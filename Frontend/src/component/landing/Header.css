@@ -20,7 +20,10 @@
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
-/* ❌ REMOVED body padding-top from here - moved to App.css */
+/* Add padding to body to prevent content hiding under fixed header */
+body {
+    padding-top: 0;
+}
 
 .hc-container {
     max-width: 1400px;

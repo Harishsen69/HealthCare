@@ -11,6 +11,8 @@
     width: 100%;
     overflow-x: hidden;
     background: #f0f9ff;
+    /* margin-top: 70px;
+    height: 90vh; */
     /* ✅ No fixed height - content ke hisaab se */
 }
 
@@ -91,11 +93,13 @@
     font-size: 14px;
 }
 
-/* ========== HERO SECTION - EXACT CONTENT HEIGHT ========== */
+/* ========== HERO SECTION ========== */
 .hm-hero-section {
     background: linear-gradient(135deg, #e0f2fe, #bae6fd, #7dd3fc);
-    padding: 40px 0;
-    /* ✅ No fixed height - content ke hisaab se */
+    min-height: calc(100vh - 70px);  /* ✅ 100vh minus header height */
+    display: flex;
+    align-items: center;
+    padding: 0;
 }
 
 .hm-hero-content {
