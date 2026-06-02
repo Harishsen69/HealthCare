@@ -1,0 +1,274 @@
+/* Doctor Profile Container */
+.profile-doctor-container {
+    background: #f8fafc;
+    min-height: calc(100vh - 80px);
+    padding: 24px;
+}
+
+/* Header Section */
+.profile-doctor-header {
+    background: linear-gradient(135deg, #1e3a5f, #2d4a6e);
+    border-radius: 24px;
+    padding: 28px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.profile-doctor-avatar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-doctor-avatar-initial {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.profile-doctor-info h2 {
+    color: white;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.profile-doctor-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    color: white;
+    display: inline-block;
+    margin-top: 6px;
+}
+
+.profile-doctor-edit-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 10px 24px;
+    border-radius: 40px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.profile-doctor-edit-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Content Section */
+.profile-doctor-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Section */
+.profile-doctor-section {
+    background: white;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.profile-doctor-section-title {
+    background: #f8fafc;
+    padding: 16px 24px;
+    border-bottom: 1px solid #eef2ff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-doctor-section-title span {
+    font-size: 20px;
+}
+
+.profile-doctor-section-title h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* Grid Layout */
+.profile-doctor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+}
+
+.profile-doctor-info-card {
+    padding: 18px 24px;
+    border-bottom: 1px solid #f0f4f8;
+    border-right: 1px solid #f0f4f8;
+}
+
+.profile-doctor-info-card:nth-child(even) {
+    border-right: none;
+}
+
+.profile-doctor-info-card.full-width {
+    grid-column: span 2;
+    border-right: none;
+}
+
+.profile-doctor-info-card label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8b9cb0;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+
+.profile-doctor-info-card p {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* Form Inputs */
+.profile-doctor-name-row {
+    display: flex;
+    gap: 12px;
+}
+
+.profile-doctor-name-row input {
+    flex: 1;
+}
+
+.profile-doctor-info-card input,
+.profile-doctor-info-card select,
+.profile-doctor-info-card textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+    background: white;
+}
+
+.profile-doctor-info-card input:focus,
+.profile-doctor-info-card select:focus,
+.profile-doctor-info-card textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Action Buttons */
+.profile-doctor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.profile-doctor-save-btn {
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.profile-doctor-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.profile-doctor-save-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.profile-doctor-cancel-btn {
+    padding: 12px 32px;
+    background: white;
+    color: #64748b;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.profile-doctor-cancel-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-doctor-container {
+        padding: 16px;
+    }
+    
+    .profile-doctor-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px 20px;
+    }
+    
+    .profile-doctor-avatar {
+        flex-direction: column;
+    }
+    
+    .profile-doctor-edit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .profile-doctor-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-doctor-info-card {
+        border-right: none;
+    }
+    
+    .profile-doctor-info-card.full-width {
+        grid-column: span 1;
+    }
+    
+    .profile-doctor-name-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .profile-doctor-actions {
+        flex-direction: column-reverse;
+    }
+    
+    .profile-doctor-save-btn,
+    .profile-doctor-cancel-btn {
+        width: 100%;
+    }
+}

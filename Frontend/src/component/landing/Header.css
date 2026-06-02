@@ -1,0 +1,230 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
+
+/* ========== HEADER WRAPPER - STRONG STICKY ========== */
+.hc-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 9999;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+/* On scroll - more premium look */
+.hc-wrapper.hc-scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ❌ REMOVED body padding-top from here - moved to App.css */
+
+.hc-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.7rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* ========== LOGO ========== */
+.hc-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.hc-logo:hover {
+    transform: scale(1.02);
+}
+
+.hc-logo-icon {
+    font-size: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.hc-logo:hover .hc-logo-icon {
+    transform: rotate(-5deg) scale(1.05);
+}
+
+.hc-logo-text {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0f2b3d 0%, #1a4a6f 50%, #0284c7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.8px;
+}
+
+/* ========== NAVIGATION ========== */
+.hc-nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.hc-nav-list {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: #f1f5f9;
+    padding: 0.3rem;
+    border-radius: 60px;
+}
+
+.hc-nav-item {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.hc-nav-item:hover {
+    color: #0f2b3d;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.hc-nav-item.hc-nav-active {
+    background: linear-gradient(135deg, #0f2b3d, #1a4a6f);
+    color: white;
+    box-shadow: 0 4px 12px rgba(15, 43, 61, 0.25);
+}
+
+/* ========== BUTTONS ========== */
+.hc-buttons {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.hc-btn-login,
+.hc-btn-register,
+.hc-btn-dashboard,
+.hc-btn-logout {
+    padding: 0.6rem 1.6rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.hc-btn-login {
+    background: transparent;
+    border: 1.5px solid #1a4a6f;
+    color: #1a4a6f;
+}
+
+.hc-btn-login:hover {
+    background: #1a4a6f;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(26, 74, 111, 0.25);
+}
+
+.hc-btn-register {
+    background: linear-gradient(135deg, #0f2b3d, #1a4a6f);
+    color: white;
+}
+
+.hc-btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 43, 61, 0.3);
+}
+
+.hc-btn-dashboard {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.hc-btn-dashboard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.hc-btn-logout {
+    background: transparent;
+    border: 1.5px solid #ef4444;
+    color: #ef4444;
+}
+
+.hc-btn-logout:hover {
+    background: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+    .hc-container {
+        padding: 0.7rem 1.5rem;
+    }
+    
+    .hc-nav-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .hc-container {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 0.8rem;
+    }
+    
+    .hc-nav-list {
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .hc-nav-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .hc-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .hc-nav-item {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+    
+    .hc-btn-login,
+    .hc-btn-register,
+    .hc-btn-dashboard,
+    .hc-btn-logout {
+        padding: 0.4rem 1rem;
+        font-size: 0.7rem;
+    }
+    
+    .hc-logo-text {
+        font-size: 1.3rem;
+    }
+    
+    .hc-logo-icon {
+        font-size: 1.6rem;
+    }
+}

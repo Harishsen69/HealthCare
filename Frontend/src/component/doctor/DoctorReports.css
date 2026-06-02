@@ -1,0 +1,399 @@
+.doctor-reports-container {
+    background: white;
+    border-radius: 24px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.dr-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #eef2ff;
+    padding-bottom: 0.5rem;
+}
+
+.dr-tabs button {
+    padding: 0.5rem 1.5rem;
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: all 0.3s;
+}
+
+.dr-tabs button.active {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.dr-report-form-container {
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+}
+
+.dr-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.dr-form-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.dr-cancel-edit {
+    padding: 0.3rem 1rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+.dr-form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dr-form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.dr-form-group label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dr-form-group input,
+.dr-form-group select,
+.dr-form-group textarea {
+    padding: 0.7rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    background: white;
+    font-family: inherit;
+}
+
+.dr-form-group input:focus,
+.dr-form-group select:focus,
+.dr-form-group textarea:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.dr-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.dr-checkbox-label input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Medicines Section */
+.dr-medicines-section {
+    margin-bottom: 1rem;
+}
+
+.dr-medicine-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    background: white;
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.dr-medicine-input-group input,
+.dr-medicine-input-group select {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    background: #f8fafc;
+}
+
+.dr-add-medicine-btn {
+    padding: 0.6rem 1.2rem;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.dr-add-medicine-btn:hover {
+    background: #059669;
+}
+
+.dr-medicines-table-container {
+    overflow-x: auto;
+    margin-top: 0.5rem;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.dr-medicines-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+}
+
+.dr-medicines-table th {
+    text-align: left;
+    padding: 0.8rem 0.6rem;
+    background: #f1f5f9;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.dr-medicines-table td {
+    padding: 0.8rem 0.6rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.dr-medicines-table tr:hover {
+    background: #f8fafc;
+}
+
+.dr-remove-medicine-btn {
+    padding: 0.2rem 0.6rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.65rem;
+}
+
+.dr-remove-medicine-btn:hover {
+    background: #dc2626;
+}
+
+/* Form Actions */
+.dr-form-actions {
+    margin-top: 1.5rem;
+}
+
+.dr-form-actions button {
+    width: 100%;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.dr-form-actions button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+}
+
+/* Reports List Table */
+.dr-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #eef2ff;
+}
+
+.dr-list-header h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.dr-report-count {
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 0.2rem 0.6rem;
+    border-radius: 30px;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+.dr-table-container {
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.dr-reports-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+}
+
+.dr-reports-table th {
+    text-align: left;
+    padding: 0.8rem 0.6rem;
+    background: #f1f5f9;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.dr-reports-table td {
+    padding: 0.8rem 0.6rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.dr-reports-table tr:hover {
+    background: #f8fafc;
+}
+
+.dr-report-id {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #4f46e5;
+}
+
+.dr-status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 30px;
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+.dr-status-badge.final {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.dr-status-badge.draft {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+/* Action Buttons - Only Icons */
+.dr-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dr-actions button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dr-actions button:hover {
+    transform: scale(1.1);
+}
+
+.dr-btn-edit {
+    background: #3b82f6;
+    color: white;
+}
+
+.dr-btn-download {
+    background: #10b981;
+    color: white;
+}
+
+.dr-btn-delete {
+    background: #ef4444;
+    color: white;
+}
+
+/* Loading & Empty */
+.dr-loading, .dr-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+}
+
+.dr-empty span {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dr-form-row {
+        flex-direction: column;
+    }
+    
+    .dr-medicine-input-group {
+        flex-direction: column;
+    }
+    
+    .dr-medicine-input-group input,
+    .dr-medicine-input-group select {
+        width: 100%;
+    }
+    
+    .dr-reports-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .dr-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .dr-actions button {
+        width: 100%;
+    }
+}
+
+/* Disabled input styling for edit mode */
+.dr-disabled-input {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+    border: 1px solid #e5e7eb;
+}

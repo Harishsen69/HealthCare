@@ -1,0 +1,616 @@
+/* ========== MAIN CONTAINER ========== */
+.patient-reports-container {
+    padding: 24px;
+    background: #f8fafc;
+    min-height: calc(100vh - 80px);
+}
+
+.patient-reports-header {
+    margin-bottom: 28px;
+}
+
+.patient-reports-header h2 {
+    color: #1e3a5f;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.patient-reports-header p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* ========== TABLE ========== */
+.patient-reports-table-wrapper {
+    background: white;
+    border-radius: 20px;
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.patient-reports-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.patient-reports-table thead tr {
+    background: #f8fafc;
+    border-bottom: 1px solid #eef2ff;
+}
+
+.patient-reports-table th {
+    padding: 16px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #1e3a5f;
+    font-size: 13px;
+}
+
+.patient-reports-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #f0f4f8;
+    font-size: 13px;
+    color: #334155;
+}
+
+.patient-reports-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.report-unread {
+    background: #eff6ff;
+}
+
+.report-unread:hover {
+    background: #dbeafe;
+}
+
+/* ========== BADGES ========== */
+.report-type-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #e2e8f0;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #334155;
+}
+
+.report-status-new {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #dcfce7;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #166534;
+}
+
+.report-status-viewed {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ========== ACTION BUTTONS ========== */
+.report-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.report-btn-view {
+    padding: 6px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.report-btn-view:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+/* ========== MODAL ========== */
+.report-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.25s ease;
+    overflow-y: auto;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    to {
+        opacity: 1;
+        backdrop-filter: blur(12px);
+    }
+}
+
+.report-modal-container {
+    background: white;
+    border-radius: 28px;
+    width: 90%;
+    max-width: 850px;
+    max-height: 85vh;
+    overflow: hidden;
+    box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    margin: 20px auto;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ========== MODAL HEADER ========== */
+.report-modal-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6e 100%);
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.report-modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6, #f59e0b);
+}
+
+.report-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.report-modal-icon {
+    font-size: 28px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.report-modal-title h2 {
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+.report-modal-close {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.report-modal-close:hover {
+    background: #ef4444;
+    transform: rotate(90deg);
+}
+
+/* ========== MODAL BODY ========== */
+.report-modal-body {
+    padding: 28px;
+    max-height: calc(85vh - 140px);
+    overflow-y: auto;
+    background: #ffffff;
+}
+
+.report-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.report-modal-body::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 3px;
+}
+
+.report-modal-body::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 3px;
+}
+
+/* ========== REPORT HEADER INFO ========== */
+.report-info-header {
+    display: flex;
+    gap: 24px;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    border: 1px solid #e2e8f0;
+}
+
+.report-info-group {
+    flex: 1;
+}
+
+.report-info-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.report-info-group p {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e3a5f;
+    margin: 0;
+}
+
+.report-type-highlight {
+    display: inline-block;
+    background: #dbeafe;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* ========== DETAILS GRID ========== */
+.report-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.report-detail-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s;
+}
+
+.report-detail-card:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.report-detail-icon {
+    font-size: 32px;
+}
+
+.report-detail-content label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.report-detail-content p {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e3a5f;
+    margin: 0;
+}
+
+.report-detail-content span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* ========== REPORT SECTIONS ========== */
+.report-section {
+    margin-bottom: 24px;
+    background: white;
+    border: 1px solid #eef2ff;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.report-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: #fafcff;
+    border-bottom: 1px solid #eef2ff;
+}
+
+.report-section-title span {
+    font-size: 20px;
+}
+
+.report-section-title h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin: 0;
+}
+
+.report-section-content {
+    padding: 16px 20px;
+    background: white;
+}
+
+.report-section-content p {
+    margin: 0;
+    line-height: 1.6;
+    color: #334155;
+    font-size: 14px;
+}
+
+/* ========== MEDICINES TABLE ========== */
+.report-medicines-table {
+    overflow-x: auto;
+}
+
+.medicines-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.medicines-table thead tr {
+    background: #eef2ff;
+}
+
+.medicines-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 700;
+    color: #1e3a5f;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.medicines-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f4f8;
+    color: #334155;
+}
+
+.medicines-table tr:last-child td {
+    border-bottom: none;
+}
+
+.medicines-table tr:hover td {
+    background: #f8fafc;
+}
+
+/* ========== SYMPTOMS TAGS ========== */
+.symptoms-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.symptom-tag {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* ========== TESTS LIST ========== */
+.tests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.test-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 10px;
+}
+
+/* ========== FOLLOW-UP CARD ========== */
+.report-followup {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fef3c7, #fffbeb);
+    border-radius: 16px;
+    margin-top: 16px;
+    border-left: 4px solid #f59e0b;
+}
+
+.report-followup span {
+    font-size: 28px;
+}
+
+.report-followup strong {
+    display: block;
+    font-size: 14px;
+    color: #92400e;
+    margin-bottom: 4px;
+}
+
+.report-followup p {
+    margin: 0;
+    font-size: 13px;
+    color: #b45309;
+}
+
+/* ========== FOOTER NOTE ========== */
+.report-footer-note {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.report-footer-note p {
+    font-size: 10px;
+    color: #94a3b8;
+    margin: 4px 0;
+}
+
+/* ========== MODAL FOOTER ========== */
+.report-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 28px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.report-modal-download {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    border-radius: 40px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.report-modal-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(16, 185, 129, 0.3);
+}
+
+.report-modal-close-btn {
+    padding: 10px 28px;
+    background: #64748b;
+    border: none;
+    border-radius: 40px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.report-modal-close-btn:hover {
+    background: #475569;
+    transform: translateY(-2px);
+}
+
+/* ========== LOADING & EMPTY STATES ========== */
+.patient-reports-loading,
+.patient-reports-error,
+.patient-reports-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+    background: white;
+    border-radius: 20px;
+}
+
+.empty-state-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.patient-reports-empty h3 {
+    color: #1e3a5f;
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+
+.patient-reports-empty p {
+    color: #64748b;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .patient-reports-container {
+        padding: 16px;
+    }
+    
+    .report-modal-container {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .report-modal-body {
+        padding: 20px;
+    }
+    
+    .report-info-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .report-details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .medicines-table {
+        font-size: 11px;
+    }
+    
+    .medicines-table th,
+    .medicines-table td {
+        padding: 8px;
+    }
+    
+    .report-modal-footer {
+        flex-direction: column;
+    }
+    
+    .report-modal-download,
+    .report-modal-close-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
