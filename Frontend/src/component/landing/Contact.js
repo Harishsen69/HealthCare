@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Contact.css";
 
 function Contact({ setPage }) {
+    const [scrolled, setScrolled] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -12,6 +13,28 @@ function Contact({ setPage }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.ct-fade-up').forEach(el => observer.observe(el));
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            observer.disconnect();
+        };
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,7 +51,6 @@ function Contact({ setPage }) {
         
         setIsSubmitting(true);
         
-        // Simulate API call
         setTimeout(() => {
             setIsSubmitting(false);
             setSubmitSuccess(true);
@@ -37,56 +59,42 @@ function Contact({ setPage }) {
         }, 1500);
     };
 
-    const handleNavigation = (page) => {
-        setPage(page);
-    };
+    const contactCards = [
+        { icon: "📍", title: "Visit Us", details: ["123 Healthcare Avenue,", "Urla, Chhattisgarh - 493221", "India"] },
+        { icon: "📞", title: "Call Us", details: ["+91 98765 43210", "+91 98765 43211 (Emergency)", "24/7 Helpline Available"] },
+        { icon: "✉️", title: "Email Us", details: ["info@medicare.com", "support@medicare.com", "careers@medicare.com"] },
+        { icon: "🕐", title: "Working Hours", details: ["Monday - Friday: 9:00 AM - 8:00 PM", "Saturday: 9:00 AM - 5:00 PM", "Sunday: Emergency Only"] }
+    ];
+
+    const faqs = [
+        { q: "How do I book an appointment?", a: "You can book an appointment online through our website or call our helpline number." },
+        { q: "What are the consultation fees?", a: "Consultation fees vary by doctor and specialty. Starting from ₹500 for general physicians." },
+        { q: "Do you accept insurance?", a: "Yes, we accept all major health insurance plans. Contact us for more details." },
+        { q: "Is emergency service available 24/7?", a: "Yes, we have 24/7 emergency services with dedicated ambulance support." }
+    ];
 
     return (
-        <div className="contact-page">
+        <div className="ct-contact-container">
             {/* Hero Section */}
-            <section className="contact-hero-section">
-                <div className="contact-hero-container">
-                    <div className="contact-hero-content">
-                        <div className="hero-badge">
-                            <span className="badge-icon">📞</span>
-                            Get in Touch
-                        </div>
-                        <h1>
-                            We'd Love to <br />
-                            <span className="text-primary">Hear From You</span>
-                        </h1>
-                        <p>
-                            Have questions about our services? Want to book an appointment?
-                            Our team is here to help you 24/7. Reach out to us anytime.
-                        </p>
-                        <div className="hero-stats">
-                            <div className="stat">
-                                <h3>24/7</h3>
-                                <p>Support Available</p>
-                            </div>
-                            <div className="stat">
-                                <h3>30min</h3>
-                                <p>Response Time</p>
-                            </div>
-                            <div className="stat">
-                                <h3>100%</h3>
-                                <p>Satisfaction</p>
-                            </div>
+            <section className="ct-hero-section">
+                <div className="ct-hero-content">
+                    <div className="ct-hero-text">
+                        <span className="ct-hero-badge">📞 Get in Touch</span>
+                        <h1>We'd Love to <br /><span className="ct-gradient-text">Hear From You</span></h1>
+                        <p>Have questions about our services? Want to book an appointment? Our team is here to help you 24/7. Reach out to us anytime.</p>
+                        <div className="ct-hero-stats">
+                            <div><h3>24/7</h3><p>Support Available</p></div>
+                            <div><h3>30min</h3><p>Response Time</p></div>
+                            <div><h3>100%</h3><p>Satisfaction</p></div>
                         </div>
                     </div>
-                    <div className="contact-hero-image">
-                        <div className="hero-image-wrapper">
-                            <img 
-                                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=450&fit=crop" 
-                                alt="Customer Support" 
-                                loading="lazy"
-                            />
-                            <div className="floating-card">
-                                <span>💬</span>
-                                <div>
-                                    <strong>24/7 Support</strong>
-                                    <p>Always here for you</p>
-                                </div>
+                    <div className="ct-hero-image">
+                        <img src="https://images.unsplash.com/photo-1581056771107-24ca5f033842?w=500&h=450&fit=crop" alt="Healthcare Team" />
+                        <div className="ct-hero-badge-card">
+                            <span>💬</span>
+                            <div>
+                                <strong>24/7 Support</strong>
+                                <p>Always here for you</p>
                             </div>
                         </div>
                     </div>
@@ -94,130 +102,75 @@ function Contact({ setPage }) {
             </section>
 
             {/* Contact Main Section */}
-            <section className="contact-main-section">
-                <div className="container">
-                    <div className="section-header">
-                        <span className="section-badge">Contact Us</span>
+            <section className="ct-contact-section ct-fade-up">
+                <div className="ct-container">
+                    <div className="ct-section-header">
+                        <span className="ct-section-badge">Contact Us</span>
                         <h2>Get In Touch With Us</h2>
                         <p>We're here to answer your questions and provide the best healthcare support</p>
                     </div>
 
-                    <div className="contact-grid">
-                        {/* Left Side - Contact Info Cards */}
-                        <div className="contact-info-side">
-                            <div className="info-card">
-                                <div className="info-icon">📍</div>
-                                <h3>Visit Us</h3>
-                                <p>123 Healthcare Avenue,</p>
-                                <p>Urla, Chhattisgarh - 493221</p>
-                                <p>India</p>
-                            </div>
-
-                            <div className="info-card">
-                                <div className="info-icon">📞</div>
-                                <h3>Call Us</h3>
-                                <p>+91 98765 43210</p>
-                                <p>+91 98765 43211 (Emergency)</p>
-                                <p>24/7 Helpline Available</p>
-                            </div>
-
-                            <div className="info-card">
-                                <div className="info-icon">✉️</div>
-                                <h3>Email Us</h3>
-                                <p>info@medicare.com</p>
-                                <p>support@medicare.com</p>
-                                <p>careers@medicare.com</p>
-                            </div>
-
-                            <div className="info-card">
-                                <div className="info-icon">🕐</div>
-                                <h3>Working Hours</h3>
-                                <p>Monday - Friday: 9:00 AM - 8:00 PM</p>
-                                <p>Saturday: 9:00 AM - 5:00 PM</p>
-                                <p>Sunday: Emergency Only</p>
-                            </div>
+                    <div className="ct-contact-grid">
+                        {/* Contact Info Cards */}
+                        <div className="ct-contact-info">
+                            {contactCards.map((card, idx) => (
+                                <div className="ct-info-card" key={idx}>
+                                    <div className="ct-info-icon">{card.icon}</div>
+                                    <h3>{card.title}</h3>
+                                    {card.details.map((line, i) => (
+                                        <p key={i}>{line}</p>
+                                    ))}
+                                </div>
+                            ))}
                         </div>
 
-                        {/* Right Side - Contact Form */}
-                        <div className="contact-form-side">
-                            <div className="form-card">
+                        {/* Contact Form */}
+                        <div className="ct-contact-form">
+                            <div className="ct-form-card">
                                 <h3>Send Us a Message</h3>
                                 <p>We'll get back to you within 24 hours</p>
 
                                 {submitSuccess && (
-                                    <div className="success-message">
+                                    <div className="ct-success-msg">
                                         ✓ Message sent successfully! We'll contact you soon.
                                     </div>
                                 )}
 
                                 {error && (
-                                    <div className="error-message">
+                                    <div className="ct-error-msg">
                                         ⚠️ {error}
                                     </div>
                                 )}
 
                                 <form onSubmit={handleSubmit}>
-                                    <div className="form-row">
-                                        <div className="form-group">
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                placeholder="Your Name *"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                required
-                                            />
+                                    <div className="ct-form-row">
+                                        <div className="ct-form-group">
+                                            <input type="text" name="name" placeholder="Your Name *" value={formData.name} onChange={handleChange} required />
                                         </div>
-                                        <div className="form-group">
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                placeholder="Your Email *"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                required
-                                            />
+                                        <div className="ct-form-group">
+                                            <input type="email" name="email" placeholder="Your Email *" value={formData.email} onChange={handleChange} required />
                                         </div>
                                     </div>
 
-                                    <div className="form-row">
-                                        <div className="form-group">
-                                            <input
-                                                type="tel"
-                                                name="phone"
-                                                placeholder="Phone Number"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                            />
+                                    <div className="ct-form-row">
+                                        <div className="ct-form-group">
+                                            <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} />
                                         </div>
-                                        <div className="form-group">
-                                            <input
-                                                type="text"
-                                                name="subject"
-                                                placeholder="Subject"
-                                                value={formData.subject}
-                                                onChange={handleChange}
-                                            />
+                                        <div className="ct-form-group">
+                                            <input type="text" name="subject" placeholder="Subject" value={formData.subject} onChange={handleChange} />
                                         </div>
                                     </div>
 
-                                    <div className="form-group">
-                                        <textarea
-                                            name="message"
-                                            placeholder="Your Message *"
-                                            rows="5"
-                                            value={formData.message}
-                                            onChange={handleChange}
-                                            required
-                                        ></textarea>
+                                    <div className="ct-form-group">
+                                        <textarea name="message" placeholder="Your Message *" rows="5" value={formData.message} onChange={handleChange} required></textarea>
                                     </div>
 
-                                    <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                                    <button type="submit" className="ct-submit-btn" disabled={isSubmitting}>
                                         {isSubmitting ? "Sending..." : "Send Message →"}
                                     </button>
                                 </form>
 
-                                <div className="form-footer">
+                                <div className="ct-form-footer">
                                     <p>📱 Or reach us on WhatsApp: +91 98765 43210</p>
                                 </div>
                             </div>
@@ -225,10 +178,10 @@ function Contact({ setPage }) {
                     </div>
 
                     {/* Map Section */}
-                    <div className="map-section">
-                        <div className="map-card">
+                    <div className="ct-map-section">
+                        <div className="ct-map-card">
                             <h3>📍 Find Us Here</h3>
-                            <div className="map-container">
+                            <div className="ct-map-container">
                                 <iframe
                                     src="https://maps.google.com/maps?q=urla+chhattisgarh&t=&z=13&ie=UTF8&iwloc=&output=embed"
                                     title="Location Map"
@@ -236,7 +189,7 @@ function Contact({ setPage }) {
                                     loading="lazy"
                                 ></iframe>
                             </div>
-                            <div className="map-directions">
+                            <div className="ct-map-directions">
                                 <a href="https://maps.google.com/?q=urla+chhattisgarh" target="_blank" rel="noopener noreferrer">
                                     Get Directions →
                                 </a>
@@ -247,96 +200,83 @@ function Contact({ setPage }) {
             </section>
 
             {/* FAQ Section */}
-            <section className="faq-section">
-                <div className="container">
-                    <div className="section-header">
-                        <span className="section-badge">FAQ</span>
+            <section className="ct-faq-section ct-fade-up">
+                <div className="ct-container">
+                    <div className="ct-section-header">
+                        <span className="ct-section-badge">FAQ</span>
                         <h2>Frequently Asked Questions</h2>
                         <p>Find quick answers to common questions</p>
                     </div>
-                    <div className="faq-grid">
-                        <div className="faq-card">
-                            <h4>📅 How do I book an appointment?</h4>
-                            <p>You can book an appointment online through our website or call our helpline number.</p>
-                        </div>
-                        <div className="faq-card">
-                            <h4>💰 What are the consultation fees?</h4>
-                            <p>Consultation fees vary by doctor and specialty. Starting from ₹500 for general physicians.</p>
-                        </div>
-                        <div className="faq-card">
-                            <h4>🏥 Do you accept insurance?</h4>
-                            <p>Yes, we accept all major health insurance plans. Contact us for more details.</p>
-                        </div>
-                        <div className="faq-card">
-                            <h4>🚑 Is emergency service available 24/7?</h4>
-                            <p>Yes, we have 24/7 emergency services with dedicated ambulance support.</p>
-                        </div>
+                    <div className="ct-faq-grid">
+                        {faqs.map((faq, idx) => (
+                            <div className="ct-faq-card" key={idx}>
+                                <h4>📅 {faq.q}</h4>
+                                <p>{faq.a}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="cta-section">
-                <div className="cta-container">
-                    <h2>Need Immediate Medical Assistance?</h2>
-                    <p>Call our 24/7 emergency helpline for instant support</p>
-                    <button className="cta-button" onClick={() => window.location.href = "tel:+919876543210"}>
-                        📞 Call Emergency: +91 98765 43210
-                    </button>
-                </div>
-            </section>
+            {/* CTA + Footer Wrapper */}
+            <div className="ct-cta-footer-wrapper">
+                {/* CTA Section */}
+                <section className="ct-cta-section">
+                    <div className="ct-cta-content">
+                        <h2>Need Immediate Medical Assistance?</h2>
+                        <p>Call our 24/7 emergency helpline for instant support</p>
+                        <button className="ct-cta-btn" onClick={() => window.location.href = "tel:+919876543210"}>
+                            📞 Call Emergency: +91 98765 43210
+                        </button>
+                    </div>
+                </section>
 
-            {/* Footer */}
-            <footer className="footer">
-                <div className="footer-container">
-                    <div className="footer-grid">
-                        <div className="footer-about">
-                            <div className="footer-logo">
-                                <span className="logo-icon">🏥</span>
-                                <span>MediCare</span>
+                {/* Footer */}
+                <footer className="ct-footer">
+                    <div className="ct-footer-inner">
+                        <div className="ct-footer-grid">
+                            <div>
+                                <div className="ct-footer-logo">🏥 MediCare</div>
+                                <p>Providing quality healthcare services since 2010. We are committed to your health and well-being.</p>
+                                <div className="ct-social-links">
+                                    <span>📘</span> <span>🐦</span> <span>📷</span> <span>🔗</span>
+                                </div>
                             </div>
-                            <p>Providing quality healthcare services since 2010. We are committed to your health and well-being.</p>
-                            <div className="social-links">
-                                <a href="#" aria-label="Facebook">📘</a>
-                                <a href="#" aria-label="Twitter">🐦</a>
-                                <a href="#" aria-label="Instagram">📷</a>
-                                <a href="#" aria-label="LinkedIn">🔗</a>
+                            <div>
+                                <h4>Quick Links</h4>
+                                <ul>
+                                    <li><button onClick={() => setPage("home")}>Home</button></li>
+                                    <li><button onClick={() => setPage("about")}>About Us</button></li>
+                                    <li><button onClick={() => setPage("services")}>Services</button></li>
+                                    <li><button onClick={() => setPage("contact")}>Contact</button></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>Our Services</h4>
+                                <ul>
+                                    <li>Cardiology</li>
+                                    <li>Neurology</li>
+                                    <li>Pediatrics</li>
+                                    <li>Orthopedics</li>
+                                    <li>Emergency Care</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>Contact Info</h4>
+                                <ul>
+                                    <li>📍 Urla, Chhattisgarh</li>
+                                    <li>📞 +91 98765 43210</li>
+                                    <li>✉️ info@medicare.com</li>
+                                    <li>🕐 Mon-Sat: 9:00 AM - 8:00 PM</li>
+                                </ul>
                             </div>
                         </div>
-                        <div className="footer-links">
-                            <h4>Quick Links</h4>
-                            <ul>
-                                <li><button onClick={() => handleNavigation("home")}>Home</button></li>
-                                <li><button onClick={() => handleNavigation("about")}>About Us</button></li>
-                                <li><button onClick={() => handleNavigation("services")}>Services</button></li>
-                                <li><button onClick={() => handleNavigation("contact")}>Contact</button></li>
-                            </ul>
-                        </div>
-                        <div className="footer-services">
-                            <h4>Our Services</h4>
-                            <ul>
-                                <li>Cardiology</li>
-                                <li>Neurology</li>
-                                <li>Pediatrics</li>
-                                <li>Orthopedics</li>
-                                <li>Emergency Care</li>
-                            </ul>
-                        </div>
-                        <div className="footer-contact">
-                            <h4>Contact Info</h4>
-                            <ul>
-                                <li>📍 Urla, Chhattisgarh</li>
-                                <li>📞 +91 98765 43210</li>
-                                <li>✉️ info@medicare.com</li>
-                                <li>🕐 Mon-Sat: 9:00 AM - 8:00 PM</li>
-                            </ul>
+                        <div className="ct-footer-bottom">
+                            <p>&copy; 2025 MediCare. All rights reserved. | Designed with ❤️ for better healthcare</p>
                         </div>
                     </div>
-                    <div className="footer-bottom">
-                        <p>&copy; 2025 MediCare. All rights reserved. | Designed with ❤️ for better healthcare</p>
-                    </div>
-                </div>
-            </footer>
+                </footer>
+            </div>
         </div>
     );
 }
