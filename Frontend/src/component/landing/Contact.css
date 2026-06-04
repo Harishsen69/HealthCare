@@ -16,7 +16,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ========== CONTACT PAGE SPECIFIC ========== */
+/* ========== CONTACT PAGE CONTAINER ========== */
 .ct-contact-container {
     width: 100%;
     overflow-x: hidden;
@@ -24,16 +24,15 @@ body {
 }
 
 .ct-container {
-    width: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* ========== SECTIONS - AUTO HEIGHT ========== */
+/* ========== SECTIONS ========== */
 .ct-hero-section,
 .ct-contact-section,
-.ct-faq-section,
-.ct-cta-footer-wrapper {
+.ct-faq-section {
     min-height: auto;
     display: flex;
     flex-direction: column;
@@ -71,7 +70,6 @@ body {
 
 /* ========== HERO SECTION ========== */
 .ct-hero-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
     padding: 40px 0;
 }
 
@@ -144,9 +142,9 @@ body {
 
 .ct-hero-image img {
     width: 85%;
-    margin-top: 70px;
+    margin-top: 40px;
     border-radius: 30px;
-    box-shadow: 0 30px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
     transition: 0.3s;
 }
 
@@ -158,49 +156,32 @@ body {
     position: absolute;
     bottom: 10px;
     right: 85px;
-    background: rgb(255, 255, 255);
-    padding: 8px 18px;
+    background: white;
+    padding: 6px 14px;
     border-radius: 20px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 11px;
     color: #0284c7;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 5px;
     animation: ct-float 3s ease-in-out infinite;
-    transition: all 0.3s ease;
-}
-
-.ct-hero-badge-card:hover {
-    animation-play-state: paused;
-    transform: scale(1.05);
 }
 
 @keyframes ct-float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-
-.ct-hero-badge-card span {
-    font-size: 20px;
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
 }
 
 /* ========== CONTACT SECTION ========== */
-.ct-contact-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 60px 0;
-}
-
 .ct-contact-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
-/* Contact Info Cards */
 .ct-contact-info {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -213,6 +194,7 @@ body {
     border-radius: 20px;
     transition: all 0.3s ease;
     border: 1px solid #e2e8f0;
+    text-align: center;
 }
 
 .ct-info-card:hover {
@@ -228,7 +210,7 @@ body {
 
 .ct-info-card h3 {
     font-size: 18px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     color: #0f172a;
 }
 
@@ -236,7 +218,6 @@ body {
     font-size: 13px;
     color: #64748b;
     margin-bottom: 5px;
-    line-height: 1.5;
 }
 
 /* Contact Form */
@@ -244,12 +225,11 @@ body {
     background: white;
     border-radius: 24px;
     padding: 30px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
 }
 
 .ct-form-card h3 {
-    font-size: 24px;
+    font-size: 22px;
     margin-bottom: 8px;
     color: #0f172a;
 }
@@ -257,6 +237,7 @@ body {
 .ct-form-card p {
     color: #64748b;
     margin-bottom: 20px;
+    font-size: 13px;
 }
 
 .ct-success-msg {
@@ -266,6 +247,7 @@ body {
     border-radius: 12px;
     margin-bottom: 20px;
     text-align: center;
+    font-size: 13px;
 }
 
 .ct-error-msg {
@@ -275,7 +257,7 @@ body {
     border-radius: 12px;
     margin-bottom: 20px;
     text-align: center;
-    border-left: 4px solid #dc2626;
+    font-size: 13px;
 }
 
 .ct-form-row {
@@ -292,8 +274,8 @@ body {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     font-size: 14px;
+    font-family: 'Inter', sans-serif;
     transition: all 0.3s;
-    font-family: inherit;
 }
 
 .ct-form-group input:focus,
@@ -310,14 +292,14 @@ body {
     color: white;
     border: none;
     border-radius: 40px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
     margin-top: 10px;
 }
 
-.ct-submit-btn:hover {
+.ct-submit-btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(2, 132, 199, 0.3);
 }
@@ -325,18 +307,6 @@ body {
 .ct-submit-btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-}
-
-.ct-form-footer {
-    text-align: center;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #e2e8f0;
-}
-
-.ct-form-footer p {
-    font-size: 13px;
-    color: #64748b;
 }
 
 /* Map Section */
@@ -368,28 +338,7 @@ body {
     border: none;
 }
 
-.ct-map-directions {
-    text-align: center;
-    margin-top: 15px;
-}
-
-.ct-map-directions a {
-    color: #0284c7;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s;
-}
-
-.ct-map-directions a:hover {
-    color: #0369a1;
-}
-
 /* ========== FAQ SECTION ========== */
-.ct-faq-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 60px 0;
-}
-
 .ct-faq-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -422,15 +371,10 @@ body {
     line-height: 1.5;
 }
 
-/* ========== CTA + FOOTER ========== */
-.ct-cta-footer-wrapper {
-    background: #0f172a;
-    padding: 40px 0 0;
-}
-
+/* ========== CTA SECTION ========== */
 .ct-cta-section {
-    background: linear-gradient(135deg, #4ca6d3, #0ea5e9);
-    margin: 30px 20px 40px;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    margin: 40px 20px;
     border-radius: 28px;
     padding: 50px 20px;
     text-align: center;
@@ -471,11 +415,11 @@ body {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* ========== FOOTER ========== */
+/* ========== FOOTER - EXACTLY LIKE HOME ========== */
 .ct-footer {
     background: #0f172a;
     color: #94a3b8;
-    padding: 40px 20px 30px;
+    padding: 35px 20px 25px;
 }
 
 .ct-footer-inner {
@@ -497,14 +441,19 @@ body {
     margin-bottom: 12px;
 }
 
+.ct-footer p {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 .ct-social-links {
     display: flex;
     gap: 15px;
     margin-top: 15px;
+    font-size: 20px;
 }
 
 .ct-social-links span {
-    font-size: 20px;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -563,7 +512,7 @@ body {
     transform: translateY(0);
 }
 
-/* ========== RESPONSIVE ========== */
+/* ========== RESPONSIVE - SAME AS HOME ========== */
 @media (max-width: 1100px) {
     .ct-contact-grid {
         grid-template-columns: 1fr;
@@ -577,6 +526,7 @@ body {
     .ct-hero-content {
         flex-direction: column;
         text-align: center;
+        gap: 25px;
     }
     .ct-hero-stats {
         justify-content: center;
@@ -585,60 +535,283 @@ body {
         width: 70%;
         margin: 0 auto;
     }
-    .ct-contact-info {
-        grid-template-columns: repeat(2, 1fr);
+    .ct-hero-image img {
+        width: 100%;
+        margin-top: 0;
+    }
+    .ct-hero-badge-card {
+        bottom: 5px;
+        right: 15px;
+        padding: 4px 10px;
+        font-size: 10px;
     }
 }
 
 @media (max-width: 768px) {
+    /* Contact cards - 2x2 grid on tablet */
     .ct-contact-info {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
     }
+    
+    .ct-info-card {
+        padding: 18px 15px;
+    }
+    
+    .ct-info-icon {
+        font-size: 28px;
+    }
+    
+    .ct-info-card h3 {
+        font-size: 15px;
+    }
+    
+    .ct-info-card p {
+        font-size: 11px;
+    }
+    
     .ct-faq-grid {
         grid-template-columns: 1fr;
     }
-    .ct-footer-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-    .ct-social-links {
-        justify-content: center;
-    }
+    
     .ct-hero-text h1 {
         font-size: 32px;
     }
+    
     .ct-hero-image {
         width: 100%;
     }
+    
     .ct-form-row {
         grid-template-columns: 1fr;
         gap: 12px;
     }
-}
-
-@media (max-width: 480px) {
-    .ct-hero-buttons {
-        flex-direction: column;
-    }
-    .ct-hero-stats {
-        gap: 15px;
-    }
-    .ct-hero-stats h3 {
-        font-size: 20px;
-    }
+    
     .ct-section-header h2 {
         font-size: 24px;
     }
+    
+    .ct-cta-section {
+        margin: 20px 15px;
+        padding: 35px 20px;
+    }
+    
     .ct-cta-section h2 {
         font-size: 24px;
     }
+    
+    /* FOOTER - Keep 4 columns */
+    .ct-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        text-align: left;
+    }
+    
+    .ct-footer-logo {
+        font-size: 18px;
+    }
+    
+    .ct-footer p {
+        font-size: 11px;
+    }
+    
+    .ct-footer h4 {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+    
+    .ct-footer li {
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+    
+    .ct-footer li button {
+        font-size: 11px;
+    }
+    
+    .ct-social-links {
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .ct-social-links span {
+        font-size: 16px;
+    }
+    
+    .ct-footer-bottom {
+        font-size: 10px;
+        padding-top: 15px;
+    }
+    
+    .ct-map-container iframe {
+        height: 250px;
+    }
+}
+
+/* ========== MOBILE (≤600px) - CONTACT CARDS 2x2 LAYOUT ========== */
+@media (max-width: 600px) {
+    /* Contact cards - 2 cards per row (Visit Us | Call Us) (Email Us | Working Hours) */
+    .ct-contact-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .ct-info-card {
+        padding: 15px 12px;
+    }
+    
+    .ct-info-icon {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+    
+    .ct-info-card h3 {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    
+    .ct-info-card p {
+        font-size: 10px;
+        margin-bottom: 3px;
+    }
+    
+    /* Form remains same */
+    .ct-contact-form {
+        padding: 20px;
+    }
+    
+    .ct-form-card h3 {
+        font-size: 18px;
+    }
+    
+    /* Footer */
+    .ct-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+    
+    .ct-footer-logo {
+        font-size: 14px;
+    }
+    
+    .ct-footer p {
+        font-size: 9px;
+    }
+    
+    .ct-footer h4 {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .ct-footer li {
+        font-size: 9px;
+        margin-bottom: 5px;
+    }
+    
+    .ct-footer li button {
+        font-size: 9px;
+    }
+    
+    .ct-social-links span {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ct-hero-stats {
+        gap: 15px;
+    }
+    
+    .ct-hero-stats h3 {
+        font-size: 20px;
+    }
+    
+    .ct-section-header h2 {
+        font-size: 22px;
+    }
+    
+    .ct-cta-section h2 {
+        font-size: 20px;
+    }
+    
+    .ct-cta-btn {
+        padding: 10px 25px;
+        font-size: 14px;
+    }
+    
     .ct-faq-card {
         padding: 18px;
     }
+    
     .ct-faq-card h4 {
         font-size: 14px;
     }
+    
     .ct-map-container iframe {
-        height: 250px;
+        height: 200px;
+    }
+    
+    /* Contact cards - tetap 2 kolom */
+    .ct-contact-info {
+        gap: 10px;
+    }
+    
+    .ct-info-card {
+        padding: 12px 10px;
+    }
+    
+    .ct-info-icon {
+        font-size: 22px;
+    }
+    
+    .ct-info-card h3 {
+        font-size: 12px;
+    }
+    
+    .ct-info-card p {
+        font-size: 9px;
+    }
+    
+    /* Footer */
+    .ct-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+    
+    .ct-footer-logo {
+        font-size: 12px;
+    }
+    
+    .ct-footer p {
+        font-size: 8px;
+    }
+    
+    .ct-footer h4 {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .ct-footer li {
+        font-size: 8px;
+        margin-bottom: 4px;
+    }
+    
+    .ct-footer li button {
+        font-size: 8px;
+    }
+    
+    .ct-social-links {
+        gap: 6px;
+    }
+    
+    .ct-social-links span {
+        font-size: 12px;
+    }
+    
+    .ct-footer-bottom {
+        font-size: 8px;
+        padding-top: 12px;
     }
 }

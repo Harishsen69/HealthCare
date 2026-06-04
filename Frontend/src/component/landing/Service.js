@@ -1,16 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import "./Service.css";
 
 function Service({ setPage }) {
-    const [scrolled, setScrolled] = useState(false);
-
+    // Scroll animations - same as Home
     useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 20);
-        };
-        window.addEventListener('scroll', handleScroll);
-        
-        // Intersection Observer for fade-up animations
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -21,31 +14,19 @@ function Service({ setPage }) {
 
         document.querySelectorAll('.sc-fade-up').forEach(el => observer.observe(el));
         
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            observer.disconnect();
-        };
+        return () => observer.disconnect();
     }, []);
 
     const services = [
-        { icon: "❤️", name: "Cardiology", desc: "Expert heart care with advanced diagnostic and treatment options for all cardiac conditions.", features: ["ECG", "Angiography", "Bypass Surgery"] },
-        { icon: "🧠", name: "Neurology", desc: "Specialized care for brain, spine, and nervous system disorders with advanced treatments.", features: ["MRI/CT Scan", "Stroke Care", "Neuro Surgery"] },
-        { icon: "👶", name: "Pediatrics", desc: "Comprehensive child healthcare from newborns to adolescents in a friendly environment.", features: ["Vaccination", "Growth Monitoring", "Child Psychology"] },
-        { icon: "🦴", name: "Orthopedics", desc: "Expert care for bones, joints, and muscles with modern surgical techniques.", features: ["Joint Replacement", "Sports Medicine", "Physiotherapy"] },
-        { icon: "👁️", name: "Ophthalmology", desc: "Complete eye care services including cataract surgery and laser treatments.", features: ["Cataract Surgery", "LASIK", "Glaucoma Care"] },
-        { icon: "🦷", name: "Dentistry", desc: "Comprehensive dental care including root canals, crowns, and cosmetic dentistry.", features: ["Root Canal", "Teeth Whitening", "Braces"] },
-        { icon: "🤰", name: "Gynecology", desc: "Complete women's health services from adolescence to menopause.", features: ["Pregnancy Care", "Fertility Treatment", "Cancer Screening"] },
-        { icon: "🩺", name: "Dermatology", desc: "Expert skin, hair, and nail care with advanced cosmetic treatments.", features: ["Skin Care", "Laser Treatment", "Hair Transplant"] },
-        { icon: "🚑", name: "Emergency Care", desc: "24/7 emergency services with rapid response and critical care.", features: ["24/7 Available", "Ambulance Service", "Trauma Care"] }
-    ];
-
-    const departments = [
-        { icon: "🏥", name: "Cancer Center", desc: "Comprehensive oncology care with modern radiation and chemotherapy." },
-        { icon: "❤️", name: "Heart Institute", desc: "Advanced cardiac care with state-of-the-art cath lab and surgery." },
-        { icon: "🧠", name: "Neuroscience Center", desc: "Specialized care for brain, spine, and nervous system disorders." },
-        { icon: "🦴", name: "Orthopedic Center", desc: "Complete bone and joint care with robotic surgery options." },
-        { icon: "👶", name: "Women & Child Care", desc: "Comprehensive care for mothers and children under one roof." },
-        { icon: "🔬", name: "Diagnostic Center", desc: "Advanced diagnostic services including MRI, CT, and lab tests." }
+        { icon: "❤️", name: "Cardiology", desc: "Expert heart care with advanced diagnostic and treatment options for all cardiac conditions." },
+        { icon: "🧠", name: "Neurology", desc: "Specialized care for brain, spine, and nervous system disorders with advanced treatments." },
+        { icon: "👶", name: "Pediatrics", desc: "Comprehensive child healthcare from newborns to adolescents in a friendly environment." },
+        { icon: "🦴", name: "Orthopedics", desc: "Expert care for bones, joints, and muscles with modern surgical techniques." },
+        { icon: "👁️", name: "Ophthalmology", desc: "Complete eye care services including cataract surgery and laser treatments." },
+        { icon: "🦷", name: "Dentistry", desc: "Comprehensive dental care including root canals, crowns, and cosmetic dentistry." },
+        { icon: "🤰", name: "Gynecology", desc: "Complete women's health services from adolescence to menopause." },
+        { icon: "🩺", name: "Dermatology", desc: "Expert skin, hair, and nail care with advanced cosmetic treatments." },
+        { icon: "🚑", name: "Emergency Care", desc: "24/7 emergency services with rapid response and critical care." }
     ];
 
     const whyUs = [
@@ -84,9 +65,7 @@ function Service({ setPage }) {
                         <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500&h=450&fit=crop" alt="Medical Services" />
                         <div className="sc-hero-badge-card">
                             <span>🏥</span>
-                            <div>
-                                <strong>24/7 Available</strong>
-                            </div>
+                            <div><strong>24/7 Available</strong></div>
                         </div>
                     </div>
                 </div>
@@ -106,32 +85,7 @@ function Service({ setPage }) {
                                 <div className="sc-service-icon">{service.icon}</div>
                                 <h3>{service.name}</h3>
                                 <p>{service.desc}</p>
-                                <div className="sc-service-features">
-                                    {service.features.map((feature, i) => (
-                                        <span key={i}>✓ {feature}</span>
-                                    ))}
-                                </div>
                                 <button className="sc-service-btn" onClick={() => setPage("appointment")}>Book Consultation →</button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Departments Section */}
-            <section className="sc-departments-section sc-fade-up">
-                <div className="sc-container">
-                    <div className="sc-section-header">
-                        <span className="sc-section-badge">Specialized Departments</span>
-                        <h2>Centers of Excellence</h2>
-                        <p>Advanced care from specialized medical teams</p>
-                    </div>
-                    <div className="sc-departments-grid">
-                        {departments.map((dept, idx) => (
-                            <div className="sc-dept-card" key={idx}>
-                                <div className="sc-dept-icon">{dept.icon}</div>
-                                <h3>{dept.name}</h3>
-                                <p>{dept.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -181,63 +135,56 @@ function Service({ setPage }) {
                 </div>
             </section>
 
-            {/* CTA + Footer Wrapper */}
-            <div className="sc-cta-footer-wrapper">
-                {/* CTA Section */}
-                <section className="sc-cta-section">
-                    <div className="sc-cta-content">
-                        <h2>Ready to Get Started?</h2>
-                        <p>Book an appointment with our expert doctors today</p>
-                        <button className="sc-cta-btn" onClick={() => setPage("appointment")}>Book Appointment Now →</button>
-                    </div>
-                </section>
+            {/* CTA Section - Same as Home */}
+            <section className="sc-cta-section">
+                <div className="sc-cta-content">
+                    <h2>Ready to Get Started?</h2>
+                    <p>Book an appointment with our expert doctors today</p>
+                    <button className="sc-cta-btn" onClick={() => setPage("appointment")}>Book Appointment Now →</button>
+                </div>
+            </section>
 
-                {/* Footer */}
-                <footer className="sc-footer">
-                    <div className="sc-footer-inner">
-                        <div className="sc-footer-grid">
-                            <div>
-                                <div className="sc-footer-logo">🏥 MediCare</div>
-                                <p>Providing quality healthcare services since 2010. We are committed to your health and well-being.</p>
-                                <div className="sc-social-links">
-                                    <span>📘</span> <span>🐦</span> <span>📷</span> <span>🔗</span>
-                                </div>
-                            </div>
-                            <div>
-                                <h4>Quick Links</h4>
-                                <ul>
-                                    <li><button onClick={() => setPage("home")}>Home</button></li>
-                                    <li><button onClick={() => setPage("about")}>About Us</button></li>
-                                    <li><button onClick={() => setPage("services")}>Services</button></li>
-                                    <li><button onClick={() => setPage("contact")}>Contact</button></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4>Our Services</h4>
-                                <ul>
-                                    <li>Cardiology</li>
-                                    <li>Neurology</li>
-                                    <li>Pediatrics</li>
-                                    <li>Orthopedics</li>
-                                    <li>Emergency Care</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4>Contact Info</h4>
-                                <ul>
-                                    <li>📍 Delhi, India</li>
-                                    <li>📞 +91 98765 43210</li>
-                                    <li>✉️ info@medicare.com</li>
-                                    <li>🕐 Mon-Sat: 9:00 AM - 8:00 PM</li>
-                                </ul>
-                            </div>
+            {/* Footer - Exactly like Home */}
+            <footer className="sc-footer">
+                <div className="sc-footer-inner">
+                    <div className="sc-footer-grid">
+                        <div>
+                            <div className="sc-footer-logo">🏥 MediCare</div>
+                            <p>Quality healthcare since 2010</p>
+                            <div className="sc-social-links">📘 📷 🐦 🔗</div>
                         </div>
-                        <div className="sc-footer-bottom">
-                            <p>&copy; 2025 MediCare. All rights reserved. | Designed with ❤️ for better healthcare</p>
+                        <div>
+                            <h4>Quick Links</h4>
+                            <ul>
+                                <li><button onClick={() => setPage("home")}>Home</button></li>
+                                <li><button onClick={() => setPage("about")}>About</button></li>
+                                <li><button onClick={() => setPage("services")}>Services</button></li>
+                                <li><button onClick={() => setPage("contact")}>Contact</button></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Services</h4>
+                            <ul>
+                                <li>Cardiology</li>
+                                <li>Neurology</li>
+                                <li>Pediatrics</li>
+                                <li>Orthopedics</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Contact</h4>
+                            <ul>
+                                <li>📍 Delhi, India</li>
+                                <li>📞 +91 98765 43210</li>
+                                <li>✉️ info@medicare.com</li>
+                            </ul>
                         </div>
                     </div>
-                </footer>
-            </div>
+                    <div className="sc-footer-bottom">
+                        <p>&copy; 2025 MediCare. All rights reserved.</p>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }

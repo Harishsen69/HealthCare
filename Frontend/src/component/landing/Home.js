@@ -9,10 +9,11 @@ function Home({ setPage }) {
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [showDoctorModal, setShowDoctorModal] = useState(false);
-    const [showAllDoctors, setShowAllDoctors] = useState(false);
+    const [visibleDoctors, setVisibleDoctors] = useState(6);
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userProfile, setUserProfile] = useState(null);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
     
     const [showAddDoctorForm, setShowAddDoctorForm] = useState(false);
     const [newDoctor, setNewDoctor] = useState({
@@ -38,6 +39,86 @@ function Home({ setPage }) {
         { icon: "🩺", name: "Dermatology", desc: "Skin Care" },
         { icon: "🧘", name: "Psychiatry", desc: "Mental Health" }
     ];
+
+    // Get initial count based on screen size
+    const getInitialCount = () => {
+        return window.innerWidth <= 900 ? 4 : 6;
+    };
+
+    // Get load more increment based on screen size
+    const getLoadMoreIncrement = () => {
+        return window.innerWidth <= 900 ? 4 : 3;
+    };
+
+    // Check screen size for mobile/laptop
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth <= 900;
+            setIsMobile(mobile);
+            // Reset visible doctors based on screen size if not showing all
+            if (visibleDoctors !== doctors.length) {
+                if (mobile && visibleDoctors > 4) {
+                    setVisibleDoctors(4);
+                } else if (!mobile && visibleDoctors < 6) {
+                    setVisibleDoctors(6);
+                }
+            }
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [doctors.length, visibleDoctors]);
+
+    const loadMoreDoctors = () => {
+        const increment = getLoadMoreIncrement();
+        setVisibleDoctors(prev => prev + increment);
+    };
+
+    const viewAllDoctors = () => {
+        setVisibleDoctors(doctors.length);
+    };
+
+    const showLessDoctors = () => {
+        const initialCount = getInitialCount();
+        setVisibleDoctors(initialCount);
+    };
+
+    useEffect(() => {
+        if (showAppointment || showDoctorModal) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.top = `-${window.scrollY}px`;
+        } else {
+            const scrollY = document.body.style.top;
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.top = '';
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
+        }
+        
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.top = '';
+        };
+    }, [showAppointment, showDoctorModal]);
+
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                if (showAppointment) closeAppointmentModal();
+                if (showDoctorModal) closeDoctorModal();
+            }
+        };
+        
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [showAppointment, showDoctorModal]);
 
     const fetchUserProfile = useCallback(async () => {
         if (!token) return;
@@ -68,6 +149,9 @@ function Home({ setPage }) {
             setLoading(true);
             const response = await API.get('doctors/');
             setDoctors(response.data || []);
+            // Set initial visible count based on screen size after doctors load
+            const initialCount = window.innerWidth <= 900 ? 4 : 6;
+            setVisibleDoctors(initialCount);
         } catch (error) {
             console.error("Error fetching doctors:", error);
             setDoctors([]);
@@ -105,13 +189,11 @@ function Home({ setPage }) {
     const closeAppointmentModal = () => {
         setShowAppointment(false);
         setFormData({ doctorId: "", date: "", time: "" });
-        document.body.style.overflow = '';
     };
 
     const closeDoctorModal = () => {
         setShowDoctorModal(false);
         setSelectedDoctor(null);
-        document.body.style.overflow = '';
     };
 
     const handleBookAppointmentClick = () => {
@@ -127,7 +209,6 @@ function Home({ setPage }) {
         }
         fetchUserProfile();
         setShowAppointment(true);
-        document.body.style.overflow = 'hidden';
     };
 
     const convertTo24Hour = (time12) => {
@@ -172,7 +253,6 @@ function Home({ setPage }) {
             setFormData({ doctorId: "", date: "", time: "" });
             setTimeout(() => setSubmitSuccess(false), 3000);
             setShowAppointment(false);
-            document.body.style.overflow = '';
             alert("Appointment booked successfully!");
         } catch (error) {
             alert(error.response?.data?.error || "Failed to book appointment");
@@ -188,7 +268,6 @@ function Home({ setPage }) {
     const handleDoctorClick = (doctor) => {
         setSelectedDoctor(doctor);
         setShowDoctorModal(true);
-        document.body.style.overflow = 'hidden';
     };
 
     const quickBook = (doctorId) => {
@@ -215,7 +294,11 @@ function Home({ setPage }) {
         fetchUserProfile();
     }, [fetchDoctors, fetchUserProfile]);
 
-    const displayedDoctors = showAllDoctors ? doctors : doctors.slice(0, 6);
+    const displayedDoctors = doctors.slice(0, visibleDoctors);
+    const initialCount = isMobile ? 4 : 6;
+    const isShowingAll = visibleDoctors === doctors.length;
+    const showLoadMore = !isShowingAll && visibleDoctors < doctors.length;
+    const showViewAll = !isShowingAll && doctors.length > visibleDoctors;
 
     if (loading) {
         return (
@@ -238,7 +321,7 @@ function Home({ setPage }) {
                     <div className="hm-hero-text">
                         <span className="hm-hero-badge">✨ Trusted Healthcare Partner</span>
                         <h1>Your Health, <span className="hm-gradient-text">Our Priority</span></h1>
-                        <p>Experience world-class medical care with our team of expert doctors. Book appointments online and get treated from the comfort of your home.</p>
+                        <p>Experience world-class medical care with our team of expert doctors.</p>
                         <div className="hm-hero-buttons">
                             <button className="hm-btn-primary" onClick={handleBookAppointmentClick}>Book Appointment</button>
                             <button className="hm-btn-secondary" onClick={() => document.getElementById('hm-doctors-section').scrollIntoView({ behavior: 'smooth' })}>Find Doctors</button>
@@ -253,9 +336,7 @@ function Home({ setPage }) {
                         <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=450&fit=crop" alt="Doctor" />
                         <div className="hm-hero-badge-card">
                             <span>🏆</span>
-                            <div>
-                                <strong>15+ Years of Excellence</strong>
-                            </div>
+                            <div><strong>15+ Years of Excellence</strong></div>
                         </div>
                     </div>
                 </div>
@@ -328,7 +409,7 @@ function Home({ setPage }) {
                     <div className="hm-section-header">
                         <span className="hm-section-badge">Meet Our Experts</span>
                         <h2>Top Rated Doctors</h2>
-                        <p>Click on any doctor to see complete details</p>
+                        <p>Tap on any doctor to see complete details</p>
                     </div>
                     
                     {doctors.length === 0 ? (
@@ -348,21 +429,29 @@ function Home({ setPage }) {
                                         </div>
                                         <h3>Dr. {doctor.name}</h3>
                                         <p className="hm-doctor-spec">{doctor.specialization}</p>
-                                        <div className="hm-doctor-info">
-                                            <span>⭐ {doctor.rating || 4.5}</span>
-                                            <span>📅 {doctor.experience || "5+ years"}</span>
-                                        </div>
-                                        <div className="hm-doctor-location">📍 {doctor.location || "Delhi, India"}</div>
-                                        <div className="hm-doctor-fee">₹{doctor.fee}</div>
                                         <button className="hm-doctor-book" onClick={(e) => { e.stopPropagation(); quickBook(doctor.id); }}>Book Appointment →</button>
                                     </div>
                                 ))}
                             </div>
-                            {doctors.length > 6 && (
-                                <div className="hm-view-all">
-                                    <button className="hm-view-all-btn" onClick={() => setShowAllDoctors(!showAllDoctors)}>
-                                        {showAllDoctors ? "Show Less ↑" : `View All Doctors (${doctors.length}) →`}
-                                    </button>
+                            
+                            {/* Load More / View All / Show Less Buttons */}
+                            {doctors.length > initialCount && (
+                                <div className="hm-load-more-container">
+                                    {showLoadMore && (
+                                        <button className="hm-load-more-btn" onClick={loadMoreDoctors}>
+                                            Load More {isMobile ? "(+4)" : "(+3)"}
+                                        </button>
+                                    )}
+                                    {showViewAll && !showLoadMore && (
+                                        <button className="hm-view-all-btn" onClick={viewAllDoctors}>
+                                            View All Doctors ({doctors.length})
+                                        </button>
+                                    )}
+                                    {isShowingAll && doctors.length > initialCount && (
+                                        <button className="hm-show-less-btn" onClick={showLessDoctors}>
+                                            Show Less ↑
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </>
@@ -374,7 +463,7 @@ function Home({ setPage }) {
             <section className="hm-cta-section">
                 <div className="hm-cta-content">
                     <h2>Ready to Start Your Health Journey?</h2>
-                    <p>Join thousands of satisfied patients and experience quality healthcare today</p>
+                    <p>Join thousands of satisfied patients</p>
                     <button className="hm-cta-btn" onClick={handleBookAppointmentClick}>Get Started →</button>
                 </div>
             </section>
@@ -383,7 +472,7 @@ function Home({ setPage }) {
             <footer className="hm-footer">
                 <div className="hm-footer-inner">
                     <div className="hm-footer-grid">
-                        <div><div className="hm-footer-logo">🏥 MediCare</div><p>Quality healthcare since 2010</p><div className="hm-social-links">📘 📷 🐦 🔗</div></div>
+                        <div><div className="hm-footer-logo">🏥 MediCare</div><p>Quality healthcare since 2010</p><div className="hm-social-links">📘  🐦 🔗</div></div>
                         <div><h4>Quick Links</h4><ul><li><button onClick={() => setPage("home")}>Home</button></li><li><button onClick={() => setPage("about")}>About</button></li><li><button onClick={() => setPage("services")}>Services</button></li><li><button onClick={() => setPage("contact")}>Contact</button></li></ul></div>
                         <div><h4>Services</h4><ul><li>Cardiology</li><li>Neurology</li><li>Pediatrics</li><li>Orthopedics</li></ul></div>
                         <div><h4>Contact</h4><ul><li>📍 Delhi, India</li><li>📞 +91 98765 43210</li><li>✉️ info@medicare.com</li></ul></div>
@@ -423,11 +512,12 @@ function Home({ setPage }) {
                 </div>
             )}
 
-            {/* Doctor Modal */}
+            {/* Doctor Modal - Full Detail */}
             {showDoctorModal && selectedDoctor && (
                 <div className="hm-modal-overlay" onClick={closeDoctorModal}>
                     <div className="hm-doctor-modal" onClick={stopPropagation}>
                         <button className="hm-modal-close-icon" onClick={closeDoctorModal}>✕</button>
+                        
                         <div className="hm-doc-header">
                             <div className="hm-doc-avatar">
                                 <img src={selectedDoctor.image || "https://randomuser.me/api/portraits/men/32.jpg"} alt={selectedDoctor.name} />
@@ -443,17 +533,44 @@ function Home({ setPage }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="hm-doc-body">
+                        
+                        <div className="hm-doc-scroll-area">
                             <div className="hm-doc-details">
-                                <div><span>🎓</span><div><label>Experience</label><p>{selectedDoctor.experience || "10+ years"}</p></div></div>
-                                <div><span>📍</span><div><label>Location</label><p>{selectedDoctor.location || "Delhi, India"}</p></div></div>
-                                <div><span>💰</span><div><label>Fee</label><p>₹{selectedDoctor.fee}</p></div></div>
-                                <div><span>👥</span><div><label>Patients</label><p>{selectedDoctor.patients || 5000}+</p></div></div>
+                                <div className="hm-doc-detail-item">
+                                    <span>🎓</span>
+                                    <div>
+                                        <label>Experience</label>
+                                        <p>{selectedDoctor.experience || "15+ years"}</p>
+                                    </div>
+                                </div>
+                                <div className="hm-doc-detail-item">
+                                    <span>📍</span>
+                                    <div>
+                                        <label>Location</label>
+                                        <p>{selectedDoctor.location || "Delhi, India"}</p>
+                                    </div>
+                                </div>
+                                <div className="hm-doc-detail-item">
+                                    <span>💰</span>
+                                    <div>
+                                        <label>Fee</label>
+                                        <p>₹{selectedDoctor.fee}</p>
+                                    </div>
+                                </div>
+                                <div className="hm-doc-detail-item">
+                                    <span>👥</span>
+                                    <div>
+                                        <label>Patients</label>
+                                        <p>{selectedDoctor.patients || 5000}+</p>
+                                    </div>
+                                </div>
                             </div>
+                            
                             <div className="hm-about-doc">
                                 <h3>📖 About Doctor</h3>
-                                <p>{selectedDoctor.about || `Dr. ${selectedDoctor.name} is an expert ${selectedDoctor.specialization} with over ${selectedDoctor.experience || 10} years of experience.`}</p>
+                                <p>{selectedDoctor.about || `Dr. ${selectedDoctor.name} is an expert ${selectedDoctor.specialization} with over ${selectedDoctor.experience || 15} years of experience.`}</p>
                             </div>
+                            
                             <div className="hm-services-tags">
                                 <span>🏥 Specialist</span>
                                 <span>🚑 Emergency</span>
@@ -461,6 +578,7 @@ function Home({ setPage }) {
                                 <span>🔄 Free Follow-up</span>
                             </div>
                         </div>
+                        
                         <div className="hm-doc-footer">
                             <button className="hm-book-now" onClick={() => quickBook(selectedDoctor.id)}>📅 Book Appointment Now</button>
                             <button className="hm-video-consult">🎥 Video Consultation</button>

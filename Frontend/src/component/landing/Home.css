@@ -16,7 +16,6 @@ body {
     overflow-x: hidden;
 }
 
-/* ========== HOME PAGE SPECIFIC ========== */
 .hm-home-container {
     width: 100%;
     overflow-x: hidden;
@@ -29,17 +28,24 @@ body {
     padding: 0 20px;
 }
 
-/* ========== SECTIONS - AUTO HEIGHT (NO 100vh) ========== */
-.hm-hero-section,
-.hm-specialties-section,
-.hm-doctors-section,
-.hm-cta-footer-wrapper {
-    scroll-snap-align: start;
+/* ========== SECTIONS ========== */
+.hm-hero-section {
     min-height: auto;
+    margin-top: -20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 60px 0;
+    /* padding: 3% 0; */
+    padding-top: 40px;
+}
+
+.hm-specialties-section {
+    padding: 3% 0;
+}
+
+.hm-doctors-section {
+    /* padding: 3% 0; */
+
 }
 
 /* ========== TOAST ========== */
@@ -57,14 +63,8 @@ body {
 }
 
 @keyframes hmSlideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
 /* ========== LOADING ========== */
@@ -88,51 +88,45 @@ body {
 }
 
 @keyframes hmSpin {
-    to {
-        transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
 }
 
 /* ========== SECTION HEADER ========== */
 .hm-section-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
+    
 }
 
 .hm-section-badge {
     display: inline-block;
     background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
-    padding: 6px 16px;
+    padding: 5px 14px;
     border-radius: 30px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .hm-section-header h2 {
-    font-size: 32px;
+    font-size: 28px;
     color: #0f172a;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .hm-section-header p {
     color: #64748b;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 /* ========== HERO SECTION ========== */
-.hm-hero-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 40px 0;
-}
-
 .hm-hero-content {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     align-items: center;
-    gap: 50px;
+    gap: 40px;
     flex-wrap: wrap;
     padding: 0 20px;
 }
@@ -145,17 +139,17 @@ body {
     display: inline-block;
     background: rgba(255, 255, 255, 0.95);
     color: #0284c7;
-    padding: 5px 15px;
+    padding: 4px 12px;
     border-radius: 50px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .hm-hero-text h1 {
-    font-size: 42px;
+    font-size: 38px;
     line-height: 1.2;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     color: #0f172a;
 }
 
@@ -170,24 +164,24 @@ body {
     color: #1c222a;
     line-height: 1.5;
     margin-bottom: 20px;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .hm-hero-buttons {
     display: flex;
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 12px;
+    margin-bottom: 25px;
     flex-wrap: wrap;
 }
 
 .hm-btn-primary,
 .hm-btn-secondary {
-    padding: 10px 25px;
+    padding: 8px 22px;
     border-radius: 40px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .hm-btn-primary {
@@ -215,17 +209,17 @@ body {
 
 .hm-hero-stats {
     display: flex;
-    gap: 30px;
+    gap: 25px;
     flex-wrap: wrap;
 }
 
 .hm-hero-stats h3 {
-    font-size: 24px;
+    font-size: 22px;
     color: #0284c7;
 }
 
 .hm-hero-stats p {
-    font-size: 12px;
+    font-size: 11px;
     color: #475569;
 }
 
@@ -236,9 +230,9 @@ body {
 
 .hm-hero-image img {
     width: 85%;
-    margin-top: 70px;
+    margin-top: 40px;
     border-radius: 30px;
-    box-shadow: 0 30px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
     transition: 0.3s;
 }
 
@@ -251,39 +245,28 @@ body {
     bottom: 10px;
     right: 85px;
     background: rgb(255, 255, 255);
-    padding: 8px 18px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 11px;
     color: #0284c7;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 5px;
     animation: hm-float 3s ease-in-out infinite;
-    transition: all 0.3s ease;
-}
-
-.hm-hero-badge-card:hover {
-    animation-play-state: paused;
-    transform: scale(1.05);
 }
 
 @keyframes hm-float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
 }
 
-.hm-hero-badge-card span {
-    font-size: 20px;
-}
-
-/* ========== ADMIN SECTION (if admin logged in) ========== */
+/* ========== ADMIN SECTION ========== */
 .hm-admin-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 40px 0;
-    margin: 20px 0;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 30px 0;
+    margin: 15px 0;
     border-radius: 24px;
 }
 
@@ -291,12 +274,12 @@ body {
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
     border: none;
-    padding: 12px 28px;
+    padding: 10px 24px;
     border-radius: 40px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    margin: 20px auto;
+    margin: 15px auto;
     display: block;
     transition: all 0.3s;
 }
@@ -307,10 +290,10 @@ body {
 }
 
 .hm-admin-form-container {
-    max-width: 600px;
-    margin: 20px auto;
+    max-width: 550px;
+    margin: 15px auto;
     background: white;
-    padding: 28px;
+    padding: 24px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
@@ -318,23 +301,16 @@ body {
 .hm-form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
 .hm-admin-form-container input {
     width: 100%;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    font-size: 14px;
-    transition: all 0.2s;
-}
-
-.hm-admin-form-container input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    font-size: 13px;
 }
 
 .hm-submit-btn {
@@ -342,39 +318,27 @@ body {
     background: linear-gradient(135deg, #10b981, #059669);
     color: white;
     border: none;
-    padding: 14px;
+    padding: 12px;
     border-radius: 40px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
-    transition: all 0.3s;
+    margin-top: 8px;
 }
 
-.hm-submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-}
-
-/* ========== SPECIALTIES SECTION - 3 BIG CARDS PER ROW ========== */
-.hm-specialties-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 0px 0;
-    margin-top: 0;
-}
-
+/* ========== SPECIALTIES SECTION ========== */
 .hm-specialties-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 20px;
+    gap: 25px;
+    margin-top: 15px;
 }
 
 .hm-spec-card {
-    background: hsl(0, 0%, 100%);
+    background: white;
     text-align: center;
-    padding: 30px 25px;
-    border-radius: 24px;
+    padding: 25px 20px;
+    border-radius: 20px;
     transition: all 0.3s ease;
     cursor: pointer;
     border: 1px solid #e2e8f0;
@@ -382,46 +346,41 @@ body {
 }
 
 .hm-spec-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-5px);
     border-color: #0284c7;
     box-shadow: 0 15px 30px rgba(2, 132, 199, 0.1);
 }
 
 .hm-spec-icon {
-    font-size: 55px;
-    margin-bottom: 15px;
+    font-size: 45px;
+    margin-bottom: 12px;
 }
 
 .hm-spec-card h3 {
-    font-size: 20px;
-    margin-bottom: 8px;
+    font-size: 18px;
+    margin-bottom: 6px;
     color: #0f172a;
     font-weight: 700;
 }
 
 .hm-spec-card p {
-    font-size: 13px;
+    font-size: 12px;
     color: #64748b;
 }
 
-/* ========== DOCTORS SECTION - 3 BIG CARDS PER ROW ========== */
-.hm-doctors-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 60px 0;
-}
-
+/* ========== DOCTORS SECTION ========== */
 .hm-doctors-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 20px;
+    gap: 25px;
+    margin-top: 15px;
 }
 
 .hm-doctor-card {
     background: white;
-    padding: 25px;
+    padding: 20px;
     text-align: center;
-    border-radius: 24px;
+    border-radius: 20px;
     transition: all 0.3s ease;
     cursor: pointer;
     border: 1px solid #e2e8f0;
@@ -429,15 +388,15 @@ body {
 }
 
 .hm-doctor-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-5px);
     border-color: #0284c7;
-    box-shadow: 0 15px 35px rgba(2, 132, 199, 0.12);
+    box-shadow: 0 15px 30px rgba(2, 132, 199, 0.12);
 }
 
 .hm-doctor-img {
-    width: 110px;
-    height: 110px;
-    margin: 0 auto 15px;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 12px;
     border-radius: 50%;
     overflow: hidden;
     position: relative;
@@ -475,13 +434,13 @@ body {
 
 .hm-doctor-overlay span {
     color: white;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
 }
 
 .hm-doctor-card h3 {
-    font-size: 18px;
-    margin-bottom: 5px;
+    font-size: 16px;
+    margin-bottom: 4px;
     color: #0f172a;
     font-weight: 700;
 }
@@ -493,40 +452,18 @@ body {
 .hm-doctor-spec {
     color: #0284c7;
     font-weight: 600;
-    font-size: 13px;
-    margin-bottom: 12px;
-}
-
-.hm-doctor-info {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 10px;
     font-size: 12px;
-    color: #64748b;
-}
-
-.hm-doctor-location {
-    font-size: 13px;
-    color: #64748b;
-    margin-bottom: 10px;
-}
-
-.hm-doctor-fee {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0284c7;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .hm-doctor-book {
     background: #0284c7;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 40px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
     width: 100%;
     transition: all 0.3s;
@@ -537,110 +474,116 @@ body {
     transform: translateY(-2px);
 }
 
-/* ========== VIEW ALL ========== */
-.hm-view-all {
-    text-align: center;
-    margin-top: 50px;
+/* ========== LOAD MORE BUTTONS ========== */
+.hm-load-more-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 30px;
+    flex-wrap: wrap;
 }
 
-.hm-view-all-btn {
-    background: transparent;
-    border: 2px solid #0284c7;
-    color: #0284c7;
-    padding: 12px 35px;
-    border-radius: 50px;
+.hm-load-more-btn,
+.hm-show-less-btn {
+    padding: 10px 24px;
+    border-radius: 40px;
     font-weight: 600;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     transition: all 0.3s;
+    border: none;
 }
 
-.hm-view-all-btn:hover {
-    background: #0284c7;
+.hm-load-more-btn {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
+}
+
+.hm-load-more-btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
+}
+
+.hm-show-less-btn {
+    background: transparent;
+    border: 2px solid #64748b;
+    color: #64748b;
+}
+
+.hm-show-less-btn:hover {
+    background: #64748b;
+    color: white;
 }
 
 /* ========== NO DOCTORS ========== */
 .hm-no-doctors {
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px 20px;
     background: white;
     border-radius: 24px;
-    margin: 20px 0;
-    border: 1px solid #e2e8f0;
+    margin: 15px 0;
 }
 
 .hm-no-doctors-icon {
-    font-size: 70px;
-    margin-bottom: 16px;
+    font-size: 60px;
+    margin-bottom: 12px;
 }
 
 .hm-no-doctors h3 {
     color: #1e293b;
-    margin-bottom: 10px;
-    font-size: 22px;
+    margin-bottom: 8px;
+    font-size: 20px;
 }
 
-.hm-no-doctors p {
-    color: #64748b;
-    font-size: 14px;
-}
-
-/* ========== CTA + FOOTER TOGETHER ========== */
-.hm-cta-footer-wrapper {
-    background: #0f172a;
-    padding: 40px 0 0;
-}
-
+/* ========== CTA SECTION ========== */
 .hm-cta-section {
-    background: linear-gradient(135deg, #4ca6d3, #0ea5e9);
-    margin: 30px 20px 40px;
-    border-radius: 28px;
-    padding: 50px 20px;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    margin: 4px 3px;
+    border-radius: 24px;
+    padding: 12px 20px;
     text-align: center;
 }
 
 .hm-cta-content {
-    max-width: 500px;
+    max-width: 450px;
     margin: 0 auto;
 }
 
 .hm-cta-section h2 {
-    font-size: 32px;
-    margin-bottom: 15px;
+    font-size: 26px;
+    margin-bottom: 10px;
     color: white;
     font-weight: 700;
 }
 
 .hm-cta-section p {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     color: rgba(255, 255, 255, 0.9);
-    font-size: 15px;
+    font-size: 13px;
 }
 
 .hm-cta-btn {
     background: white;
     color: #0284c7;
     border: none;
-    padding: 14px 40px;
+    padding: 12px 32px;
     border-radius: 50px;
     font-weight: 700;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     transition: all 0.3s;
 }
 
 .hm-cta-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* ========== FOOTER ========== */
+/* ========== FOOTER - LAPTOP STYLE (NO STACKING ON MOBILE) ========== */
 .hm-footer {
     background: #0f172a;
     color: #94a3b8;
-    padding: 40px 20px 30px;
+    padding: 35px 20px 25px;
 }
 
 .hm-footer-inner {
@@ -728,122 +671,93 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 9999;
+    animation: overlayFadeIn 0.3s ease;
+    cursor: pointer;
 }
 
-.hm-modal-content,
-.hm-doctor-modal {
-    background: rgb(255, 255, 255);
+@keyframes overlayFadeIn {
+    from { opacity: 0; backdrop-filter: blur(0px); }
+    to { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+.hm-modal-content {
+    background: white;
     border-radius: 28px;
-    max-width: 600px;
-    margin-top: 60px;
-    padding: 14px 10px 0;
+    max-width: 500px;
+    width: 90%;
     position: relative;
-    animation: hmModalSlide 0.3s ease;
-    max-height: 85vh;
-    overflow-y: auto;
+    animation: modalSlideUp 0.35s ease;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    cursor: default;
 }
 
-@keyframes hmModalSlide {
-    from {
-        transform: translateY(30px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+@keyframes modalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.hm-doctor-modal {
+    background: white;
+    border-radius: 28px;
+    max-width: 520px;
+    width: 90%;
+    max-height: 85vh;
+    position: relative;
+    animation: modalSlideUp 0.35s ease;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .hm-modal-close,
 .hm-modal-close-icon {
     position: absolute;
-    top: 25px;
-    right: 20px;
-    width: 34px;
-    height: 34px;
-    background: rgba(250, 134, 134, 0.981);
-    border: none;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border: 1px solid #e2e8f0;
     border-radius: 50%;
     font-size: 18px;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
-    color: rgb(0, 0, 0);
+    transition: all 0.3s ease;
+    color: #475569;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 20;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .hm-modal-close:hover,
 .hm-modal-close-icon:hover {
-    background: #ff0000;
-    transform: rotate(90deg);
-}
-
-.hm-modal-content h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 22px;
-    color: #0f172a;
-}
-
-.hm-modal-content input,
-.hm-modal-content select {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 14px;
-}
-
-.hm-modal-content button[type="submit"] {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    background: #ef4444;
     color: white;
-    border: none;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 10px;
-    font-size: 15px;
-    transition: all 0.3s;
+    transform: rotate(90deg);
+    border-color: #ef4444;
 }
 
-.hm-modal-content button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(2, 132, 199, 0.3);
-}
-
-.hm-user-summary {
-    background: #f0f9ff;
-    padding: 15px;
-    border-radius: 16px;
-    margin-bottom: 20px;
-    font-size: 13px;
-    color: #0284c7;
-    border: 1px solid #bae6fd;
-}
-
-.hm-user-summary p {
-    margin: 5px 0;
-}
-
-/* ========== DOCTOR MODAL ========== */
+/* Doctor Modal Header */
 .hm-doc-header {
-    background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
-    padding: 25px;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    padding: 20px;
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    border-radius: 28px 28px 0 0;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
 }
 
 .hm-doc-avatar {
     position: relative;
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
 }
 
 .hm-doc-avatar img {
@@ -852,79 +766,115 @@ body {
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid white;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
 .hm-available-tag {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
+    bottom: -5px;
+    right: -8px;
     background: #10b981;
     color: white;
-    font-size: 9px;
-    padding: 2px 8px;
+    font-size: 8px;
+    padding: 2px 7px;
     border-radius: 20px;
     font-weight: 600;
+    white-space: nowrap;
+}
+
+.hm-doc-info {
+    flex: 1;
 }
 
 .hm-doc-info h2 {
-    font-size: 22px;
-    margin-bottom: 5px;
+    font-size: 20px;
+    margin-bottom: 4px;
     color: white;
+    font-weight: 700;
 }
 
 .hm-doc-specialty {
-    font-size: 13px;
+    font-size: 12px;
     opacity: 0.9;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: white;
 }
 
 .hm-doc-rating {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
 .hm-doc-rating span:first-child {
     color: #fbbf24;
-    font-size: 12px;
+    font-size: 11px;
 }
 
+.hm-doc-rating span:not(:first-child) {
+    color: white;
+    font-size: 11px;
+}
+
+.hm-doc-scroll-area {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    padding: 18px;
+}
+
+.hm-doc-scroll-area::-webkit-scrollbar {
+    width: 4px;
+}
+
+.hm-doc-scroll-area::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+.hm-doc-scroll-area::-webkit-scrollbar-thumb {
+    background: #0284c7;
+    border-radius: 10px;
+}
+
+/* Doctor Modal Details - 2 cards per row on all devices */
 .hm-doc-details {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 20px;
-    padding: 20px;
 }
 
-.hm-doc-details>div {
+.hm-doc-detail-item {
     display: flex;
     align-items: center;
     gap: 12px;
     background: #f8fafc;
-    padding: 12px;
-    border-radius: 14px;
-    transition: 0.3s;
+    padding: 12px 15px;
+    border-radius: 16px;
+    transition: all 0.2s ease;
+    border: 1px solid #eef2f8;
 }
 
-.hm-doc-details>div:hover {
+.hm-doc-detail-item:hover {
     background: #e0f2fe;
+    transform: translateX(3px);
 }
 
-.hm-doc-details span {
-    font-size: 26px;
+.hm-doc-detail-item span {
+    font-size: 24px;
 }
 
-.hm-doc-details label {
+.hm-doc-detail-item label {
     font-size: 10px;
     color: #64748b;
     display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
-.hm-doc-details p {
+.hm-doc-detail-item p {
     font-size: 14px;
     font-weight: 700;
     color: #0f172a;
@@ -933,20 +883,21 @@ body {
 
 .hm-about-doc {
     background: #f8fafc;
-    padding: 15px;
-    border-radius: 16px;
-    margin-bottom: 15px;
-    margin: 0 20px 20px;
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    border: 1px solid #eef2f8;
 }
 
 .hm-about-doc h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
+    font-size: 14px;
+    margin-bottom: 8px;
     color: #0f172a;
+    font-weight: 700;
 }
 
 .hm-about-doc p {
-    font-size: 13px;
+    font-size: 12px;
     color: #475569;
     line-height: 1.5;
 }
@@ -955,7 +906,6 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin: 0 20px 15px;
 }
 
 .hm-services-tags span {
@@ -964,8 +914,9 @@ body {
     padding: 5px 12px;
     border-radius: 30px;
     font-size: 11px;
-    font-weight: 500;
-    transition: all 0.3s;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .hm-services-tags span:hover {
@@ -975,31 +926,32 @@ body {
 
 .hm-doc-footer {
     display: flex;
-    gap: 12px;
-    padding: 15px 20px 20px;
-    border-top: 1px solid #e2e8f0;
-    background: #fafcff;
+    gap: 10px;
+    padding: 14px 18px 18px;
+    border-top: 1px solid #eef2f8;
+    background: white;
+    flex-shrink: 0;
 }
 
 .hm-book-now,
 .hm-video-consult {
     flex: 1;
-    padding: 12px;
+    padding: 10px;
     border-radius: 40px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     border: none;
-    transition: all 0.3s;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .hm-book-now {
     background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
 }
 
 .hm-book-now:hover {
@@ -1010,23 +962,82 @@ body {
 .hm-video-consult {
     background: #f1f5f9;
     color: #0f172a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    border: 1px solid #e2e8f0;
 }
 
 .hm-video-consult:hover {
     background: #e2e8f0;
-    transform: translateY(-2px);
 }
 
-/* ========== RESPONSIVE ========== */
+/* Appointment Modal Form */
+.hm-modal-content h2 {
+    text-align: center;
+    margin: 18px 25px 8px;
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.hm-user-summary {
+    background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+    padding: 12px 16px;
+    margin: 12px 20px;
+    border-radius: 16px;
+    font-size: 12px;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
+}
+
+.hm-user-summary p {
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hm-modal-content form {
+    padding: 0 20px 20px;
+}
+
+.hm-modal-content input,
+.hm-modal-content select {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+}
+
+.hm-modal-content input:focus,
+.hm-modal-content select:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+}
+
+.hm-modal-content button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+/* ========== RESPONSIVE - MOBILE & TABLET ========== */
 @media (max-width: 1100px) {
-    .hm-specialties-grid,
-    .hm-doctors-grid {
+    .hm-specialties-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 25px;
+        gap: 20px;
     }
 }
 
@@ -1034,120 +1045,354 @@ body {
     .hm-hero-content {
         flex-direction: column;
         text-align: center;
+        gap: 25px;
     }
-
     .hm-hero-buttons,
     .hm-hero-stats {
         justify-content: center;
     }
-
     .hm-hero-image {
-        width: 70%;
-        margin: 0 auto;
+        width: 100%;
+        margin: 0;
     }
-
-    .hm-doc-header {
-        flex-direction: column;
-        text-align: center;
-        align-items: center;
+    .hm-hero-image img {
+        width: 100%;
+        margin-top: -5px;
     }
-
-    .hm-doc-footer {
-        flex-direction: column;
+    .hm-hero-badge-card {
+        bottom: 5px;
+        right: 15px;
+        padding: 4px 10px;
+        font-size: 10px;
     }
-
-    .hm-doc-details {
-        grid-template-columns: 1fr;
+    .hm-container {
+        width: 100%;
+        padding: 0 15px;
     }
 }
 
 @media (max-width: 768px) {
-    .hm-specialties-grid,
+    /* 2 cards per row on mobile */
     .hm-doctors-grid {
-        grid-template-columns: 1fr;
-        max-width: 380px;
-        margin: 0 auto;
-        gap: 25px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
-
-    .hm-footer-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
+    
+    .hm-specialties-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
-
-    .hm-social-links {
-        justify-content: center;
+    
+    .hm-doctor-card {
+        padding: 12px;
     }
-
-    .hm-hero-text h1 {
-        font-size: 32px;
+    
+    .hm-doctor-img {
+        width: 65px;
+        height: 65px;
+        margin-bottom: 8px;
     }
-
-    .hm-hero-image {
-        width: 100%;
+    
+    .hm-doctor-card h3 {
+        font-size: 13px;
     }
-
+    
+    .hm-doctor-spec {
+        font-size: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .hm-doctor-book {
+        font-size: 10px;
+        padding: 6px 10px;
+    }
+    
     .hm-spec-card {
-        padding: 30px 20px;
+        padding: 18px 12px;
     }
-
+    
     .hm-spec-icon {
-        font-size: 45px;
+        font-size: 35px;
     }
-
+    
     .hm-spec-card h3 {
+        font-size: 14px;
+    }
+    
+    .hm-spec-card p {
+        font-size: 10px;
+    }
+    
+    .hm-hero-text h1 {
+        font-size: 28px;
+    }
+    
+    .hm-hero-text p {
+        font-size: 13px;
+    }
+    
+    .hm-hero-stats h3 {
         font-size: 18px;
+    }
+    
+    .hm-section-header h2 {
+        font-size: 22px;
+    }
+    
+    /* FOOTER - Keep 4 columns on mobile (NO STACKING) */
+    .hm-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        text-align: left;
+    }
+    
+    .hm-footer-logo {
+        font-size: 18px;
+    }
+    
+    .hm-footer h4 {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+    
+    .hm-footer li {
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+    
+    .hm-footer li button {
+        font-size: 11px;
+    }
+    
+    .hm-social-links {
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .hm-social-links span {
+        font-size: 16px;
+    }
+    
+    .hm-footer-bottom {
+        font-size: 10px;
+        padding-top: 15px;
+    }
+    
+    /* Modal Responsive - Keep 2 cards */
+    .hm-doc-header {
+        padding: 15px;
+        gap: 12px;
+    }
+    
+    .hm-doc-avatar {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .hm-doc-info h2 {
+        font-size: 16px;
+    }
+    
+    .hm-doc-specialty {
+        font-size: 10px;
+    }
+    
+    .hm-doc-details {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .hm-doc-detail-item {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+    
+    .hm-doc-detail-item span {
+        font-size: 18px;
+    }
+    
+    .hm-doc-detail-item label {
+        font-size: 8px;
+    }
+    
+    .hm-doc-detail-item p {
+        font-size: 11px;
+    }
+    
+    .hm-doc-footer {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 15px 15px;
+    }
+    
+    .hm-book-now,
+    .hm-video-consult {
+        padding: 8px;
+        font-size: 11px;
+    }
+    
+    .hm-cta-section {
+        margin: 20px 15px;
+        padding: 25px 15px;
+    }
+    
+    .hm-cta-section h2 {
+        font-size: 22px;
+    }
+    
+    .hm-load-more-btn,
+    .hm-show-less-btn {
+        padding: 8px 18px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Footer - Still 4 columns, just smaller text */
+    .hm-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+    
+    .hm-footer-logo {
+        font-size: 14px;
+    }
+    
+    .hm-footer h4 {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .hm-footer li {
+        font-size: 9px;
+        margin-bottom: 5px;
+    }
+    
+    .hm-footer li button {
+        font-size: 9px;
+    }
+    
+    .hm-social-links span {
+        font-size: 14px;
+    }
+    
+    /* Modal - Keep 2 cards */
+    .hm-doc-details {
+        gap: 8px;
     }
 }
 
 @media (max-width: 480px) {
-    .hm-hero-buttons {
-        flex-direction: column;
+    .hm-doctors-grid {
+        gap: 10px;
     }
-
+    
+    .hm-doctor-card {
+        padding: 10px;
+    }
+    
+    .hm-doctor-img {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .hm-doctor-card h3 {
+        font-size: 11px;
+    }
+    
+    .hm-doctor-spec {
+        font-size: 9px;
+    }
+    
+    .hm-doctor-book {
+        font-size: 9px;
+        padding: 5px 8px;
+    }
+    
+    .hm-spec-card {
+        padding: 15px 10px;
+    }
+    
+    .hm-spec-icon {
+        font-size: 30px;
+    }
+    
+    .hm-spec-card h3 {
+        font-size: 12px;
+    }
+    
+    
     .hm-btn-primary,
     .hm-btn-secondary {
-        width: 100%;
-        text-align: center;
+        width: 45%;
+      ;
     }
-
-    .hm-specialties-grid,
-    .hm-doctors-grid {
-        grid-template-columns: 1fr;
+    
+    .hm-modal-close,
+    .hm-modal-close-icon {
+        top: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
     }
-
-    .hm-hero-stats {
-        gap: 15px;
+    
+    /* Footer - Ultra compact but still 4 columns */
+    .hm-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
     }
-
-    .hm-hero-stats h3 {
-        font-size: 20px;
+    
+    .hm-footer-logo {
+        font-size: 12px;
     }
-
-    .hm-section-header h2 {
-        font-size: 24px;
+    
+    .hm-footer h4 {
+        font-size: 12px;
+        margin-bottom: 6px;
     }
-
-    .hm-cta-section h2 {
-        font-size: 24px;
+    
+    .hm-footer li {
+        font-size: 8px;
+        margin-bottom: 8px;
     }
-
-    .hm-doc-header {
-        padding: 20px;
+    
+    .hm-footer li button {
+        font-size: 8px;
     }
-
-    .hm-doc-details>div {
-        flex-direction: column;
-        text-align: center;
+    
+    .hm-social-links {
+        gap: 6px;
     }
-
-    .hm-services-tags span {
+    
+    .hm-social-links span {
+        font-size: 12px;
+    }
+    
+    .hm-footer-bottom {
+        font-size: 8px;
+        padding-top: px;
+    }
+    
+    /* Modal details - still 2 cards */
+    .hm-doc-details {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .hm-doc-detail-item {
+        padding: 6px 8px;
+    }
+    
+    .hm-doc-detail-item span {
+        font-size: 16px;
+    }
+    
+    .hm-doc-detail-item label {
+        font-size: 7px;
+    }
+    
+    .hm-doc-detail-item p {
         font-size: 10px;
-        padding: 4px 10px;
-    }
-
-    .hm-book-now,
-    .hm-video-consult {
-        font-size: 11px;
     }
 }

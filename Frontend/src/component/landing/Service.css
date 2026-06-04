@@ -16,7 +16,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ========== SERVICE PAGE SPECIFIC ========== */
+/* ========== SERVICE PAGE CONTAINER ========== */
 .sc-service-container {
     width: 100%;
     overflow-x: hidden;
@@ -24,18 +24,16 @@ body {
 }
 
 .sc-container {
-    width: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* ========== SECTIONS - AUTO HEIGHT ========== */
+/* ========== SECTIONS ========== */
 .sc-hero-section,
 .sc-services-section,
-.sc-departments-section,
 .sc-why-section,
-.sc-testimonials-section,
-.sc-cta-footer-wrapper {
+.sc-testimonials-section {
     min-height: auto;
     display: flex;
     flex-direction: column;
@@ -73,7 +71,6 @@ body {
 
 /* ========== HERO SECTION ========== */
 .sc-hero-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
     padding: 40px 0;
 }
 
@@ -130,7 +127,8 @@ body {
     flex-wrap: wrap;
 }
 
-.sc-btn-primary, .sc-btn-secondary {
+.sc-btn-primary,
+.sc-btn-secondary {
     padding: 10px 25px;
     border-radius: 40px;
     font-weight: 600;
@@ -185,9 +183,9 @@ body {
 
 .sc-hero-image img {
     width: 85%;
-    margin-top: 70px;
+    margin-top: 40px;
     border-radius: 30px;
-    box-shadow: 0 30px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
     transition: 0.3s;
 }
 
@@ -199,55 +197,41 @@ body {
     position: absolute;
     bottom: 10px;
     right: 85px;
-    background: rgb(255, 255, 255);
-    padding: 8px 18px;
+    background: white;
+    padding: 6px 14px;
     border-radius: 20px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 11px;
     color: #0284c7;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 5px;
     animation: sc-float 3s ease-in-out infinite;
-    transition: all 0.3s ease;
-}
-
-.sc-hero-badge-card:hover {
-    animation-play-state: paused;
-    transform: scale(1.05);
 }
 
 @keyframes sc-float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-
-.sc-hero-badge-card span {
-    font-size: 20px;
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
 }
 
 /* ========== SERVICES SECTION ========== */
-.sc-services-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 60px 0;
-}
-
 .sc-services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
+    margin-top: 15px;
 }
 
 .sc-service-card {
     background: white;
-    padding: 30px;
+    text-align: center;
+    padding: 30px 25px;
     border-radius: 24px;
     transition: all 0.3s ease;
     cursor: pointer;
     border: 1px solid #e2e8f0;
-    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
 }
 
 .sc-service-card:hover {
@@ -271,25 +255,8 @@ body {
 .sc-service-card p {
     font-size: 13px;
     color: #64748b;
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-.sc-service-features {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
     margin-bottom: 20px;
-}
-
-.sc-service-features span {
-    background: #e0f2fe;
-    color: #0284c7;
-    padding: 5px 12px;
-    border-radius: 30px;
-    font-size: 11px;
-    font-weight: 500;
+    line-height: 1.5;
 }
 
 .sc-service-btn {
@@ -310,60 +277,12 @@ body {
     transform: translateY(-2px);
 }
 
-/* ========== DEPARTMENTS SECTION ========== */
-.sc-departments-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 60px 0;
-}
-
-.sc-departments-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-}
-
-.sc-dept-card {
-    background: white;
-    text-align: center;
-    padding: 30px 20px;
-    border-radius: 24px;
-    transition: all 0.3s ease;
-    border: 1px solid #e2e8f0;
-}
-
-.sc-dept-card:hover {
-    transform: translateY(-5px);
-    border-color: #0284c7;
-    box-shadow: 0 15px 30px rgba(2, 132, 199, 0.1);
-}
-
-.sc-dept-icon {
-    font-size: 45px;
-    margin-bottom: 15px;
-}
-
-.sc-dept-card h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #0f172a;
-}
-
-.sc-dept-card p {
-    font-size: 13px;
-    color: #64748b;
-    line-height: 1.5;
-}
-
 /* ========== WHY CHOOSE US ========== */
-.sc-why-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 60px 0;
-}
-
 .sc-why-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 30px;
+    margin-top: 15px;
 }
 
 .sc-why-card {
@@ -373,6 +292,7 @@ body {
     border-radius: 24px;
     transition: all 0.3s ease;
     border: 1px solid #e2e8f0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
 }
 
 .sc-why-card:hover {
@@ -398,15 +318,11 @@ body {
 }
 
 /* ========== TESTIMONIALS ========== */
-.sc-testimonials-section {
-    background: linear-gradient(to right, #c4e5f8, hsla(194, 100%, 47%, 0.356));
-    padding: 60px 0;
-}
-
 .sc-testimonials-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
+    margin-top: 15px;
 }
 
 .sc-testimonial-card {
@@ -416,6 +332,7 @@ body {
     transition: all 0.3s ease;
     position: relative;
     border: 1px solid #e2e8f0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
 }
 
 .sc-testimonial-card:hover {
@@ -448,15 +365,10 @@ body {
     color: #0f172a;
 }
 
-/* ========== CTA + FOOTER ========== */
-.sc-cta-footer-wrapper {
-    background: #0f172a;
-    padding: 40px 0 0;
-}
-
+/* ========== CTA SECTION - SAME AS HOME ========== */
 .sc-cta-section {
-    background: linear-gradient(135deg, #4ca6d3, #0ea5e9);
-    margin: 30px 20px 40px;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    margin: 40px 20px;
     border-radius: 28px;
     padding: 50px 20px;
     text-align: center;
@@ -497,11 +409,11 @@ body {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* ========== FOOTER ========== */
+/* ========== FOOTER - EXACTLY LIKE HOME ========== */
 .sc-footer {
     background: #0f172a;
     color: #94a3b8;
-    padding: 40px 20px 30px;
+    padding: 35px 20px 25px;
 }
 
 .sc-footer-inner {
@@ -523,14 +435,19 @@ body {
     margin-bottom: 12px;
 }
 
+.sc-footer p {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 .sc-social-links {
     display: flex;
     gap: 15px;
     margin-top: 15px;
+    font-size: 20px;
 }
 
 .sc-social-links span {
-    font-size: 20px;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -589,16 +506,17 @@ body {
     transform: translateY(0);
 }
 
-/* ========== RESPONSIVE ========== */
+/* ========== RESPONSIVE - SAME AS HOME ========== */
 @media (max-width: 1100px) {
-    .sc-services-grid, .sc-departments-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .sc-why-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .sc-services-grid,
     .sc-testimonials-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .sc-why-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
     }
 }
 
@@ -606,34 +524,161 @@ body {
     .sc-hero-content {
         flex-direction: column;
         text-align: center;
+        gap: 25px;
     }
-    .sc-hero-buttons, .sc-hero-stats {
+    .sc-hero-buttons,
+    .sc-hero-stats {
         justify-content: center;
     }
     .sc-hero-image {
         width: 70%;
         margin: 0 auto;
     }
+    .sc-hero-image img {
+        width: 100%;
+        margin-top: 0;
+    }
+    .sc-hero-badge-card {
+        bottom: 5px;
+        right: 15px;
+        padding: 4px 10px;
+        font-size: 10px;
+    }
 }
 
 @media (max-width: 768px) {
-    .sc-services-grid, .sc-departments-grid, .sc-why-grid, .sc-testimonials-grid {
-        grid-template-columns: 1fr;
-        max-width: 380px;
-        margin: 0 auto;
+    /* 2 cards per row on mobile */
+    .sc-services-grid,
+    .sc-testimonials-grid,
+    .sc-why-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
     }
-    .sc-footer-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
+    
+    .sc-service-card,
+    .sc-why-card,
+    .sc-testimonial-card {
+        padding: 25px 15px;
     }
-    .sc-social-links {
-        justify-content: center;
+    
+    .sc-service-icon {
+        font-size: 40px;
     }
+    
+    .sc-service-card h3,
+    .sc-why-card h3 {
+        font-size: 16px;
+    }
+    
     .sc-hero-text h1 {
         font-size: 32px;
     }
+    
     .sc-hero-image {
         width: 100%;
+    }
+    
+    .sc-section-header h2 {
+        font-size: 24px;
+    }
+    
+    .sc-cta-section {
+        margin: 20px 15px;
+        padding: 35px 20px;
+    }
+    
+    .sc-cta-section h2 {
+        font-size: 24px;
+    }
+    
+    /* FOOTER - Keep 4 columns */
+    .sc-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        text-align: left;
+    }
+    
+    .sc-footer-logo {
+        font-size: 18px;
+    }
+    
+    .sc-footer p {
+        font-size: 11px;
+    }
+    
+    .sc-footer h4 {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+    
+    .sc-footer li {
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+    
+    .sc-footer li button {
+        font-size: 11px;
+    }
+    
+    .sc-social-links {
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .sc-social-links span {
+        font-size: 16px;
+    }
+    
+    .sc-footer-bottom {
+        font-size: 10px;
+        padding-top: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    .sc-services-grid,
+    .sc-testimonials-grid,
+    .sc-why-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .sc-service-card,
+    .sc-why-card,
+    .sc-testimonial-card {
+        padding: 20px 12px;
+    }
+    
+    /* Footer - Still 4 columns */
+    .sc-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+    
+    .sc-footer-logo {
+        font-size: 14px;
+    }
+    
+    .sc-footer p {
+        font-size: 9px;
+    }
+    
+    .sc-footer h4 {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .sc-footer li {
+        font-size: 9px;
+        margin-bottom: 5px;
+    }
+    
+    .sc-footer li button {
+        font-size: 9px;
+    }
+    
+    .sc-social-links span {
+        font-size: 14px;
     }
 }
 
@@ -641,20 +686,104 @@ body {
     .sc-hero-buttons {
         flex-direction: column;
     }
-    .sc-btn-primary, .sc-btn-secondary {
+    
+    .sc-btn-primary,
+    .sc-btn-secondary {
         width: 100%;
         text-align: center;
     }
+    
     .sc-hero-stats {
         gap: 15px;
     }
+    
     .sc-hero-stats h3 {
         font-size: 20px;
     }
+    
     .sc-section-header h2 {
-        font-size: 24px;
+        font-size: 22px;
     }
+    
     .sc-cta-section h2 {
-        font-size: 24px;
+        font-size: 20px;
+    }
+    
+    .sc-cta-btn {
+        padding: 10px 25px;
+        font-size: 14px;
+    }
+    
+    .sc-services-grid,
+    .sc-testimonials-grid,
+    .sc-why-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .sc-service-card,
+    .sc-why-card,
+    .sc-testimonial-card {
+        padding: 15px 10px;
+    }
+    
+    .sc-service-icon {
+        font-size: 32px;
+    }
+    
+    .sc-service-card h3,
+    .sc-why-card h3 {
+        font-size: 13px;
+    }
+    
+    .sc-service-card p,
+    .sc-why-card p {
+        font-size: 10px;
+    }
+    
+    .sc-service-btn {
+        font-size: 10px;
+        padding: 6px 10px;
+    }
+    
+    /* Footer - Ultra compact */
+    .sc-footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+    
+    .sc-footer-logo {
+        font-size: 12px;
+    }
+    
+    .sc-footer p {
+        font-size: 8px;
+    }
+    
+    .sc-footer h4 {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .sc-footer li {
+        font-size: 8px;
+        margin-bottom: 4px;
+    }
+    
+    .sc-footer li button {
+        font-size: 8px;
+    }
+    
+    .sc-social-links {
+        gap: 6px;
+    }
+    
+    .sc-social-links span {
+        font-size: 12px;
+    }
+    
+    .sc-footer-bottom {
+        font-size: 8px;
+        padding-top: 12px;
     }
 }
