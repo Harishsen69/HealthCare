@@ -1,8 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
 
 function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingAppointments, notificationCount, reportCount }) {
     const [isOpen, setIsOpen] = useState(false);
+    
+    // Check if mobile
+    const isMobile = window.innerWidth <= 768;
+
+    // Prevent body scroll when sidebar is open on mobile
+    useEffect(() => {
+        if (isMobile && isOpen) {
+            document.body.style.overflow = 'hidden';
+            // ✅ Hide mobile header when sidebar opens
+            const mobileHeader = document.querySelector('.patient-mobile-header');
+            if (mobileHeader) {
+                mobileHeader.style.display = 'none';
+            }
+        } else {
+            document.body.style.overflow = '';
+            // ✅ Show mobile header when sidebar closes
+            if (isMobile && !isOpen) {
+                const mobileHeader = document.querySelector('.patient-mobile-header');
+                if (mobileHeader) {
+                    mobileHeader.style.display = 'flex';
+                }
+            }
+        }
+        return () => {
+            document.body.style.overflow = '';
+            // ✅ Ensure header is visible on cleanup
+            const mobileHeader = document.querySelector('.patient-mobile-header');
+            if (mobileHeader && isMobile) {
+                mobileHeader.style.display = 'flex';
+            }
+        };
+    }, [isOpen, isMobile]);
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -50,7 +82,7 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
         localStorage.removeItem("currentPage");
         sessionStorage.clear();
         if (setPage) setPage("home");
-        setTimeout(() => window.location.href = "/", 50);
+        setTimeout(() => window.location.reload(), 50);
     };
 
     const handleHome = () => {
@@ -65,15 +97,19 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
 
     return (
         <>
-            {/* Hamburger Menu Button */}
-            <button className={`hamburger-menu ${isOpen ? "open" : ""}`} onClick={toggleSidebar}>
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            {/* Mobile Hamburger Menu Button - Right Side */}
+            {isMobile && (
+                <button className={`hamburger-menu ${isOpen ? "open" : ""}`} onClick={toggleSidebar}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            )}
 
-            {/* Overlay */}
-            <div className={`sidebar-overlay ${isOpen ? "show" : ""}`} onClick={closeSidebar}></div>
+            {/* Mobile Overlay */}
+            {isMobile && isOpen && (
+                <div className="sidebar-overlay" onClick={closeSidebar}></div>
+            )}
 
             {/* Sidebar */}
             <div className={`sidebar-container ${isOpen ? "sidebar-open" : ""}`}>
@@ -98,7 +134,7 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
                             onClick={() => handleTabClick(item.id)}
                         >
                             <span className="sidebar-nav-icon">{item.icon}</span>
-                            {item.label}
+                            <span className="sidebar-nav-label">{item.label}</span>
                             {item.showBadge && <span className="new-badge">NEW</span>}
                             {item.badge > 0 && <span className="notification-badge">{item.badge}</span>}
                             {item.id === "notifications" && notificationCount > 0 && !item.badge && (
@@ -110,10 +146,12 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
                 
                 <div className="sidebar-footer">
                     <button className="sidebar-home-btn" onClick={handleHome}>
-                        <span className="sidebar-nav-icon">🏠</span>Home
+                        <span className="sidebar-nav-icon">🏠</span>
+                        <span className="sidebar-nav-label">Home</span>
                     </button>
                     <button className="sidebar-logout-btn" onClick={handleLogout}>
-                        <span className="sidebar-nav-icon">🚪</span>Logout
+                        <span className="sidebar-nav-icon">↪️</span>
+                        <span className="sidebar-nav-label">Logout</span>
                     </button>
                 </div>
             </div>

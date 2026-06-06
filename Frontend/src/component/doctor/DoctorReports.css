@@ -1,23 +1,27 @@
+/* ========== DOCTOR REPORTS CONTAINER ========== */
 .doctor-reports-container {
     background: white;
-    border-radius: 24px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
 }
 
+/* ========== TABS ========== */
 .dr-tabs {
     display: flex;
-    gap: 1rem;
+    gap: 0.8rem;
     margin-bottom: 1.5rem;
     border-bottom: 2px solid #eef2ff;
     padding-bottom: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .dr-tabs button {
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem 1.2rem;
     background: none;
     border: none;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #64748b;
     cursor: pointer;
@@ -26,15 +30,21 @@
 }
 
 .dr-tabs button.active {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
 }
 
+.dr-tabs button:hover:not(.active) {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+/* ========== REPORT FORM CONTAINER ========== */
 .dr-report-form-container {
-    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    background: #f8fafc;
     border-radius: 20px;
-    padding: 1.5rem;
+    padding: 1rem;
     border: 1px solid #e2e8f0;
 }
 
@@ -42,15 +52,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #e2e8f0;
+    flex-wrap: wrap;
+    gap: 0.8rem;
 }
 
 .dr-form-header h3 {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: #1e293b;
+    margin: 0;
 }
 
 .dr-cancel-edit {
@@ -60,17 +73,27 @@
     border: none;
     border-radius: 20px;
     font-size: 0.7rem;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
+.dr-cancel-edit:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* ========== FORM ROWS ========== */
 .dr-form-row {
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
 .dr-form-group {
     flex: 1;
+    min-width: 180px;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -78,9 +101,9 @@
 }
 
 .dr-form-group label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    color: #1e293b;
+    color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -89,19 +112,26 @@
 .dr-form-group select,
 .dr-form-group textarea {
     padding: 0.7rem 1rem;
-    border: 1px solid #cbd5e1;
+    border: 1.5px solid #e2e8f0;
     border-radius: 12px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     background: white;
-    font-family: inherit;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
 }
 
 .dr-form-group input:focus,
 .dr-form-group select:focus,
 .dr-form-group textarea:focus {
     outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+}
+
+.dr-form-group input:hover,
+.dr-form-group select:hover,
+.dr-form-group textarea:hover {
+    border-color: #94a3b8;
 }
 
 .dr-checkbox-label {
@@ -117,9 +147,19 @@
     cursor: pointer;
 }
 
-/* Medicines Section */
+/* ========== MEDICINES SECTION ========== */
 .dr-medicines-section {
     margin-bottom: 1rem;
+}
+
+.dr-medicines-section label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.5rem;
 }
 
 .dr-medicine-input-group {
@@ -128,7 +168,7 @@
     margin-bottom: 1rem;
     flex-wrap: wrap;
     background: white;
-    padding: 1rem;
+    padding: 0.8rem;
     border-radius: 16px;
     border: 1px solid #e2e8f0;
 }
@@ -138,26 +178,37 @@
     flex: 1;
     min-width: 120px;
     padding: 0.6rem 0.8rem;
-    border: 1px solid #cbd5e1;
+    border: 1.5px solid #e2e8f0;
     border-radius: 12px;
     font-size: 0.8rem;
-    background: #f8fafc;
+    background: white;
+}
+
+.dr-medicine-input-group input:focus,
+.dr-medicine-input-group select:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
 }
 
 .dr-add-medicine-btn {
     padding: 0.6rem 1.2rem;
-    background: #10b981;
+    background: linear-gradient(135deg, #10b981, #059669);
     color: white;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     font-weight: 600;
+    font-size: 0.75rem;
+    transition: all 0.2s;
 }
 
 .dr-add-medicine-btn:hover {
-    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
 }
 
+/* ========== MEDICINES TABLE - HORIZONTAL SCROLL ========== */
 .dr-medicines-table-container {
     overflow-x: auto;
     margin-top: 0.5rem;
@@ -169,11 +220,13 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 0.75rem;
+    min-width: 600px;
+    white-space: nowrap;
 }
 
 .dr-medicines-table th {
     text-align: left;
-    padding: 0.8rem 0.6rem;
+    padding: 0.7rem 0.6rem;
     background: #f1f5f9;
     font-size: 0.7rem;
     font-weight: 700;
@@ -182,9 +235,10 @@
 }
 
 .dr-medicines-table td {
-    padding: 0.8rem 0.6rem;
+    padding: 0.7rem 0.6rem;
     border-bottom: 1px solid #e2e8f0;
     vertical-align: middle;
+    color: #475569;
 }
 
 .dr-medicines-table tr:hover {
@@ -192,20 +246,24 @@
 }
 
 .dr-remove-medicine-btn {
-    padding: 0.2rem 0.6rem;
-    background: #ef4444;
-    color: white;
+    padding: 0.25rem 0.7rem;
+    background: #fee2e2;
+    color: #dc2626;
     border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     cursor: pointer;
     font-size: 0.65rem;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
 .dr-remove-medicine-btn:hover {
     background: #dc2626;
+    color: white;
+    transform: scale(1.02);
 }
 
-/* Form Actions */
+/* ========== FORM ACTIONS ========== */
 .dr-form-actions {
     margin-top: 1.5rem;
 }
@@ -213,21 +271,32 @@
 .dr-form-actions button {
     width: 100%;
     padding: 0.8rem;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
     border: none;
-    border-radius: 14px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    border-radius: 40px;
+    font-weight: 700;
+    font-size: 0.85rem;
     cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);
 }
 
-.dr-form-actions button:hover {
+.dr-form-actions button:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.3);
 }
 
-/* Reports List Table */
+.dr-form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ========== REPORTS LIST ========== */
+.dr-reports-list {
+    margin-top: 0.5rem;
+}
+
 .dr-list-header {
     display: flex;
     justify-content: space-between;
@@ -235,23 +304,27 @@
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #eef2ff;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .dr-list-header h3 {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #1e293b;
+    margin: 0;
 }
 
 .dr-report-count {
-    background: #eef2ff;
-    color: #4f46e5;
+    background: #e0f2fe;
+    color: #0284c7;
     padding: 0.2rem 0.6rem;
-    border-radius: 30px;
-    font-size: 0.65rem;
+    border-radius: 20px;
+    font-size: 0.6rem;
     font-weight: 600;
 }
 
+/* ========== REPORTS TABLE - HORIZONTAL SCROLL ========== */
 .dr-table-container {
     overflow-x: auto;
     border-radius: 16px;
@@ -262,6 +335,8 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 0.75rem;
+    min-width: 700px;
+    white-space: nowrap;
 }
 
 .dr-reports-table th {
@@ -278,6 +353,7 @@
     padding: 0.8rem 0.6rem;
     border-bottom: 1px solid #e2e8f0;
     vertical-align: middle;
+    color: #475569;
 }
 
 .dr-reports-table tr:hover {
@@ -287,13 +363,15 @@
 .dr-report-id {
     font-family: monospace;
     font-size: 0.7rem;
-    color: #4f46e5;
+    color: #0284c7;
+    font-weight: 600;
 }
 
+/* ========== STATUS BADGES ========== */
 .dr-status-badge {
     display: inline-block;
-    padding: 0.2rem 0.5rem;
-    border-radius: 30px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
     font-size: 0.6rem;
     font-weight: 600;
 }
@@ -308,10 +386,11 @@
     color: #b45309;
 }
 
-/* Action Buttons - Only Icons */
+/* ========== ACTION BUTTONS ========== */
 .dr-actions {
     display: flex;
     gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .dr-actions button {
@@ -329,7 +408,7 @@
 }
 
 .dr-actions button:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .dr-btn-edit {
@@ -337,9 +416,17 @@
     color: white;
 }
 
+.dr-btn-edit:hover {
+    background: #2563eb;
+}
+
 .dr-btn-download {
     background: #10b981;
     color: white;
+}
+
+.dr-btn-download:hover {
+    background: #059669;
 }
 
 .dr-btn-delete {
@@ -347,8 +434,13 @@
     color: white;
 }
 
-/* Loading & Empty */
-.dr-loading, .dr-empty {
+.dr-btn-delete:hover {
+    background: #dc2626;
+}
+
+/* ========== LOADING & EMPTY STATES ========== */
+.dr-loading, 
+.dr-empty {
     text-align: center;
     padding: 2rem;
     color: #94a3b8;
@@ -360,10 +452,37 @@
     margin-bottom: 0.5rem;
 }
 
-/* Responsive */
+/* ========== DISABLED INPUT ========== */
+.dr-disabled-input {
+    background-color: #f1f5f9;
+    color: #64748b;
+    cursor: not-allowed;
+    border: 1.5px solid #e2e8f0;
+}
+
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
+    .doctor-reports-container {
+        padding: 0.8rem;
+    }
+    
+    .dr-tabs {
+        gap: 0.5rem;
+    }
+    
+    .dr-tabs button {
+        padding: 0.4rem 1rem;
+        font-size: 0.75rem;
+    }
+    
     .dr-form-row {
         flex-direction: column;
+        gap: 0;
+    }
+    
+    .dr-form-group {
+        min-width: auto;
+        margin-bottom: 0.8rem;
     }
     
     .dr-medicine-input-group {
@@ -375,25 +494,93 @@
         width: 100%;
     }
     
+    .dr-medicines-table {
+        min-width: 550px;
+    }
+    
     .dr-reports-table {
-        display: block;
-        overflow-x: auto;
+        min-width: 620px;
     }
     
     .dr-actions {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row;
+        justify-content: center;
     }
     
     .dr-actions button {
-        width: 100%;
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+    
+    .dr-form-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 
-/* Disabled input styling for edit mode */
-.dr-disabled-input {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    cursor: not-allowed;
-    border: 1px solid #e5e7eb;
+@media (max-width: 480px) {
+    .doctor-reports-container {
+        padding: 0.6rem;
+    }
+    
+    .dr-tabs button {
+        padding: 0.35rem 0.8rem;
+        font-size: 0.7rem;
+    }
+    
+    .dr-form-group label {
+        font-size: 0.6rem;
+    }
+    
+    .dr-form-group input,
+    .dr-form-group select,
+    .dr-form-group textarea {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.75rem;
+    }
+    
+    .dr-medicines-table {
+        min-width: 480px;
+    }
+    
+    .dr-medicines-table th,
+    .dr-medicines-table td {
+        padding: 0.5rem 0.4rem;
+        font-size: 0.65rem;
+    }
+    
+    .dr-reports-table {
+        min-width: 550px;
+    }
+    
+    .dr-reports-table th,
+    .dr-reports-table td {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.65rem;
+    }
+    
+    .dr-actions button {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+    
+    .dr-report-id {
+        font-size: 0.6rem;
+    }
+    
+    .dr-status-badge {
+        font-size: 0.55rem;
+        padding: 0.15rem 0.5rem;
+    }
+    
+    .dr-form-actions button {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+    }
+    
+    .dr-empty span {
+        font-size: 1.8rem;
+    }
 }

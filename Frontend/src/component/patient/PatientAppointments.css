@@ -1,115 +1,165 @@
+/* ========== PATIENT APPOINTMENTS STYLES ========== */
+
+/* ✅ Make table horizontally scrollable on mobile */
 .patient-appointments-container {
-    background: white;
-    border-radius: 24px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    width: 100%;
 }
 
-.patient-page-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #eef2ff;
-}
-
-.patient-appointments-table-wrapper {
-    margin-bottom: 2rem;
+.patient-appointments-section {
     background: white;
     border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid #eef2ff;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
 }
 
-.patient-appointments-table-wrapper:last-child {
-    margin-bottom: 0;
-}
-
-.patient-table-header {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 1rem 1rem 0.5rem 1rem;
-    background: #f8fafc;
-    border-bottom: 2px solid #eef2ff;
-}
-
-.patient-table-icon {
-    font-size: 1.2rem;
-}
-
-.patient-table-header h3 {
-    font-size: 0.9rem;
+.patient-appointments-section h3 {
+    font-size: 1rem;
     font-weight: 600;
     color: #1e293b;
-    margin: 0;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
 }
 
-.patient-upcoming-count,
-.patient-completed-count {
+/* ✅ Table wrapper with horizontal scroll */
+.patient-appointments-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ✅ Table - ensure it doesn't wrap */
+.patient-appointments-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+    white-space: nowrap;
+}
+
+.patient-appointments-table th,
+.patient-appointments-table td {
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.patient-appointments-table th {
+    background: #f8fafc;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.patient-appointments-table td {
+    font-size: 0.7rem;
+    color: #475569;
+}
+
+/* ✅ Status badges */
+.patient-appointment-status {
     padding: 0.2rem 0.6rem;
-    border-radius: 30px;
-    font-size: 0.65rem;
+    border-radius: 20px;
+    font-size: 0.6rem;
     font-weight: 600;
-    margin-left: auto;
+    display: inline-block;
 }
 
-.patient-upcoming-count {
+.patient-appointment-status.pending {
     background: #fef3c7;
     color: #b45309;
 }
 
-.patient-completed-count {
+.patient-appointment-status.confirmed {
     background: #dcfce7;
     color: #15803d;
 }
 
-.patient-appointments-table {
-    width: 100%;
-    border-collapse: collapse;
+.patient-appointment-status.completed {
+    background: #dbeafe;
+    color: #1d4ed8;
 }
 
-.patient-appointments-table th {
-    text-align: left;
-    padding: 0.8rem 0.6rem;
-    background: #ffffff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #475569;
-    border-bottom: 1px solid #e2e8f0;
+.patient-appointment-status.cancelled {
+    background: #fee2e2;
+    color: #b91c1c;
 }
 
-.patient-appointments-table td {
-    padding: 0.8rem 0.6rem;
-    font-size: 0.75rem;
-    color: #334155;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.patient-appointments-table tr:hover {
-    background: #f8fafc;
-}
-
-.patient-cancel-btn {
-    background: #ef4444;
-    color: white;
+/* ✅ Cancel button */
+.patient-cancel-appointment-btn {
+    background: #fee2e2;
     border: none;
-    padding: 0.25rem 0.8rem;
-    border-radius: 30px;
-    font-size: 0.65rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.6rem;
     font-weight: 600;
+    color: #dc2626;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s;
 }
 
-.patient-cancel-btn:hover {
+.patient-cancel-appointment-btn:hover {
     background: #dc2626;
-    transform: scale(1.02);
+    color: white;
 }
 
+/* ✅ Empty state */
+.patient-appointments-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+/* ✅ Section header with count */
+.patient-appointments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.patient-appointments-count {
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
+    .patient-appointments-section {
+        padding: 0.8rem;
+    }
+    
+    .patient-appointments-table th,
+    .patient-appointments-table td {
+        padding: 0.5rem 0.4rem;
+    }
+    
     .patient-appointments-table {
-        display: block;
-        overflow-x: auto;
+        min-width: 580px;
+    }
+}
+
+@media (max-width: 480px) {
+    .patient-appointments-section {
+        padding: 0.6rem;
+    }
+    
+    .patient-appointments-table th,
+    .patient-appointments-table td {
+        padding: 0.4rem 0.3rem;
+        font-size: 0.65rem;
+    }
+    
+    .patient-appointments-table {
+        min-width: 520px;
     }
 }

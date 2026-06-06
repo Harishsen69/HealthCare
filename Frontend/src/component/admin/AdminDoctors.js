@@ -95,31 +95,33 @@ function AdminDoctors({ doctors, setDoctors }) {
                 </div>
             )}
 
-            {/* Doctors Table */}
-            <table className="admin-doctors-table">
-                <thead>
-                    <tr>
-                        <th>S.No.</th>
-                        <th>Name</th>
-                        <th>Specialization</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Fee</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {doctors.map((doc, index) => (
-                        <tr key={doc.id}>
-                            <td>{index + 1}</td>
-                            <td>{doc.name}</td>
-                            <td>{doc.specialization}</td>
-                            <td>{doc.email}</td>
-                            <td>{doc.phone || "N/A"}</td>
-                            <td>₹{doc.fee}</td>
+            {/* Doctors Table with Horizontal Scroll */}
+            <div className="admin-table-responsive">
+                <table className="admin-doctors-table">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Fee</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {doctors.map((doc, index) => (
+                            <tr key={doc.id}>
+                                <td>{index + 1}</td>
+                                <td>{doc.name}</td>
+                                <td>{doc.specialization}</td>
+                                <td>{doc.email}</td>
+                                <td>{doc.phone || "N/A"}</td>
+                                <td>₹{doc.fee}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

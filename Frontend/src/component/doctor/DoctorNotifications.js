@@ -33,13 +33,15 @@ function DoctorNotifications({ notifications, fetchNotifications, setActiveTab }
         await markAsRead(notification.id);
     };
 
+    const unreadCount = localNotifications.filter(n => !n.is_read).length;
+
     return (
         <div className="doctor-notifications-container">
             <div className="doctor-notif-header">
                 <h3>🔔 Notifications</h3>
-                <span className="doctor-unread-count">
-                    {localNotifications.filter(n => !n.is_read).length} Unread
-                </span>
+                {unreadCount > 0 && (
+                    <span className="doctor-unread-count">{unreadCount} Unread</span>
+                )}
             </div>
 
             {localNotifications.length === 0 ? (
@@ -48,7 +50,7 @@ function DoctorNotifications({ notifications, fetchNotifications, setActiveTab }
                     <p>No notifications</p>
                 </div>
             ) : (
-                <div className="doctor-notif-list">
+                <div className="doctor-notif-table-wrapper">
                     <table className="doctor-notif-table">
                         <thead>
                             <tr>
@@ -89,7 +91,7 @@ function DoctorNotifications({ notifications, fetchNotifications, setActiveTab }
                                             className="doctor-view-notif-btn"
                                             onClick={() => handleView(notif)}
                                         >
-                                            👁️ View
+                                            View
                                         </button>
                                     </td>
                                 </tr>

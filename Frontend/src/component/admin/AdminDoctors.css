@@ -1,10 +1,13 @@
+/* ========== ADMIN DOCTORS CONTAINER ========== */
 .admin-doctors-container {
     background: white;
-    border-radius: 24px;
-    padding: 1.2rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
 }
 
+/* ========== HEADER ========== */
 .admin-doctors-header {
     display: flex;
     justify-content: space-between;
@@ -12,17 +15,20 @@
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #eef2ff;
+    flex-wrap: wrap;
+    gap: 0.8rem;
 }
 
 .admin-doctors-header h2 {
     font-size: 0.9rem;
     font-weight: 600;
     color: #1e293b;
+    margin: 0;
 }
 
 .admin-add-doctor-btn {
     padding: 0.5rem 1.2rem;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
     border: none;
     border-radius: 30px;
@@ -30,14 +36,15 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(2, 132, 199, 0.2);
 }
 
 .admin-add-doctor-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 6px 12px rgba(2, 132, 199, 0.3);
 }
 
-/* Add Doctor Form */
+/* ========== ADD DOCTOR FORM ========== */
 .admin-add-doctor-form {
     background: #f8fafc;
     padding: 1rem;
@@ -53,78 +60,172 @@
     margin-bottom: 1rem;
 }
 
+/* ========== FORM ROWS ========== */
 .admin-form-row {
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
 .admin-form-row input {
     flex: 1;
-    padding: 0.7rem;
-    border: 1px solid #cbd5e1;
+    min-width: 180px;
+    padding: 0.7rem 0.8rem;
+    border: 1.5px solid #e2e8f0;
     border-radius: 12px;
     font-size: 0.8rem;
     background: white;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
 }
 
 .admin-form-row input:focus {
     outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
 }
 
+.admin-form-row input:hover {
+    border-color: #94a3b8;
+}
+
+/* ========== SUBMIT BUTTON ========== */
 .admin-submit-btn {
     width: 100%;
     padding: 0.7rem;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 40px;
     font-weight: 600;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);
 }
 
-.admin-submit-btn:hover {
+.admin-submit-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.3);
 }
 
-/* Doctors Table */
+.admin-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ========== DOCTORS TABLE - HORIZONTAL SCROLL ========== */
+.admin-table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .admin-doctors-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 700px;
+    white-space: nowrap;
 }
 
 .admin-doctors-table th {
     text-align: left;
-    padding: 0.8rem 0.6rem;
+    padding: 0.75rem 0.5rem;
     background: #f8fafc;
     font-size: 0.7rem;
     font-weight: 700;
-    color: #475569;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     border-bottom: 2px solid #e2e8f0;
 }
 
 .admin-doctors-table td {
-    padding: 0.8rem 0.6rem;
+    padding: 0.75rem 0.5rem;
     font-size: 0.75rem;
-    color: #334155;
-    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.admin-doctors-table tr:hover {
+.admin-doctors-table tr:hover td {
     background: #f8fafc;
 }
 
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
+    .admin-doctors-container {
+        padding: 0.8rem;
+    }
+    
+    .admin-doctors-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .admin-add-doctor-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
     .admin-form-row {
         flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .admin-form-row input {
+        min-width: auto;
+        width: 100%;
     }
     
     .admin-doctors-table {
-        display: block;
-        overflow-x: auto;
+        min-width: 600px;
+    }
+    
+    .admin-doctors-table th,
+    .admin-doctors-table td {
+        padding: 0.5rem 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-doctors-container {
+        padding: 0.6rem;
+    }
+    
+    .admin-doctors-header h2 {
+        font-size: 0.8rem;
+    }
+    
+    .admin-add-doctor-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.7rem;
+    }
+    
+    .admin-add-doctor-form {
+        padding: 0.8rem;
+    }
+    
+    .admin-add-doctor-form h3 {
+        font-size: 0.75rem;
+    }
+    
+    .admin-form-row input {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.7rem;
+    }
+    
+    .admin-submit-btn {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .admin-doctors-table {
+        min-width: 520px;
+    }
+    
+    .admin-doctors-table th,
+    .admin-doctors-table td {
+        padding: 0.4rem 0.3rem;
+        font-size: 0.65rem;
     }
 }

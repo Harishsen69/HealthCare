@@ -1,8 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./Service.css";
 
 function Service({ setPage }) {
-    // Scroll animations - same as Home
+    const [visibleServices, setVisibleServices] = useState(6);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+    const [showAllServices, setShowAllServices] = useState(false);
+
+    // Check screen size for mobile/laptop
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth <= 900;
+            setIsMobile(mobile);
+            if (mobile && visibleServices > 4) {
+                setVisibleServices(4);
+            } else if (!mobile && visibleServices < 6) {
+                setVisibleServices(6);
+            }
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [visibleServices]);
+
+    // Scroll animations
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -13,7 +33,6 @@ function Service({ setPage }) {
         }, { threshold: 0.1 });
 
         document.querySelectorAll('.sc-fade-up').forEach(el => observer.observe(el));
-        
         return () => observer.disconnect();
     }, []);
 
@@ -42,6 +61,38 @@ function Service({ setPage }) {
         { quote: "Quick appointment and excellent treatment. The doctors explained everything clearly.", name: "Amit Patel", rating: "⭐⭐⭐⭐⭐" }
     ];
 
+    // Get initial count based on screen size
+    const getInitialCount = () => {
+        return window.innerWidth <= 900 ? 4 : 6;
+    };
+
+    // Get load more increment based on screen size
+    const getLoadMoreIncrement = () => {
+        return window.innerWidth <= 900 ? 4 : 3;
+    };
+
+    const loadMoreServices = () => {
+        const increment = getLoadMoreIncrement();
+        setVisibleServices(prev => prev + increment);
+    };
+
+    const viewAllServices = () => {
+        setVisibleServices(services.length);
+        setShowAllServices(true);
+    };
+
+    const showLessServices = () => {
+        const initialCount = getInitialCount();
+        setVisibleServices(initialCount);
+        setShowAllServices(false);
+    };
+
+    const displayedServices = services.slice(0, visibleServices);
+    const initialCount = isMobile ? 4 : 6;
+    const isShowingAll = visibleServices === services.length;
+    const showLoadMore = !isShowingAll && visibleServices < services.length;
+    const showViewAll = !isShowingAll && services.length > visibleServices;
+
     return (
         <div className="sc-service-container">
             {/* Hero Section */}
@@ -52,7 +103,7 @@ function Service({ setPage }) {
                         <h1>Comprehensive <span className="sc-gradient-text">Healthcare Services</span></h1>
                         <p>We offer a wide range of medical services to meet all your healthcare needs. From preventive care to complex surgeries, our expert team is here for you.</p>
                         <div className="sc-hero-buttons">
-                            <button className="sc-btn-primary" onClick={() => setPage("appointment")}>Book Appointment →</button>
+                            <button className="sc-btn-primary" onClick={() => setPage("appointment")}>Book Appointment </button>
                             <button className="sc-btn-secondary" onClick={() => setPage("contact")}>Contact Us</button>
                         </div>
                         <div className="sc-hero-stats">
@@ -71,7 +122,7 @@ function Service({ setPage }) {
                 </div>
             </section>
 
-            {/* Services Grid Section */}
+            {/* Services Grid Section - With Load More */}
             <section className="sc-services-section sc-fade-up">
                 <div className="sc-container">
                     <div className="sc-section-header">
@@ -80,7 +131,7 @@ function Service({ setPage }) {
                         <p>Advanced technology meets compassionate care</p>
                     </div>
                     <div className="sc-services-grid">
-                        {services.map((service, idx) => (
+                        {displayedServices.map((service, idx) => (
                             <div className="sc-service-card" key={idx}>
                                 <div className="sc-service-icon">{service.icon}</div>
                                 <h3>{service.name}</h3>
@@ -89,6 +140,27 @@ function Service({ setPage }) {
                             </div>
                         ))}
                     </div>
+
+                    {/* Load More / View All / Show Less Buttons */}
+                    {services.length > initialCount && (
+                        <div className="sc-load-more-container">
+                            {showLoadMore && (
+                                <button className="sc-load-more-btn" onClick={loadMoreServices}>
+                                    Load More {isMobile ? "(+4)" : "(+3)"}
+                                </button>
+                            )}
+                            {showViewAll && !showLoadMore && (
+                                <button className="sc-view-all-btn" onClick={viewAllServices}>
+                                    View All Services ({services.length})
+                                </button>
+                            )}
+                            {isShowingAll && services.length > initialCount && (
+                                <button className="sc-show-less-btn" onClick={showLessServices}>
+                                    Show Less ↑
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -135,7 +207,7 @@ function Service({ setPage }) {
                 </div>
             </section>
 
-            {/* CTA Section - Same as Home */}
+            {/* CTA Section */}
             <section className="sc-cta-section">
                 <div className="sc-cta-content">
                     <h2>Ready to Get Started?</h2>
@@ -144,45 +216,16 @@ function Service({ setPage }) {
                 </div>
             </section>
 
-            {/* Footer - Exactly like Home */}
+            {/* Footer */}
             <footer className="sc-footer">
                 <div className="sc-footer-inner">
                     <div className="sc-footer-grid">
-                        <div>
-                            <div className="sc-footer-logo">🏥 MediCare</div>
-                            <p>Quality healthcare since 2010</p>
-                            <div className="sc-social-links">📘 📷 🐦 🔗</div>
-                        </div>
-                        <div>
-                            <h4>Quick Links</h4>
-                            <ul>
-                                <li><button onClick={() => setPage("home")}>Home</button></li>
-                                <li><button onClick={() => setPage("about")}>About</button></li>
-                                <li><button onClick={() => setPage("services")}>Services</button></li>
-                                <li><button onClick={() => setPage("contact")}>Contact</button></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4>Services</h4>
-                            <ul>
-                                <li>Cardiology</li>
-                                <li>Neurology</li>
-                                <li>Pediatrics</li>
-                                <li>Orthopedics</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4>Contact</h4>
-                            <ul>
-                                <li>📍 Delhi, India</li>
-                                <li>📞 +91 98765 43210</li>
-                                <li>✉️ info@medicare.com</li>
-                            </ul>
-                        </div>
+                        <div><div className="sc-footer-logo">🏥 MediCare</div><p>Quality healthcare since 2010</p><div className="sc-social-links">📘 📷 🐦 🔗</div></div>
+                        <div><h4>Quick Links</h4><ul><li><button onClick={() => setPage("home")}>Home</button></li><li><button onClick={() => setPage("about")}>About</button></li><li><button onClick={() => setPage("services")}>Services</button></li><li><button onClick={() => setPage("contact")}>Contact</button></li></ul></div>
+                        <div><h4>Services</h4><ul><li>Cardiology</li><li>Neurology</li><li>Pediatrics</li><li>Orthopedics</li></ul></div>
+                        <div><h4>Contact</h4><ul><li>📍 Delhi, India</li><li>📞 +91 98765 43210</li><li>✉️ info@medicare.com</li></ul></div>
                     </div>
-                    <div className="sc-footer-bottom">
-                        <p>&copy; 2025 MediCare. All rights reserved.</p>
-                    </div>
+                    <div className="sc-footer-bottom"><p>&copy; 2025 MediCare. All rights reserved.</p></div>
                 </div>
             </footer>
         </div>

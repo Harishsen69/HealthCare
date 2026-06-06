@@ -1,57 +1,62 @@
 /* ========== MAIN CONTAINER ========== */
 .patient-reports-container {
-    padding: 24px;
-    background: #f8fafc;
+    padding: 1rem;
+    background: transparent;
     min-height: calc(100vh - 80px);
 }
 
 .patient-reports-header {
-    margin-bottom: 28px;
+    margin-bottom: 1.5rem;
 }
 
 .patient-reports-header h2 {
     color: #1e3a5f;
-    font-size: 26px;
+    font-size: 1.4rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 0.3rem;
 }
 
 .patient-reports-header p {
     color: #64748b;
-    font-size: 14px;
+    font-size: 0.8rem;
 }
 
-/* ========== TABLE ========== */
+/* ========== TABLE WRAPPER - HORIZONTAL SCROLL ========== */
 .patient-reports-table-wrapper {
     background: white;
     border-radius: 20px;
     overflow-x: auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    -webkit-overflow-scrolling: touch;
 }
 
 .patient-reports-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 800px;
+    min-width: 700px;
+    white-space: nowrap;
 }
 
 .patient-reports-table thead tr {
     background: #f8fafc;
-    border-bottom: 1px solid #eef2ff;
+    border-bottom: 2px solid #eef2ff;
 }
 
 .patient-reports-table th {
-    padding: 16px 12px;
+    padding: 0.9rem 0.8rem;
     text-align: left;
-    font-weight: 600;
+    font-weight: 700;
     color: #1e3a5f;
-    font-size: 13px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .patient-reports-table td {
-    padding: 14px 12px;
+    padding: 0.8rem 0.8rem;
     border-bottom: 1px solid #f0f4f8;
-    font-size: 13px;
+    font-size: 0.75rem;
     color: #334155;
 }
 
@@ -59,6 +64,7 @@
     background: #f8fafc;
 }
 
+/* Unread report row */
 .report-unread {
     background: #eff6ff;
 }
@@ -70,54 +76,54 @@
 /* ========== BADGES ========== */
 .report-type-badge {
     display: inline-block;
-    padding: 5px 12px;
+    padding: 0.25rem 0.7rem;
     background: #e2e8f0;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 0.65rem;
     font-weight: 500;
     color: #334155;
 }
 
 .report-status-new {
     display: inline-block;
-    padding: 5px 12px;
+    padding: 0.25rem 0.7rem;
     background: #dcfce7;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 0.65rem;
     font-weight: 600;
     color: #166534;
 }
 
 .report-status-viewed {
     display: inline-block;
-    padding: 5px 12px;
+    padding: 0.25rem 0.7rem;
     background: #f1f5f9;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 0.65rem;
     color: #64748b;
 }
 
 /* ========== ACTION BUTTONS ========== */
 .report-actions {
     display: flex;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 .report-btn-view {
-    padding: 6px 16px;
-    background: #3b82f6;
+    padding: 0.35rem 1rem;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .report-btn-view:hover {
-    background: #2563eb;
     transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
 }
 
 /* ========== MODAL ========== */
@@ -127,24 +133,24 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10000;
-    animation: fadeIn 0.25s ease;
-    overflow-y: auto;
+    animation: overlayFadeIn 0.25s ease;
+    cursor: pointer;
 }
 
-@keyframes fadeIn {
+@keyframes overlayFadeIn {
     from {
         opacity: 0;
         backdrop-filter: blur(0px);
     }
     to {
         opacity: 1;
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(8px);
     }
 }
 
@@ -156,11 +162,11 @@
     max-height: 85vh;
     overflow: hidden;
     box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.3s ease;
-    margin: 20px auto;
+    animation: modalSlideUp 0.3s ease;
+    cursor: default;
 }
 
-@keyframes slideUp {
+@keyframes modalSlideUp {
     from {
         transform: translateY(30px);
         opacity: 0;
@@ -173,50 +179,38 @@
 
 /* ========== MODAL HEADER ========== */
 .report-modal-header {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6e 100%);
-    padding: 20px 28px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    padding: 1.2rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
 }
 
-.report-modal-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6, #f59e0b);
-}
-
 .report-modal-title {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.8rem;
 }
 
 .report-modal-icon {
-    font-size: 28px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    font-size: 1.8rem;
 }
 
 .report-modal-title h2 {
     color: white;
-    font-size: 22px;
+    font-size: 1.3rem;
     font-weight: 700;
     margin: 0;
-    letter-spacing: -0.3px;
 }
 
 .report-modal-close {
     background: rgba(255, 255, 255, 0.15);
     border: none;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 1rem;
     cursor: pointer;
     color: white;
     display: flex;
@@ -232,34 +226,35 @@
 
 /* ========== MODAL BODY ========== */
 .report-modal-body {
-    padding: 28px;
-    max-height: calc(85vh - 140px);
+    padding: 1.5rem;
+    max-height: calc(85vh - 130px);
     overflow-y: auto;
     background: #ffffff;
 }
 
 .report-modal-body::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 .report-modal-body::-webkit-scrollbar-track {
     background: #e2e8f0;
-    border-radius: 3px;
+    border-radius: 10px;
 }
 
 .report-modal-body::-webkit-scrollbar-thumb {
-    background: #94a3b8;
-    border-radius: 3px;
+    background: #0284c7;
+    border-radius: 10px;
 }
 
 /* ========== REPORT HEADER INFO ========== */
 .report-info-header {
     display: flex;
-    gap: 24px;
-    padding: 18px 20px;
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 1rem 1.2rem;
+    background: #f8fafc;
     border-radius: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
     border: 1px solid #e2e8f0;
 }
 
@@ -269,42 +264,42 @@
 
 .report-info-group label {
     display: block;
-    font-size: 11px;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.5px;
     color: #64748b;
-    margin-bottom: 6px;
+    margin-bottom: 0.25rem;
 }
 
 .report-info-group p {
-    font-size: 15px;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #1e3a5f;
+    color: #0f172a;
     margin: 0;
 }
 
 .report-type-highlight {
     display: inline-block;
     background: #dbeafe;
-    padding: 4px 12px;
+    padding: 0.2rem 0.8rem;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 
 /* ========== DETAILS GRID ========== */
 .report-details-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .report-detail-card {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px;
+    gap: 0.8rem;
+    padding: 1rem;
     background: #f8fafc;
     border-radius: 14px;
     border: 1px solid #e2e8f0;
@@ -317,34 +312,34 @@
 }
 
 .report-detail-icon {
-    font-size: 32px;
+    font-size: 1.8rem;
 }
 
 .report-detail-content label {
     display: block;
-    font-size: 10px;
+    font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: #64748b;
-    margin-bottom: 4px;
+    margin-bottom: 0.2rem;
 }
 
 .report-detail-content p {
-    font-size: 15px;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #1e3a5f;
+    color: #0f172a;
     margin: 0;
 }
 
 .report-detail-content span {
-    font-size: 12px;
+    font-size: 0.7rem;
     color: #64748b;
 }
 
 /* ========== REPORT SECTIONS ========== */
 .report-section {
-    margin-bottom: 24px;
+    margin-bottom: 1.5rem;
     background: white;
     border: 1px solid #eef2ff;
     border-radius: 16px;
@@ -354,33 +349,33 @@
 .report-section-title {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 20px;
+    gap: 0.6rem;
+    padding: 0.8rem 1.2rem;
     background: #fafcff;
     border-bottom: 1px solid #eef2ff;
 }
 
 .report-section-title span {
-    font-size: 20px;
+    font-size: 1.2rem;
 }
 
 .report-section-title h3 {
-    font-size: 15px;
+    font-size: 0.85rem;
     font-weight: 700;
-    color: #1e3a5f;
+    color: #0f172a;
     margin: 0;
 }
 
 .report-section-content {
-    padding: 16px 20px;
+    padding: 1rem 1.2rem;
     background: white;
 }
 
 .report-section-content p {
     margin: 0;
-    line-height: 1.6;
+    line-height: 1.5;
     color: #334155;
-    font-size: 14px;
+    font-size: 0.8rem;
 }
 
 /* ========== MEDICINES TABLE ========== */
@@ -391,7 +386,8 @@
 .medicines-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 0.75rem;
+    min-width: 500px;
 }
 
 .medicines-table thead tr {
@@ -399,15 +395,15 @@
 }
 
 .medicines-table th {
-    padding: 12px;
+    padding: 0.7rem;
     text-align: left;
     font-weight: 700;
-    color: #1e3a5f;
+    color: #0f172a;
     border-bottom: 1px solid #e2e8f0;
 }
 
 .medicines-table td {
-    padding: 12px;
+    padding: 0.7rem;
     border-bottom: 1px solid #f0f4f8;
     color: #334155;
 }
@@ -420,104 +416,58 @@
     background: #f8fafc;
 }
 
-/* ========== SYMPTOMS TAGS ========== */
-.symptoms-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.symptom-tag {
-    background: #e0f2fe;
-    color: #0369a1;
-    padding: 6px 14px;
-    border-radius: 30px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-/* ========== TESTS LIST ========== */
-.tests-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.test-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px;
-    background: #f8fafc;
-    border-radius: 10px;
-}
-
 /* ========== FOLLOW-UP CARD ========== */
 .report-followup {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
     background: linear-gradient(135deg, #fef3c7, #fffbeb);
     border-radius: 16px;
-    margin-top: 16px;
+    margin-top: 1rem;
     border-left: 4px solid #f59e0b;
 }
 
 .report-followup span {
-    font-size: 28px;
+    font-size: 1.6rem;
 }
 
 .report-followup strong {
     display: block;
-    font-size: 14px;
+    font-size: 0.8rem;
     color: #92400e;
-    margin-bottom: 4px;
+    margin-bottom: 0.2rem;
 }
 
 .report-followup p {
     margin: 0;
-    font-size: 13px;
+    font-size: 0.75rem;
     color: #b45309;
-}
-
-/* ========== FOOTER NOTE ========== */
-.report-footer-note {
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid #e2e8f0;
-    text-align: center;
-}
-
-.report-footer-note p {
-    font-size: 10px;
-    color: #94a3b8;
-    margin: 4px 0;
 }
 
 /* ========== MODAL FOOTER ========== */
 .report-modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    padding: 16px 28px;
+    gap: 0.8rem;
+    padding: 1rem 1.5rem;
     border-top: 1px solid #e2e8f0;
     background: #f8fafc;
 }
 
 .report-modal-download {
-    padding: 10px 24px;
+    padding: 0.6rem 1.5rem;
     background: linear-gradient(135deg, #10b981, #059669);
     border: none;
     border-radius: 40px;
-    font-size: 13px;
+    font-size: 0.8rem;
     font-weight: 600;
     color: white;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 .report-modal-download:hover {
@@ -526,11 +476,11 @@
 }
 
 .report-modal-close-btn {
-    padding: 10px 28px;
+    padding: 0.6rem 1.8rem;
     background: #64748b;
     border: none;
     border-radius: 40px;
-    font-size: 13px;
+    font-size: 0.8rem;
     font-weight: 600;
     color: white;
     cursor: pointer;
@@ -550,67 +500,187 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 80px 20px;
+    padding: 3rem 1.5rem;
     text-align: center;
     background: white;
     border-radius: 20px;
+    border: 1px solid #e2e8f0;
 }
 
 .empty-state-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
 }
 
 .patient-reports-empty h3 {
-    color: #1e3a5f;
-    margin-bottom: 8px;
-    font-size: 20px;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
 }
 
 .patient-reports-empty p {
     color: #64748b;
+    font-size: 0.8rem;
 }
 
-/* ========== RESPONSIVE ========== */
+.patient-reports-loading {
+    color: #0284c7;
+    font-weight: 600;
+}
+
+/* ========== RESPONSIVE - MOBILE ========== */
 @media (max-width: 768px) {
     .patient-reports-container {
-        padding: 16px;
+        padding: 0.8rem;
     }
     
+    .patient-reports-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .patient-reports-table {
+        min-width: 620px;
+    }
+    
+    .patient-reports-table th,
+    .patient-reports-table td {
+        padding: 0.6rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .report-btn-view {
+        padding: 0.25rem 0.8rem;
+        font-size: 0.65rem;
+    }
+    
+    .report-type-badge,
+    .report-status-new,
+    .report-status-viewed {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 768px) {
     .report-modal-container {
         width: 95%;
         max-height: 90vh;
     }
     
     .report-modal-body {
-        padding: 20px;
+        padding: 1rem;
     }
     
     .report-info-header {
         flex-direction: column;
-        gap: 12px;
+        gap: 0.8rem;
+        padding: 0.8rem;
     }
     
     .report-details-grid {
         grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .report-detail-card {
+        padding: 0.8rem;
+    }
+    
+    .report-section {
+        margin-bottom: 1rem;
+    }
+    
+    .report-section-title {
+        padding: 0.6rem 1rem;
+    }
+    
+    .report-section-content {
+        padding: 0.8rem 1rem;
     }
     
     .medicines-table {
-        font-size: 11px;
+        min-width: 450px;
     }
     
     .medicines-table th,
     .medicines-table td {
-        padding: 8px;
+        padding: 0.5rem;
+        font-size: 0.7rem;
     }
     
     .report-modal-footer {
         flex-direction: column;
+        gap: 0.6rem;
+        padding: 0.8rem 1rem;
     }
     
     .report-modal-download,
     .report-modal-close-btn {
         width: 100%;
         justify-content: center;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .report-followup {
+        padding: 0.8rem;
+        gap: 0.8rem;
+    }
+    
+    .report-followup span {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .patient-reports-container {
+        padding: 0.6rem;
+    }
+    
+    .patient-reports-header h2 {
+        font-size: 1.1rem;
+    }
+    
+    .patient-reports-table {
+        min-width: 550px;
+    }
+    
+    .patient-reports-table th,
+    .patient-reports-table td {
+        padding: 0.5rem 0.4rem;
+        font-size: 0.65rem;
+    }
+    
+    .report-btn-view {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.6rem;
+    }
+    
+    .report-modal-title h2 {
+        font-size: 1rem;
+    }
+    
+    .report-modal-icon {
+        font-size: 1.4rem;
+    }
+    
+    .report-info-group p {
+        font-size: 0.75rem;
+    }
+    
+    .report-detail-icon {
+        font-size: 1.4rem;
+    }
+    
+    .report-detail-content p {
+        font-size: 0.75rem;
+    }
+    
+    .report-section-title h3 {
+        font-size: 0.75rem;
+    }
+    
+    .report-section-content p {
+        font-size: 0.7rem;
     }
 }

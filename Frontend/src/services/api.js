@@ -1,65 +1,64 @@
 import axios from 'axios';
 
-// ✅ YOUR LAPTOP IP (from ipconfig)
-const LAPTOP_IP = '10.65.173.205';
+// ✅ BACKEND PORT 8000 (Django default)
+const BACKEND_PORT = 8000;
+const FRONTEND_PORT = 3000;
 
-// ✅ Auto-detect base URL (works on both laptop and mobile)
+// ✅ YOUR LAPTOP IP (Change this to your laptop's IP address)
+const LAPTOP_IP = '10.65.173.205';  // ← Apna IP daalo
+
+// ✅ Auto-detect base URL
 const getBaseURL = () => {
-    // Get current hostname from browser
     const hostname = window.location.hostname;
     
     console.log('Current hostname:', hostname);
+    console.log('Window location:', window.location);
     
-    // If running on localhost (laptop testing)
+    // Localhost (laptop pe development)
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        return 'http://127.0.0.1:8000/api/';
+        return `http://127.0.0.1:${BACKEND_PORT}/api/`;
     }
     
-    // If running on mobile or other devices (using laptop's IP)
-    // This will work when accessed via http://10.179.231.205:3000
-    return `http://${LAPTOP_IP}:8000/api/`;
+    // Mobile or other devices on same network
+    return `http://${LAPTOP_IP}:${BACKEND_PORT}/api/`;
 };
-
-// ✅ Alternative: Force IP mode (uncomment if auto-detect not working)
-// const getBaseURL = () => {
-//     return `http://${LAPTOP_IP}:8000/api/`;
-// };
 
 const API = axios.create({
     baseURL: getBaseURL(),
     headers: {
         'Content-Type': 'application/json',
     },
-    timeout: 30000, // 30 seconds timeout
+    timeout: 30000,
 });
 
-// Add token to every request
+// ✅ Add token to every request
 API.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        console.log(`API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+        console.log(`📍 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
         return config;
     },
     (error) => {
-        console.error('Request error:', error);
+        console.error('❌ Request error:', error);
         return Promise.reject(error);
     }
 );
 
-// Response interceptor for handling errors
+// ✅ Response interceptor
 API.interceptors.response.use(
     (response) => {
-        console.log(`API Response: ${response.status} ${response.config.url}`);
+        console.log(`✅ API Response: ${response.status} ${response.config.url}`);
         return response;
     },
     (error) => {
-        console.error('Response error:', error.response?.status, error.response?.data);
+        console.error('❌ Response error:', error.response?.status, error.response?.data);
         
+        // Handle 401 Unauthorized
         if (error.response?.status === 401) {
-            // Token expired or invalid
+            console.log('🔒 Token expired or invalid, logging out...');
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('medicareUser');
@@ -75,5 +74,17 @@ API.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+// ✅ Test function to check if backend is reachable
+export const testBackendConnection = async () => {
+    try {
+        const response = await API.get('doctors/');
+        console.log('✅ Backend connection successful! Doctors count:', response.data?.length);
+        return true;
+    } catch (error) {
+        console.error('❌ Backend connection failed:', error.message);
+        return false;
+    }
+};
 
 export default API;

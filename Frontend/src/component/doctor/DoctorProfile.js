@@ -5,8 +5,6 @@ import "./DoctorProfile.css";
 function DoctorProfile({ user, setUser }) {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [avatarPreview, setAvatarPreview] = useState(null);
-    const [avatarFile, setAvatarFile] = useState(null);
     
     const [fullName, setFullName] = useState(user?.name || "");
     const [phone, setPhone] = useState(user?.phone || "");
@@ -25,10 +23,6 @@ function DoctorProfile({ user, setUser }) {
             setAddress(response.data.address || "");
             setDob(response.data.dob || "");
             setBloodGroup(response.data.blood_group || "");
-            
-            if (response.data.avatar) {
-                setAvatarPreview(response.data.avatar);
-            }
         } catch (error) {
             console.error("Error fetching profile:", error);
         }
@@ -48,38 +42,6 @@ function DoctorProfile({ user, setUser }) {
         }
     }, [user]);
 
-    const handleAvatarChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => setAvatarPreview(reader.result);
-            reader.readAsDataURL(file);
-            setAvatarFile(file);
-        }
-    };
-
-    const handleDeleteAvatar = async () => {
-        if (!window.confirm("Are you sure you want to delete your profile picture?")) return;
-        
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await API.delete('delete-avatar/', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            
-            if (response.status === 200) {
-                setAvatarPreview(null);
-                const updatedUser = { ...user, avatar: null };
-                setUser(updatedUser);
-                localStorage.setItem("medicareUser", JSON.stringify(updatedUser));
-                alert("Profile picture deleted successfully!");
-            }
-        } catch (error) {
-            console.error("Delete avatar error:", error);
-            alert("Failed to delete profile picture");
-        }
-    };
-
     const handleSave = async () => {
         setLoading(true);
         try {
@@ -89,22 +51,20 @@ function DoctorProfile({ user, setUser }) {
             const firstName = nameParts[0] || "";
             const lastName = nameParts.slice(1).join(' ') || "";
             
-            const formDataToSend = new FormData();
-            formDataToSend.append('first_name', firstName);
-            formDataToSend.append('last_name', lastName);
-            formDataToSend.append('phone', phone);
-            formDataToSend.append('address', address);
-            formDataToSend.append('dob', dob);
-            formDataToSend.append('blood_group', bloodGroup);
+            const payload = {
+                full_name: fullName,
+                first_name: firstName,
+                last_name: lastName,
+                phone: phone,
+                address: address,
+                dob: dob,
+                blood_group: bloodGroup,
+            };
             
-            if (avatarFile) {
-                formDataToSend.append('avatar', avatarFile);
-            }
-            
-            const response = await API.put('profile/update/', formDataToSend, {
+            const response = await API.put('profile/update/', payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'application/json'
                 }
             });
             
@@ -118,7 +78,6 @@ function DoctorProfile({ user, setUser }) {
                     address: address,
                     dob: dob,
                     blood_group: bloodGroup,
-                    avatar: response.data.user?.avatar || user?.avatar,
                 };
                 
                 setUser(updatedUser);
@@ -141,31 +100,33 @@ function DoctorProfile({ user, setUser }) {
         return name.charAt(0).toUpperCase();
     };
 
+    const displayName = fullName || user?.name || "Doctor";
+
     return (
-        <div className="profile-doctor-container">
-            <div className="profile-doctor-header">
-                <div className="profile-doctor-avatar">
-                    <div className="profile-doctor-avatar-initial">{getInitials()}</div>
-                    <div className="profile-doctor-info">
-                        <h2>Dr. {user?.name || fullName || "Doctor"}</h2>
-                        <span className="profile-doctor-badge">Medical Professional</span>
+        <div className="doctor-profile-container">
+            <div className="doctor-profile-header">
+                <div className="doctor-profile-avatar">
+                    <div className="doctor-profile-avatar-initial">{getInitials()}</div>
+                    <div className="doctor-profile-info">
+                        <h2>Dr. {displayName}</h2>
+                        <span className="doctor-profile-badge">Medical Professional</span>
                     </div>
                 </div>
                 {!isEditing && (
-                    <button className="profile-doctor-edit-btn" onClick={() => setIsEditing(true)}>
+                    <button className="doctor-profile-edit-btn" onClick={() => setIsEditing(true)}>
                         ✏️ Edit Profile
                     </button>
                 )}
             </div>
 
-            <div className="profile-doctor-content">
-                <div className="profile-doctor-section">
-                    <div className="profile-doctor-section-title">
+            <div className="doctor-profile-content">
+                <div className="doctor-profile-section">
+                    <div className="doctor-profile-section-title">
                         <span>👤</span>
                         <h3>Personal Information</h3>
                     </div>
-                    <div className="profile-doctor-grid">
-                        <div className="profile-doctor-info-card full-width">
+                    <div className="doctor-profile-grid">
+                        <div className="doctor-profile-info-card full-width">
                             <label>Full Name</label>
                             {isEditing ? (
                                 <input 
@@ -174,16 +135,16 @@ function DoctorProfile({ user, setUser }) {
                                     placeholder="Enter your full name"
                                 />
                             ) : (
-                                <p>Dr. {user?.name || fullName || "Not added"}</p>
+                                <p>Dr. {displayName}</p>
                             )}
                         </div>
                         
-                        <div className="profile-doctor-info-card">
+                        <div className="doctor-profile-info-card">
                             <label>Email Address</label>
                             <p>{user?.email || "Not added"}</p>
                         </div>
                         
-                        <div className="profile-doctor-info-card">
+                        <div className="doctor-profile-info-card">
                             <label>Phone Number</label>
                             {isEditing ? (
                                 <input 
@@ -197,7 +158,7 @@ function DoctorProfile({ user, setUser }) {
                             )}
                         </div>
                         
-                        <div className="profile-doctor-info-card">
+                        <div className="doctor-profile-info-card">
                             <label>Date of Birth</label>
                             {isEditing ? (
                                 <input 
@@ -210,7 +171,7 @@ function DoctorProfile({ user, setUser }) {
                             )}
                         </div>
                         
-                        <div className="profile-doctor-info-card">
+                        <div className="doctor-profile-info-card">
                             <label>Blood Group</label>
                             {isEditing ? (
                                 <select value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)}>
@@ -225,7 +186,7 @@ function DoctorProfile({ user, setUser }) {
                             )}
                         </div>
                         
-                        <div className="profile-doctor-info-card full-width">
+                        <div className="doctor-profile-info-card full-width">
                             <label>Address</label>
                             {isEditing ? (
                                 <textarea 
@@ -242,11 +203,11 @@ function DoctorProfile({ user, setUser }) {
                 </div>
 
                 {isEditing && (
-                    <div className="profile-doctor-actions">
-                        <button className="profile-doctor-save-btn" onClick={handleSave} disabled={loading}>
+                    <div className="doctor-profile-actions">
+                        <button className="doctor-profile-save-btn" onClick={handleSave} disabled={loading}>
                             {loading ? "Saving..." : "Save Changes"}
                         </button>
-                        <button className="profile-doctor-cancel-btn" onClick={() => setIsEditing(false)}>
+                        <button className="doctor-profile-cancel-btn" onClick={() => setIsEditing(false)}>
                             Cancel
                         </button>
                     </div>

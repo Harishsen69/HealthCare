@@ -30,7 +30,15 @@ body {
 }
 
 /* ========== SECTIONS ========== */
-.sc-hero-section,
+.sc-hero-section {
+    min-height: auto;
+    margin-top: -20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 40px;
+}
+
 .sc-services-section,
 .sc-why-section,
 .sc-testimonials-section {
@@ -38,48 +46,44 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 60px 0;
+    padding: 10px 0;
 }
 
 /* ========== SECTION HEADER ========== */
 .sc-section-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 .sc-section-badge {
     display: inline-block;
     background: linear-gradient(135deg, #0284c7, #0ea5e9);
     color: white;
-    padding: 6px 16px;
+    padding: 5px 14px;
     border-radius: 30px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .sc-section-header h2 {
-    font-size: 32px;
+    font-size: 28px;
     color: #0f172a;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .sc-section-header p {
     color: #64748b;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 /* ========== HERO SECTION ========== */
-.sc-hero-section {
-    padding: 40px 0;
-}
-
 .sc-hero-content {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     align-items: center;
-    gap: 50px;
+    gap: 40px;
     flex-wrap: wrap;
     padding: 0 20px;
 }
@@ -92,17 +96,17 @@ body {
     display: inline-block;
     background: rgba(255, 255, 255, 0.95);
     color: #0284c7;
-    padding: 5px 15px;
+    padding: 4px 12px;
     border-radius: 50px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .sc-hero-text h1 {
-    font-size: 42px;
+    font-size: 38px;
     line-height: 1.2;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     color: #0f172a;
 }
 
@@ -117,24 +121,24 @@ body {
     color: #1c222a;
     line-height: 1.5;
     margin-bottom: 20px;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .sc-hero-buttons {
     display: flex;
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 12px;
+    margin-bottom: 25px;
     flex-wrap: wrap;
 }
 
 .sc-btn-primary,
 .sc-btn-secondary {
-    padding: 10px 25px;
+    padding: 8px 22px;
     border-radius: 40px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .sc-btn-primary {
@@ -162,17 +166,17 @@ body {
 
 .sc-hero-stats {
     display: flex;
-    gap: 30px;
+    gap: 25px;
     flex-wrap: wrap;
 }
 
 .sc-hero-stats h3 {
-    font-size: 24px;
+    font-size: 22px;
     color: #0284c7;
 }
 
 .sc-hero-stats p {
-    font-size: 12px;
+    font-size: 11px;
     color: #475569;
 }
 
@@ -219,15 +223,15 @@ body {
 .sc-services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+    gap: 25px;
     margin-top: 15px;
 }
 
 .sc-service-card {
     background: white;
     text-align: center;
-    padding: 30px 25px;
-    border-radius: 24px;
+    padding: 25px 20px;
+    border-radius: 20px;
     transition: all 0.3s ease;
     cursor: pointer;
     border: 1px solid #e2e8f0;
@@ -235,27 +239,27 @@ body {
 }
 
 .sc-service-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-5px);
     border-color: #0284c7;
     box-shadow: 0 15px 30px rgba(2, 132, 199, 0.1);
 }
 
 .sc-service-icon {
-    font-size: 55px;
-    margin-bottom: 15px;
+    font-size: 45px;
+    margin-bottom: 12px;
 }
 
 .sc-service-card h3 {
-    font-size: 20px;
+    font-size: 18px;
     margin-bottom: 10px;
     color: #0f172a;
     font-weight: 700;
 }
 
 .sc-service-card p {
-    font-size: 13px;
+    font-size: 12px;
     color: #64748b;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     line-height: 1.5;
 }
 
@@ -263,10 +267,10 @@ body {
     background: #0284c7;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 40px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
     width: 100%;
     transition: all 0.3s;
@@ -277,19 +281,71 @@ body {
     transform: translateY(-2px);
 }
 
+/* ========== LOAD MORE BUTTONS ========== */
+.sc-load-more-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.sc-load-more-btn,
+.sc-show-less-btn,
+.sc-view-all-btn {
+    padding: 10px 24px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s;
+    border: none;
+}
+
+.sc-load-more-btn {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    color: white;
+}
+
+.sc-load-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
+}
+
+.sc-view-all-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.sc-view-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.sc-show-less-btn {
+    background: transparent;
+    border: 2px solid #64748b;
+    color: #64748b;
+}
+
+.sc-show-less-btn:hover {
+    background: #64748b;
+    color: white;
+}
+
 /* ========== WHY CHOOSE US ========== */
 .sc-why-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
+    gap: 25px;
     margin-top: 15px;
 }
 
 .sc-why-card {
     background: white;
     text-align: center;
-    padding: 35px 25px;
-    border-radius: 24px;
+    padding: 25px 20px;
+    border-radius: 20px;
     transition: all 0.3s ease;
     border: 1px solid #e2e8f0;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
@@ -302,8 +358,8 @@ body {
 }
 
 .sc-why-icon {
-    font-size: 50px;
-    margin-bottom: 15px;
+    font-size: 45px;
+    margin-bottom: 12px;
 }
 
 .sc-why-card h3 {
@@ -313,7 +369,7 @@ body {
 }
 
 .sc-why-card p {
-    font-size: 13px;
+    font-size: 12px;
     color: #64748b;
 }
 
@@ -321,14 +377,14 @@ body {
 .sc-testimonials-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+    gap: 25px;
     margin-top: 15px;
 }
 
 .sc-testimonial-card {
     background: white;
-    padding: 35px 25px;
-    border-radius: 24px;
+    padding: 25px 20px;
+    border-radius: 20px;
     transition: all 0.3s ease;
     position: relative;
     border: 1px solid #e2e8f0;
@@ -365,51 +421,51 @@ body {
     color: #0f172a;
 }
 
-/* ========== CTA SECTION - SAME AS HOME ========== */
+/* ========== CTA SECTION ========== */
 .sc-cta-section {
     background: linear-gradient(135deg, #0284c7, #0ea5e9);
-    margin: 40px 20px;
-    border-radius: 28px;
-    padding: 50px 20px;
+    margin: 4px 3px;
+    border-radius: 24px;
+    padding: 12px 20px;
     text-align: center;
 }
 
 .sc-cta-content {
-    max-width: 500px;
+    max-width: 450px;
     margin: 0 auto;
 }
 
 .sc-cta-section h2 {
-    font-size: 32px;
-    margin-bottom: 15px;
+    font-size: 26px;
+    margin-bottom: 10px;
     color: white;
     font-weight: 700;
 }
 
 .sc-cta-section p {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     color: rgba(255, 255, 255, 0.9);
-    font-size: 15px;
+    font-size: 13px;
 }
 
 .sc-cta-btn {
     background: white;
     color: #0284c7;
     border: none;
-    padding: 14px 40px;
+    padding: 12px 32px;
     border-radius: 50px;
     font-weight: 700;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     transition: all 0.3s;
 }
 
 .sc-cta-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* ========== FOOTER - EXACTLY LIKE HOME ========== */
+/* ========== FOOTER ========== */
 .sc-footer {
     background: #0f172a;
     color: #94a3b8;
@@ -513,7 +569,6 @@ body {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
     }
-    
     .sc-why-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
@@ -531,18 +586,22 @@ body {
         justify-content: center;
     }
     .sc-hero-image {
-        width: 70%;
-        margin: 0 auto;
+        width: 100%;
+        margin: 0;
     }
     .sc-hero-image img {
         width: 100%;
-        margin-top: 0;
+        margin-top: -5px;
     }
     .sc-hero-badge-card {
         bottom: 5px;
         right: 15px;
         padding: 4px 10px;
         font-size: 10px;
+    }
+    .sc-container {
+        width: 100%;
+        padding: 0 15px;
     }
 }
 
@@ -552,26 +611,31 @@ body {
     .sc-testimonials-grid,
     .sc-why-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+        gap: 12px;
     }
     
     .sc-service-card,
     .sc-why-card,
     .sc-testimonial-card {
-        padding: 25px 15px;
+        padding: 15px 12px;
     }
     
     .sc-service-icon {
-        font-size: 40px;
+        font-size: 35px;
     }
     
     .sc-service-card h3,
     .sc-why-card h3 {
-        font-size: 16px;
+        font-size: 14px;
+    }
+    
+    .sc-service-card p,
+    .sc-why-card p {
+        font-size: 11px;
     }
     
     .sc-hero-text h1 {
-        font-size: 32px;
+        font-size: 28px;
     }
     
     .sc-hero-image {
@@ -579,19 +643,19 @@ body {
     }
     
     .sc-section-header h2 {
-        font-size: 24px;
+        font-size: 22px;
     }
     
     .sc-cta-section {
         margin: 20px 15px;
-        padding: 35px 20px;
+        padding: 25px 15px;
     }
     
     .sc-cta-section h2 {
-        font-size: 24px;
+        font-size: 22px;
     }
     
-    /* FOOTER - Keep 4 columns */
+    /* FOOTER */
     .sc-footer-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 15px;
@@ -600,10 +664,6 @@ body {
     
     .sc-footer-logo {
         font-size: 18px;
-    }
-    
-    .sc-footer p {
-        font-size: 11px;
     }
     
     .sc-footer h4 {
@@ -633,6 +693,14 @@ body {
         font-size: 10px;
         padding-top: 15px;
     }
+    
+    /* Load More Buttons */
+    .sc-load-more-btn,
+    .sc-show-less-btn,
+    .sc-view-all-btn {
+        padding: 8px 18px;
+        font-size: 11px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -640,16 +708,9 @@ body {
     .sc-testimonials-grid,
     .sc-why-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 10px;
     }
     
-    .sc-service-card,
-    .sc-why-card,
-    .sc-testimonial-card {
-        padding: 20px 12px;
-    }
-    
-    /* Footer - Still 4 columns */
     .sc-footer-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
@@ -657,10 +718,6 @@ body {
     
     .sc-footer-logo {
         font-size: 14px;
-    }
-    
-    .sc-footer p {
-        font-size: 9px;
     }
     
     .sc-footer h4 {
@@ -683,14 +740,45 @@ body {
 }
 
 @media (max-width: 480px) {
-    .sc-hero-buttons {
-        flex-direction: column;
+    .sc-services-grid,
+    .sc-testimonials-grid,
+    .sc-why-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
     }
+    
+    .sc-service-card,
+    .sc-why-card,
+    .sc-testimonial-card {
+        padding: 12px 8px;
+    }
+    
+    .sc-service-icon {
+        font-size: 28px;
+    }
+    
+    .sc-service-card h3,
+    .sc-why-card h3 {
+        font-size: 12px;
+    }
+    
+    .sc-service-card p,
+    .sc-why-card p {
+        font-size: 10px;
+    }
+    
+    .sc-service-btn {
+        font-size: 9px;
+        padding: 5px 8px;
+    }
+    
+    /* .sc-hero-buttons {
+        flex-direction: column;
+    } */
     
     .sc-btn-primary,
     .sc-btn-secondary {
-        width: 100%;
-        text-align: center;
+        width: 45%;
     }
     
     .sc-hero-stats {
@@ -714,76 +802,40 @@ body {
         font-size: 14px;
     }
     
-    .sc-services-grid,
-    .sc-testimonials-grid,
-    .sc-why-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    
-    .sc-service-card,
-    .sc-why-card,
-    .sc-testimonial-card {
-        padding: 15px 10px;
-    }
-    
-    .sc-service-icon {
-        font-size: 32px;
-    }
-    
-    .sc-service-card h3,
-    .sc-why-card h3 {
-        font-size: 13px;
-    }
-    
-    .sc-service-card p,
-    .sc-why-card p {
-        font-size: 10px;
-    }
-    
-    .sc-service-btn {
-        font-size: 10px;
-        padding: 6px 10px;
-    }
-    
-    /* Footer - Ultra compact */
+    /* FOOTER */
     .sc-footer-grid {
         grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-    }
-    
-    .sc-footer-logo {
-        font-size: 12px;
-    }
-    
-    .sc-footer p {
-        font-size: 8px;
-    }
-    
-    .sc-footer h4 {
-        font-size: 10px;
-        margin-bottom: 6px;
-    }
-    
-    .sc-footer li {
-        font-size: 8px;
-        margin-bottom: 4px;
-    }
-    
-    .sc-footer li button {
-        font-size: 8px;
-    }
-    
-    .sc-social-links {
         gap: 6px;
     }
     
+    .sc-footer-logo {
+        font-size: 11px;
+    }
+    
+    .sc-footer h4 {
+        font-size: 9px;
+        margin-bottom: 5px;
+    }
+    
+    .sc-footer li {
+        font-size: 7px;
+        margin-bottom: 3px;
+    }
+    
+    .sc-footer li button {
+        font-size: 7px;
+    }
+    
+    .sc-social-links {
+        gap: 5px;
+    }
+    
     .sc-social-links span {
-        font-size: 12px;
+        font-size: 11px;
     }
     
     .sc-footer-bottom {
-        font-size: 8px;
-        padding-top: 12px;
+        font-size: 7px;
+        padding-top: 10px;
     }
 }

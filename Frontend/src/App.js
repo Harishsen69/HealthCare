@@ -17,13 +17,49 @@ import DoctorDashboard from "./component/doctor/DoctorDashboard";
 import AdminDashboard from "./component/admin/AdminDashboard";
 
 function App() {
-    // ✅ ALWAYS HOME PAGE BY DEFAULT
-    const [page, setPage] = useState("home");
+    // ✅ Get current page from URL hash ONLY (no localStorage on app start)
+    const getCurrentPageFromUrl = () => {
+        const hash = window.location.hash.slice(1);
+        const validPages = ['home', 'about', 'services', 'contact', 'appointment', 'login', 'register', 'patient_dashboard', 'doctor_dashboard', 'admin_dashboard'];
+        
+        // If hash exists and is valid, use it
+        if (hash && validPages.includes(hash)) {
+            return hash;
+        }
+        
+        // ✅ Default to home on app start/restart (no localStorage check)
+        return 'home';
+    };
+
+    const [page, setPage] = useState(getCurrentPageFromUrl());
     const [userRole, setUserRole] = useState(() => {
         return localStorage.getItem('user_type') || null;
     });
 
-    // Save page to localStorage
+    // ✅ Update URL and localStorage when page changes
+    const handleSetPage = (newPage) => {
+        setPage(newPage);
+        window.location.hash = newPage;
+        localStorage.setItem('currentPage', newPage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // ✅ Listen for browser back/forward buttons and refresh
+    useEffect(() => {
+        const handleHashChange = () => {
+            const newPage = getCurrentPageFromUrl();
+            setPage(newPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.addEventListener('hashchange', handleHashChange);
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
+    // Save page to localStorage when it changes
     useEffect(() => {
         localStorage.setItem('currentPage', page);
     }, [page]);
@@ -33,10 +69,9 @@ function App() {
         const token = localStorage.getItem('access_token');
         const userType = localStorage.getItem('user_type');
         
-        // ✅ Agar logged in hai aur login/register page pe hai to home pe bhejo
         if (token && userType) {
             if (page === 'login' || page === 'register') {
-                setPage('home');
+                handleSetPage('home');
             }
         }
         setUserRole(userType);
@@ -46,40 +81,35 @@ function App() {
     const role = localStorage.getItem('user_type');
 
     // ========== DASHBOARD RENDERING ==========
-    // ✅ Patient Dashboard - Sirf tab dikhe jab page 'patient_dashboard' ho
     if (page === 'patient_dashboard') {
         if (token && role === 'patient') {
-            return <PatientDashboard setPage={setPage} />;
+            return <PatientDashboard setPage={handleSetPage} />;
         } else {
-            // Agar token nahi hai ya role patient nahi hai to home pe bhejo
-            setPage('home');
+            handleSetPage('home');
             return null;
         }
     }
     
-    // ✅ Doctor Dashboard
     if (page === 'doctor_dashboard') {
         if (token && role === 'doctor') {
-            return <DoctorDashboard setPage={setPage} />;
+            return <DoctorDashboard setPage={handleSetPage} />;
         } else {
-            setPage('home');
+            handleSetPage('home');
             return null;
         }
     }
     
-    // ✅ Admin Dashboard
     if (page === 'admin_dashboard') {
         if (token && role === 'admin') {
-            return <AdminDashboard setPage={setPage} />;
+            return <AdminDashboard setPage={handleSetPage} />;
         } else {
-            setPage('home');
+            handleSetPage('home');
             return null;
         }
     }
 
-    // ✅ INVALID DASHBOARD PAGE CHECK - Agar koi 'dashboard' page aaya to home bhejo
     if (page === 'dashboard') {
-        setPage('home');
+        handleSetPage('home');
         return null;
     }
 
@@ -89,15 +119,15 @@ function App() {
 
     return (
         <div className="app">
-            {showHeader && <Header setPage={setPage} currentPage={page} />}
+            {showHeader && <Header setPage={handleSetPage} currentPage={page} />}
             
-            {page === "home" && <Home setPage={setPage} />}
-            {page === "about" && <About setPage={setPage} />}
-            {page === "services" && <Service setPage={setPage} />}
-            {page === "contact" && <Contact setPage={setPage} />}
-            {page === "login" && <Login setPage={setPage} />}
-            {page === "register" && <Register setPage={setPage} />}
-            {page === "appointment" && <Appointment setPage={setPage} />}
+            {page === "home" && <Home setPage={handleSetPage} />}
+            {page === "about" && <About setPage={handleSetPage} />}
+            {page === "services" && <Service setPage={handleSetPage} />}
+            {page === "contact" && <Contact setPage={handleSetPage} />}
+            {page === "login" && <Login setPage={handleSetPage} />}
+            {page === "register" && <Register setPage={handleSetPage} />}
+            {page === "appointment" && <Appointment setPage={handleSetPage} />}
         </div>
     );
 }

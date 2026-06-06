@@ -5,8 +5,6 @@ import "./AdminProfile.css";
 function AdminProfile({ user, setUser }) {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [avatarPreview, setAvatarPreview] = useState(null);
-    const [avatarFile, setAvatarFile] = useState(null);
     
     const [formData, setFormData] = useState({
         full_name: user?.name || "",
@@ -31,10 +29,6 @@ function AdminProfile({ user, setUser }) {
                 dob: response.data.dob || "",
                 blood_group: response.data.blood_group || "",
             }));
-            
-            if (response.data.avatar) {
-                setAvatarPreview(response.data.avatar);
-            }
         } catch (error) {
             console.error("Error fetching profile:", error);
         }
@@ -61,38 +55,6 @@ function AdminProfile({ user, setUser }) {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleAvatarChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => setAvatarPreview(reader.result);
-            reader.readAsDataURL(file);
-            setAvatarFile(file);
-        }
-    };
-
-    const handleDeleteAvatar = async () => {
-        if (!window.confirm("Are you sure you want to delete your profile picture?")) return;
-        
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await API.delete('delete-avatar/', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            
-            if (response.status === 200) {
-                setAvatarPreview(null);
-                const updatedUser = { ...user, avatar: null };
-                setUser(updatedUser);
-                localStorage.setItem("medicareUser", JSON.stringify(updatedUser));
-                alert("Profile picture deleted successfully!");
-            }
-        } catch (error) {
-            console.error("Delete avatar error:", error);
-            alert("Failed to delete profile picture");
-        }
-    };
-
     const handleSave = async () => {
         setLoading(true);
         try {
@@ -104,6 +66,7 @@ function AdminProfile({ user, setUser }) {
             const lastName = nameParts.slice(1).join(' ') || "";
             
             const payload = {
+                full_name: formData.full_name,
                 first_name: firstName,
                 last_name: lastName,
                 phone: formData.phone,
@@ -120,7 +83,6 @@ function AdminProfile({ user, setUser }) {
             });
             
             if (response.status === 200) {
-                // ✅ Update user object
                 const updatedUser = {
                     ...user,
                     name: formData.full_name,
@@ -152,13 +114,15 @@ function AdminProfile({ user, setUser }) {
         return name.charAt(0).toUpperCase();
     };
 
+    const displayName = formData.full_name || user?.name || "Admin";
+
     return (
         <div className="profile-admin-container">
             <div className="profile-admin-header">
                 <div className="profile-admin-avatar">
                     <div className="profile-admin-avatar-initial">{getInitials()}</div>
                     <div className="profile-admin-info">
-                        <h2>{user?.name || formData.full_name || "Admin"}</h2>
+                        <h2>{displayName}</h2>
                         <span className="profile-admin-badge">Administrator</span>
                     </div>
                 </div>
@@ -176,7 +140,7 @@ function AdminProfile({ user, setUser }) {
                         <h3>Personal Information</h3>
                     </div>
                     <div className="profile-admin-grid">
-                        <div className="profile-admin-info-card">
+                        <div className="profile-admin-info-card full-width">
                             <label>Full Name</label>
                             {isEditing ? (
                                 <input 
@@ -186,7 +150,7 @@ function AdminProfile({ user, setUser }) {
                                     placeholder="Enter your full name"
                                 />
                             ) : (
-                                <p>{user?.name || formData.full_name || "Not added"}</p>
+                                <p>{displayName}</p>
                             )}
                         </div>
                         

@@ -1,88 +1,101 @@
+/* ========== DOCTOR NOTIFICATIONS CONTAINER ========== */
 .doctor-notifications-container {
     background: white;
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
 }
 
+/* ========== HEADER ========== */
 .doctor-notif-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.2rem;
-    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-bottom: 1px solid #eef2ff;
+    flex-wrap: wrap;
+    gap: 0.8rem;
 }
 
 .doctor-notif-header h3 {
     font-size: 0.9rem;
     font-weight: 600;
     color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .doctor-unread-count {
-    background: #eef2ff;
-    color: #4f46e5;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    color: white;
     padding: 0.2rem 0.7rem;
     border-radius: 30px;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    font-weight: 600;
 }
 
-.doctor-empty-notif {
-    text-align: center;
-    padding: 2rem;
-    color: #94a3b8;
+/* ========== TABLE WRAPPER - HORIZONTAL SCROLL ========== */
+.doctor-notif-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-.doctor-empty-notif span {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.doctor-empty-notif p {
-    font-size: 0.8rem;
-}
-
+/* ========== NOTIFICATIONS TABLE ========== */
 .doctor-notif-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 650px;
+    white-space: nowrap;
 }
 
 .doctor-notif-table th {
-    padding: 0.8rem 0.6rem;
+    padding: 0.9rem 0.6rem;
     text-align: left;
     background: #f8fafc;
     font-size: 0.7rem;
     font-weight: 700;
-    color: #475569;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     border-bottom: 2px solid #e2e8f0;
 }
 
 .doctor-notif-table td {
-    padding: 0.8rem 0.6rem;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 0.9rem 0.6rem;
+    border-bottom: 1px solid #f0f4f8;
     vertical-align: middle;
+    font-size: 0.75rem;
+    color: #475569;
 }
 
+/* Unread row styling */
 .doctor-unread-row {
-    background: #f8fafc;
+    background: #eff6ff;
 }
 
+.doctor-unread-row:hover {
+    background: #dbeafe;
+}
+
+/* ========== TYPE CELL ========== */
 .doctor-notif-type-cell {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
-    padding: 0.8rem 0.4rem;
+    gap: 0.3rem;
     text-align: center;
 }
 
 .doctor-notif-type-icon {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
 }
 
 .doctor-notif-type-text {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 600;
     color: #475569;
     background: #f1f5f9;
@@ -91,8 +104,11 @@
     white-space: nowrap;
 }
 
+/* ========== MESSAGE CELL ========== */
 .doctor-notif-msg-cell {
     padding-right: 1rem;
+    white-space: normal;
+    word-break: break-word;
 }
 
 .doctor-notif-msg-cell strong {
@@ -100,49 +116,181 @@
     display: block;
     margin-bottom: 0.3rem;
     color: #0f172a;
+    font-weight: 700;
 }
 
 .doctor-notif-msg-cell p {
     font-size: 0.7rem;
     color: #64748b;
-    line-height: 1.3;
+    line-height: 1.4;
     margin: 0;
 }
 
+/* ========== DATE CELL ========== */
 .doctor-notif-date-cell {
     font-size: 0.65rem;
     color: #94a3b8;
     white-space: nowrap;
 }
 
+/* ========== ACTION CELL ========== */
 .doctor-notif-action-cell {
-    text-align: left;
+    text-align: center;
 }
 
+/* ========== VIEW BUTTON ========== */
 .doctor-view-notif-btn {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
     border: none;
-    padding: 0.25rem 0.8rem;
+    padding: 0.35rem 1rem;
     border-radius: 30px;
     color: white;
     font-size: 0.65rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(2, 132, 199, 0.2);
 }
 
 .doctor-view-notif-btn:hover {
-    transform: scale(1.02);
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
 }
 
+/* ========== EMPTY STATE ========== */
+.doctor-empty-notif {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    color: #94a3b8;
+}
+
+.doctor-empty-notif span {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.8rem;
+}
+
+.doctor-empty-notif p {
+    font-size: 0.8rem;
+}
+
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
+    .doctor-notifications-container {
+        margin: 0;
+    }
+    
+    .doctor-notif-header {
+        padding: 0.8rem 1rem;
+    }
+    
+    .doctor-notif-header h3 {
+        font-size: 0.85rem;
+    }
+    
+    .doctor-unread-count {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.6rem;
+    }
+    
     .doctor-notif-table {
-        display: block;
-        overflow-x: auto;
+        min-width: 580px;
+    }
+    
+    .doctor-notif-table th,
+    .doctor-notif-table td {
+        padding: 0.6rem 0.4rem;
+    }
+    
+    .doctor-notif-msg-cell strong {
+        font-size: 0.75rem;
+    }
+    
+    .doctor-notif-msg-cell p {
+        font-size: 0.65rem;
     }
     
     .doctor-notif-date-cell {
-        white-space: nowrap;
+        font-size: 0.6rem;
+    }
+    
+    .doctor-view-notif-btn {
+        padding: 0.25rem 0.8rem;
+        font-size: 0.6rem;
+    }
+    
+    .doctor-notif-type-icon {
+        font-size: 1.1rem;
+    }
+    
+    .doctor-notif-type-text {
+        font-size: 0.55rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .doctor-notifications-container {
+        border-radius: 16px;
+    }
+    
+    .doctor-notif-header {
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .doctor-notif-header h3 {
+        font-size: 0.8rem;
+    }
+    
+    .doctor-unread-count {
+        font-size: 0.55rem;
+        padding: 0.12rem 0.5rem;
+    }
+    
+    .doctor-notif-table {
+        min-width: 520px;
+    }
+    
+    .doctor-notif-table th,
+    .doctor-notif-table td {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.65rem;
+    }
+    
+    .doctor-notif-msg-cell strong {
+        font-size: 0.7rem;
+    }
+    
+    .doctor-notif-msg-cell p {
+        font-size: 0.6rem;
+    }
+    
+    .doctor-notif-date-cell {
+        font-size: 0.55rem;
+    }
+    
+    .doctor-view-notif-btn {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.55rem;
+    }
+    
+    .doctor-notif-type-icon {
+        font-size: 1rem;
+    }
+    
+    .doctor-notif-type-text {
+        font-size: 0.5rem;
+        padding: 0.15rem 0.4rem;
+    }
+    
+    .doctor-empty-notif {
+        padding: 1.5rem 1rem;
+    }
+    
+    .doctor-empty-notif span {
+        font-size: 2rem;
+    }
+    
+    .doctor-empty-notif p {
+        font-size: 0.7rem;
     }
 }

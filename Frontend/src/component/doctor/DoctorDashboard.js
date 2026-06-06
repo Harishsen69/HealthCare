@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import API from "../../services/api";
 import Sidebar from "../common/Sidebar";
 import DoctorAppointments from "./DoctorAppointments";
@@ -14,8 +14,15 @@ function DoctorDashboard({ setPage }) {
         const savedUser = localStorage.getItem("medicareUser");
         return savedUser ? JSON.parse(savedUser) : null;
     });
-    const [activeTab, setActiveTab] = useState("overview");
+    
+    // Get activeTab from localStorage on refresh
+    const [activeTab, setActiveTab] = useState(() => {
+        const savedTab = localStorage.getItem('doctorDashboardTab');
+        return savedTab || "overview";
+    });
+    
     const [loading, setLoading] = useState(true);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     
     // Doctor appointments states
     const [doctorPendingAppointments, setDoctorPendingAppointments] = useState([]);
@@ -30,6 +37,14 @@ function DoctorDashboard({ setPage }) {
     const [notifications, setNotifications] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
 
+    // Check if mobile
+    const isMobile = window.innerWidth <= 768;
+
+    // Save activeTab to localStorage when it changes
+    useEffect(() => {
+        localStorage.setItem('doctorDashboardTab', activeTab);
+    }, [activeTab]);
+
     // ========== HELPER: FORMAT TIME TO 12-HOUR ==========
     const formatTimeTo12Hour = (time24) => {
         if (!time24) return '';
@@ -38,6 +53,18 @@ function DoctorDashboard({ setPage }) {
         let hour12 = hours % 12 || 12;
         let hour12Str = hour12.toString().padStart(2, '0');
         return `${hour12Str}:${minutes} ${period}`;
+    };
+
+    const getCurrentPageName = () => {
+        const pageNames = {
+            overview: "Dashboard",
+            appointments: "Appointments",
+            availability: "Availability",
+            profile: "Profile",
+            notifications: "Notifications",
+            reports: "Reports"
+        };
+        return pageNames[activeTab] || "Dashboard";
     };
 
     // ========== FETCH NOTIFICATIONS ==========
@@ -50,7 +77,6 @@ function DoctorDashboard({ setPage }) {
             const data = response.data || [];
             setNotifications(data);
             setNotificationCount(data.filter(n => !n.is_read).length);
-            console.log("Notifications fetched:", data);
         } catch (error) {
             console.error("Error fetching notifications:", error);
         }
@@ -134,27 +160,9 @@ function DoctorDashboard({ setPage }) {
         }
     };
 
-    // ========== UPDATED LOGOUT HANDLER ==========
-    const handleLogout = () => {
-        // Clear all localStorage
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("medicareUser");
-        localStorage.removeItem("user_type");
-        localStorage.removeItem("user_role");
-        localStorage.removeItem("currentPage");
-        localStorage.removeItem("viewedReports");
-        
-        // Clear session storage
-        sessionStorage.clear();
-        
-        // Home page pe bhejo
-        setPage("home");
-        
-        // Force page reload
-        setTimeout(() => {
-            window.location.reload();
-        }, 50);
+    // ========== TOGGLE MOBILE SIDEBAR ==========
+    const toggleMobileSidebar = () => {
+        setIsMobileSidebarOpen(!isMobileSidebarOpen);
     };
 
     // ========== LOAD DATA ON MOUNT ==========
@@ -164,7 +172,12 @@ function DoctorDashboard({ setPage }) {
         fetchNotifications();
     }, []);
 
-    if (loading) return <div className="doctor-loading">Loading...</div>;
+    if (loading) return (
+        <div className="doctor-loading">
+            <div className="doctor-loading-spinner"></div>
+            <p>Loading your dashboard...</p>
+        </div>
+    );
 
     // ========== RENDER OVERVIEW DASHBOARD ==========
     const renderOverview = () => (
@@ -210,26 +223,28 @@ function DoctorDashboard({ setPage }) {
                 {todayAppointments.length === 0 ? (
                     <div className="doctor-empty-table">No appointments scheduled for today</div>
                 ) : (
-                    <table className="doctor-availability-table">
-                        <thead>
-                            <tr>
-                                <th>S.No.</th>
-                                <th>Patient Name</th>
-                                <th>Time</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {todayAppointments.map((apt, index) => (
-                                <tr key={apt.id}>
-                                    <td>{index + 1}</td>
-                                    <td><strong>{apt.patient_name || "Patient"}</strong></td>
-                                    <td>{formatTimeTo12Hour(apt.time)}</td>
-                                    <td><span className={`doctor-status-badge ${apt.status}`}>{apt.status}</span></td>
+                    <div className="doctor-table-responsive">
+                        <table className="doctor-availability-table">
+                            <thead>
+                                <tr>
+                                    <th>S.No.</th>
+                                    <th>Patient Name</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {todayAppointments.map((apt, index) => (
+                                    <tr key={apt.id}>
+                                        <td>{index + 1}</td>
+                                        <td><strong>{apt.patient_name || "Patient"}</strong></td>
+                                        <td>{formatTimeTo12Hour(apt.time)}</td>
+                                        <td><span className={`doctor-status-badge ${apt.status}`}>{apt.status}</span></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 
@@ -239,28 +254,30 @@ function DoctorDashboard({ setPage }) {
                     <div className="doctor-section-header">
                         <h3>📋 Upcoming Appointments</h3>
                     </div>
-                    <table className="doctor-availability-table">
-                        <thead>
-                            <tr>
-                                <th>S.No.</th>
-                                <th>Patient Name</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {upcomingDoctorAppointments.slice(0, 5).map((apt, index) => (
-                                <tr key={apt.id}>
-                                    <td>{index + 1}</td>
-                                    <td><strong>{apt.patient_name || "Patient"}</strong></td>
-                                    <td>{apt.date}</td>
-                                    <td>{formatTimeTo12Hour(apt.time)}</td>
-                                    <td><span className={`doctor-status-badge ${apt.status}`}>{apt.status}</span></td>
+                    <div className="doctor-table-responsive">
+                        <table className="doctor-availability-table">
+                            <thead>
+                                <tr>
+                                    <th>S.No.</th>
+                                    <th>Patient Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {upcomingDoctorAppointments.slice(0, 5).map((apt, index) => (
+                                    <tr key={apt.id}>
+                                        <td>{index + 1}</td>
+                                        <td><strong>{apt.patient_name || "Patient"}</strong></td>
+                                        <td>{apt.date}</td>
+                                        <td>{formatTimeTo12Hour(apt.time)}</td>
+                                        <td><span className={`doctor-status-badge ${apt.status}`}>{apt.status}</span></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                     {upcomingDoctorAppointments.length > 5 && (
                         <div className="doctor-view-all" onClick={() => setActiveTab("appointments")}>
                             View all upcoming appointments →
@@ -276,26 +293,28 @@ function DoctorDashboard({ setPage }) {
                         <h3>✅ Completed Appointments</h3>
                         <span className="doctor-completed-count">{doctorCompletedAppointments.length} Completed</span>
                     </div>
-                    <table className="doctor-availability-table">
-                        <thead>
-                            <tr>
-                                <th>S.No.</th>
-                                <th>Patient Name</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {doctorCompletedAppointments.slice(0, 5).map((apt, index) => (
-                                <tr key={apt.id}>
-                                    <td>{index + 1}</td>
-                                    <td><strong>{apt.patient_name || "Patient"}</strong></td>
-                                    <td>{apt.date}</td>
-                                    <td>{formatTimeTo12Hour(apt.time)}</td>
+                    <div className="doctor-table-responsive">
+                        <table className="doctor-availability-table">
+                            <thead>
+                                <tr>
+                                    <th>S.No.</th>
+                                    <th>Patient Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {doctorCompletedAppointments.slice(0, 5).map((apt, index) => (
+                                    <tr key={apt.id}>
+                                        <td>{index + 1}</td>
+                                        <td><strong>{apt.patient_name || "Patient"}</strong></td>
+                                        <td>{apt.date}</td>
+                                        <td>{formatTimeTo12Hour(apt.time)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                     {doctorCompletedAppointments.length > 5 && (
                         <div className="doctor-view-all" onClick={() => setActiveTab("appointments")}>
                             View all {doctorCompletedAppointments.length} completed appointments →
@@ -317,35 +336,53 @@ function DoctorDashboard({ setPage }) {
                 setPage={setPage}
                 hasPendingAppointments={hasPendingAppointments}
                 notificationCount={notificationCount}
+                isMobile={isMobile}
+                isMobileSidebarOpen={isMobileSidebarOpen}
+                toggleMobileSidebar={toggleMobileSidebar}
             />
             
-            <div className="doctor-main-content">
-                <div className="doctor-main-header">
-                    <h1>Welcome back, <span>{user?.name?.split(" ")[0] || "Doctor"}</span>!</h1>
-                    <p>Manage your appointments and availability.</p>
+            {/* ✅ Blur overlay wrapper - SAME AS PATIENT */}
+            <div className={`doctor-content-overlay ${isMobile && isMobileSidebarOpen ? 'blur-active' : ''}`}>
+                <div className="doctor-main-content">
+                    {/* Mobile Header - Only Page Name */}
+                    {isMobile && (
+                        <div className="doctor-mobile-header">
+                            <div className="doctor-mobile-page-title">
+                                <h2>{getCurrentPageName()}</h2>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* Desktop Header */}
+                    {!isMobile && (
+                        <div className="doctor-main-header">
+                            <h1>Welcome back, <span>{user?.name?.split(" ")[0] || "Doctor"}</span>!</h1>
+                            <p>Manage your appointments and availability.</p>
+                        </div>
+                    )}
+                    
+                    {activeTab === "overview" && renderOverview()}
+                    {activeTab === "appointments" && (
+                        <DoctorAppointments 
+                            doctorPendingAppointments={doctorPendingAppointments}
+                            doctorConfirmedAppointments={doctorConfirmedAppointments}
+                            doctorCompletedAppointments={doctorCompletedAppointments}
+                            loadingDoctorApps={loading}
+                            handleDoctorAppointmentAction={handleDoctorAppointmentAction}
+                            formatTimeTo12Hour={formatTimeTo12Hour}
+                        />
+                    )}
+                    {activeTab === "availability" && <DoctorAvailability />}
+                    {activeTab === "profile" && <DoctorProfile user={user} setUser={setUser} />}
+                    {activeTab === "notifications" && (
+                        <DoctorNotifications 
+                            notifications={notifications}
+                            fetchNotifications={fetchNotifications}
+                            setActiveTab={setActiveTab}
+                        />
+                    )}
+                    {activeTab === "reports" && <DoctorReports />}
                 </div>
-                
-                {activeTab === "overview" && renderOverview()}
-                {activeTab === "appointments" && (
-                    <DoctorAppointments 
-                        doctorPendingAppointments={doctorPendingAppointments}
-                        doctorConfirmedAppointments={doctorConfirmedAppointments}
-                        doctorCompletedAppointments={doctorCompletedAppointments}
-                        loadingDoctorApps={loading}
-                        handleDoctorAppointmentAction={handleDoctorAppointmentAction}
-                        formatTimeTo12Hour={formatTimeTo12Hour}
-                    />
-                )}
-                {activeTab === "availability" && <DoctorAvailability />}
-                {activeTab === "profile" && <DoctorProfile user={user} setUser={setUser} />}
-                {activeTab === "notifications" && (
-                    <DoctorNotifications 
-                        notifications={notifications}
-                        fetchNotifications={fetchNotifications}
-                        setActiveTab={setActiveTab}
-                    />
-                )}
-                {activeTab === "reports" && <DoctorReports />}
             </div>
         </div>
     );

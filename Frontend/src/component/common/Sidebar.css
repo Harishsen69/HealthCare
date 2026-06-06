@@ -27,6 +27,13 @@
     }
 }
 
+/* Desktop Sidebar - Always visible (No change) */
+@media (min-width: 769px) {
+    .sidebar-container {
+        transform: translateX(0);
+    }
+}
+
 /* Scrollbar */
 .sidebar-container::-webkit-scrollbar {
     width: 4px;
@@ -41,14 +48,14 @@
     border-radius: 10px;
 }
 
-/* ========== HAMBURGER MENU BUTTON (Mobile Only) ========== */
+/* ========== HAMBURGER MENU BUTTON (Mobile Only - RIGHT SIDE) ========== */
 .hamburger-menu {
     display: none;
     position: fixed;
     top: 15px;
-    left: 15px;
+    right: 15px;
     z-index: 1100;
-    background: linear-gradient(135deg, #1e3a5f, #2d4a6e);
+background: linear-gradient(135deg, #4f46e5, #7c3aed);
     border: none;
     width: 45px;
     height: 45px;
@@ -101,6 +108,11 @@
 
 .sidebar-overlay.show {
     display: block;
+}
+
+/* Prevent body scroll when sidebar is open on mobile */
+body.sidebar-open-mobile {
+    overflow: hidden;
 }
 
 /* ========== LOGO ========== */
@@ -188,16 +200,18 @@
     transition: all 0.3s;
 }
 
+/* ✅ SIRF HOVER COLOR CHANGE - PURPLE SE BLUE */
 .sidebar-nav-item:hover {
-    background: rgba(255, 255, 255, 0.08);
+background: linear-gradient(135deg, #4f46e5, #7c3aed);
     color: white;
     transform: translateX(5px);
 }
 
+/* ✅ ACTIVE COLOR BHI BLUE */
 .sidebar-nav-item-active {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+background: linear-gradient(135deg, #4f46e5, #7c3aed);
     color: white;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
 
 .sidebar-nav-icon {

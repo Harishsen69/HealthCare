@@ -122,83 +122,87 @@ function DoctorAvailability() {
                     <h3>📅 Set Your Availability</h3>
                 </div>
                 <div className="doctor-availability-form">
-                    <div className="doctor-availability-row">
-                        <div className="doctor-input-field">
-                            <label>Date</label>
-                            <input
-                                type="date"
-                                value={availabilityDate}
-                                onChange={(e) => setAvailabilityDate(e.target.value)}
-                                min={new Date().toISOString().split('T')[0]}
-                            />
+                    <form onSubmit={handleSetAvailability}>
+                        <div className="doctor-availability-row">
+                            <div className="doctor-input-field">
+                                <label>Date</label>
+                                <input
+                                    type="date"
+                                    value={availabilityDate}
+                                    onChange={(e) => setAvailabilityDate(e.target.value)}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    required
+                                />
+                            </div>
+                            <div className="doctor-input-field">
+                                <label>Status</label>
+                                <select
+                                    value={isAvailable}
+                                    onChange={(e) => setIsAvailable(e.target.value === 'true')}
+                                >
+                                    <option value="true">✅ Available</option>
+                                    <option value="false">❌ Not Available</option>
+                                </select>
+                            </div>
+                            {isAvailable && (
+                                <>
+                                    <div className="doctor-input-field">
+                                        <label>Start Time</label>
+                                        <select
+                                            value={startTime}
+                                            onChange={(e) => setStartTime(e.target.value)}
+                                            required={isAvailable}
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="09:00">09:00 AM</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="11:00">11:00 AM</option>
+                                            <option value="12:00">12:00 PM</option>
+                                            <option value="13:00">01:00 PM</option>
+                                            <option value="14:00">02:00 PM</option>
+                                            <option value="15:00">03:00 PM</option>
+                                            <option value="16:00">04:00 PM</option>
+                                            <option value="17:00">05:00 PM</option>
+                                            <option value="18:00">06:00 PM</option>
+                                            <option value="19:00">07:00 PM</option>
+                                            <option value="20:00">08:00 PM</option>
+                                        </select>
+                                    </div>
+                                    <div className="doctor-input-field">
+                                        <label>End Time</label>
+                                        <select
+                                            value={endTime}
+                                            onChange={(e) => setEndTime(e.target.value)}
+                                            required={isAvailable}
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="09:00">09:00 AM</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="11:00">11:00 AM</option>
+                                            <option value="12:00">12:00 PM</option>
+                                            <option value="13:00">01:00 PM</option>
+                                            <option value="14:00">02:00 PM</option>
+                                            <option value="15:00">03:00 PM</option>
+                                            <option value="16:00">04:00 PM</option>
+                                            <option value="17:00">05:00 PM</option>
+                                            <option value="18:00">06:00 PM</option>
+                                            <option value="19:00">07:00 PM</option>
+                                            <option value="20:00">08:00 PM</option>
+                                        </select>
+                                    </div>
+                                </>
+                            )}
+                            <div className="doctor-action-field">
+                                <button
+                                    type="submit"
+                                    disabled={availabilityLoading}
+                                    className="doctor-save-availability"
+                                >
+                                    {availabilityLoading ? "Saving..." : "Save"}
+                                </button>
+                            </div>
                         </div>
-                        <div className="doctor-input-field">
-                            <label>Status</label>
-                            <select
-                                value={isAvailable}
-                                onChange={(e) => setIsAvailable(e.target.value === 'true')}
-                            >
-                                <option value="true">✅ Available</option>
-                                <option value="false">❌ Not Available</option>
-                            </select>
-                        </div>
-                        {isAvailable && (
-                            <>
-                                <div className="doctor-input-field">
-                                    <label>Start Time</label>
-                                    <select
-                                        value={startTime}
-                                        onChange={(e) => setStartTime(e.target.value)}
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="09:00">09:00 AM</option>
-                                        <option value="10:00">10:00 AM</option>
-                                        <option value="11:00">11:00 AM</option>
-                                        <option value="12:00">12:00 PM</option>
-                                        <option value="13:00">01:00 PM</option>
-                                        <option value="14:00">02:00 PM</option>
-                                        <option value="15:00">03:00 PM</option>
-                                        <option value="16:00">04:00 PM</option>
-                                        <option value="17:00">05:00 PM</option>
-                                        <option value="18:00">06:00 PM</option>
-                                        <option value="19:00">07:00 PM</option>
-                                        <option value="20:00">08:00 PM</option>
-                                    </select>
-                                </div>
-                                <div className="doctor-input-field">
-                                    <label>End Time</label>
-                                    <select
-                                        value={endTime}
-                                        onChange={(e) => setEndTime(e.target.value)}
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="09:00">09:00 AM</option>
-                                        <option value="10:00">10:00 AM</option>
-                                        <option value="11:00">11:00 AM</option>
-                                        <option value="12:00">12:00 PM</option>
-                                        <option value="13:00">01:00 PM</option>
-                                        <option value="14:00">02:00 PM</option>
-                                        <option value="15:00">03:00 PM</option>
-                                        <option value="16:00">04:00 PM</option>
-                                        <option value="17:00">05:00 PM</option>
-                                        <option value="18:00">06:00 PM</option>
-                                        <option value="19:00">07:00 PM</option>
-                                        <option value="20:00">08:00 PM</option>
-                                    </select>
-                                </div>
-                            </>
-                        )}
-                        <div className="doctor-input-field doctor-action-field">
-                            <button
-                                type="submit"
-                                onClick={handleSetAvailability}
-                                disabled={availabilityLoading}
-                                className="doctor-save-availability"
-                            >
-                                {availabilityLoading ? "Saving..." : "Save"}
-                            </button>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
@@ -212,43 +216,45 @@ function DoctorAvailability() {
                 {savedAvailabilities.length === 0 ? (
                     <div className="doctor-empty-table">No availabilities set yet</div>
                 ) : (
-                    <table className="doctor-availability-list-table">
-                        <thead>
-                            <tr>
-                                <th>S.No.</th>
-                                <th>Date</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>Break</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {savedAvailabilities.map((avail, index) => (
-                                <tr key={avail.id}>
-                                    <td>{index + 1}</td>
-                                    <td>{avail.date}</td>
-                                    <td>{!avail.is_available ? '-' : (avail.start_time ? formatTimeTo12Hour(avail.start_time) : '-')}</td>
-                                    <td>{!avail.is_available ? '-' : (avail.end_time ? formatTimeTo12Hour(avail.end_time) : '-')}</td>
-                                    <td>{!avail.is_available ? '-' : (avail.break_start && avail.break_end ? `${formatTimeTo12Hour(avail.break_start)} - ${formatTimeTo12Hour(avail.break_end)}` : '-')}</td>
-                                    <td>
-                                        <span className={`doctor-status-badge ${avail.is_available ? 'available' : 'unavailable'}`}>
-                                            {avail.is_available ? '✅ Available' : '❌ Unavailable'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button
-                                            className="doctor-delete-availability"
-                                            onClick={() => handleDeleteAvailability(avail.id, avail.date)}
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
+                    <div className="doctor-table-responsive">
+                        <table className="doctor-availability-list-table">
+                            <thead>
+                                <tr>
+                                    <th>S.No.</th>
+                                    <th>Date</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Break</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {savedAvailabilities.map((avail, index) => (
+                                    <tr key={avail.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{avail.date}</td>
+                                        <td>{!avail.is_available ? '-' : (avail.start_time ? formatTimeTo12Hour(avail.start_time) : '-')}</td>
+                                        <td>{!avail.is_available ? '-' : (avail.end_time ? formatTimeTo12Hour(avail.end_time) : '-')}</td>
+                                        <td>{!avail.is_available ? '-' : (avail.break_start && avail.break_end ? `${formatTimeTo12Hour(avail.break_start)} - ${formatTimeTo12Hour(avail.break_end)}` : '-')}</td>
+                                        <td>
+                                            <span className={`doctor-status-badge ${avail.is_available ? 'available' : 'unavailable'}`}>
+                                                {avail.is_available ? '✅ Available' : '❌ Unavailable'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="doctor-delete-availability"
+                                                onClick={() => handleDeleteAvailability(avail.id, avail.date)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
         </div>

@@ -164,7 +164,7 @@ body {
 /* ========== MOBILE LAYOUT - Structure 1 (≤900px) ========== */
 @media (max-width: 900px) {
     body {
-        padding-top: 100px;
+        padding-top: 0px;
     }
     
     .hc-container {
@@ -217,7 +217,7 @@ body {
 
 @media (max-width: 600px) {
     body {
-        padding-top: 110px;
+        padding-top: 0px;
     }
     
     .hc-nav-item {

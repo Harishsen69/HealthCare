@@ -1,10 +1,13 @@
+/* ========== ADMIN APPOINTMENTS CONTAINER ========== */
 .admin-appointments-container {
     background: white;
-    border-radius: 24px;
-    padding: 1.2rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
 }
 
+/* ========== HEADER ========== */
 .admin-appointments-header {
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
@@ -15,43 +18,129 @@
     font-size: 0.9rem;
     font-weight: 600;
     color: #1e293b;
+    margin: 0;
 }
 
+/* ========== TABLE WRAPPER - HORIZONTAL SCROLL ========== */
+.admin-appointments-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ========== APPOINTMENTS TABLE ========== */
 .admin-appointments-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 700px;
+    white-space: nowrap;
 }
 
 .admin-appointments-table th {
     text-align: left;
-    padding: 0.8rem 0.6rem;
+    padding: 0.75rem 0.5rem;
     background: #f8fafc;
     font-size: 0.7rem;
     font-weight: 700;
-    color: #475569;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     border-bottom: 2px solid #e2e8f0;
 }
 
 .admin-appointments-table td {
-    padding: 0.8rem 0.6rem;
+    padding: 0.75rem 0.5rem;
     font-size: 0.75rem;
-    color: #334155;
-    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.admin-appointments-table tr:hover {
+.admin-appointments-table tr:hover td {
     background: #f8fafc;
 }
 
+/* ========== STATUS BADGES ========== */
+.admin-status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.admin-status-badge.pending {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.admin-status-badge.confirmed {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.admin-status-badge.completed {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.admin-status-badge.cancelled {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* ========== EMPTY STATE ========== */
 .admin-empty-table {
     text-align: center;
     padding: 2rem;
     color: #94a3b8;
+    font-size: 0.8rem;
 }
 
+/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
+    .admin-appointments-container {
+        padding: 0.8rem;
+    }
+    
+    .admin-appointments-header h2 {
+        font-size: 0.85rem;
+    }
+    
     .admin-appointments-table {
-        display: block;
-        overflow-x: auto;
+        min-width: 620px;
+    }
+    
+    .admin-appointments-table th,
+    .admin-appointments-table td {
+        padding: 0.5rem 0.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-appointments-container {
+        padding: 0.6rem;
+    }
+    
+    .admin-appointments-header h2 {
+        font-size: 0.8rem;
+    }
+    
+    .admin-appointments-table {
+        min-width: 550px;
+    }
+    
+    .admin-appointments-table th,
+    .admin-appointments-table td {
+        padding: 0.4rem 0.3rem;
+        font-size: 0.65rem;
+    }
+    
+    .admin-status-badge {
+        font-size: 0.55rem;
+        padding: 0.15rem 0.5rem;
+    }
+    
+    .admin-empty-table {
+        padding: 1rem;
+        font-size: 0.7rem;
     }
 }
