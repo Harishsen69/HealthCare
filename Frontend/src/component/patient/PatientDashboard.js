@@ -350,84 +350,108 @@ function PatientDashboard({ setPage }) {
             </div>
 
             {/* Quick Actions */}
-            <div className="patient-quick-actions">
-                <h3>Quick Actions</h3>
-                <div className="patient-action-grid">
-                    <button className="patient-action-card" onClick={() => setShowBookingForm(!showBookingForm)}>
-                        <span>📅</span>
-                        <p>Book New Appointment</p>
-                    </button>
-                    <button className="patient-action-card" onClick={() => setActiveTab("appointments")}>
-                        <span>📋</span>
-                        <p>View My Appointments</p>
-                    </button>
-                    <button className="patient-action-card" onClick={() => setActiveTab("profile")}>
-                        <span>👤</span>
-                        <p>Update Profile</p>
-                    </button>
-                </div>
-            </div>
+<div className="patient-quick-actions">
+    <h3>Quick Actions</h3>
+    <div className="patient-action-grid">
+        <button className="patient-action-card" onClick={() => setShowBookingForm(!showBookingForm)}>
+            <span>📅</span>
+            <p>Book New Appointment</p>
+        </button>
+        <button className="patient-action-card" onClick={() => setActiveTab("appointments")}>
+            <span>📋</span>
+            <p>View My Appointments</p>
+        </button>
+        <button className="patient-action-card" onClick={() => setActiveTab("profile")}>
+            <span>👤</span>
+            <p>Update Profile</p>
+        </button>
+    </div>
+</div>
 
-            {/* Booking Form */}
-            {showBookingForm && (
-                <div className="patient-booking-form-wrapper">
-                    <div className="patient-booking-form">
-                        <div className="patient-booking-header">
-                            <h3>📅 Book New Appointment</h3>
-                            <button className="patient-close-booking" onClick={() => setShowBookingForm(false)}>✕</button>
-                        </div>
-                        {bookingError && <div className="patient-booking-error">⚠️ {bookingError}</div>}
-                        <form onSubmit={handleBookAppointment}>
-                            <div className="patient-form-group">
-                                <select 
-                                    value={selectedDoctor} 
-                                    onChange={(e) => { setSelectedDoctor(e.target.value); setAppointmentTime(""); setBookedSlots([]); setDoctorAvailable(true); setBookingError(""); }} 
-                                    required
-                                >
-                                    <option value="">Select Doctor</option>
-                                    {doctors.map(doc => (<option key={doc.id} value={doc.id}>{doc.name} - {doc.specialization}</option>))}
-                                </select>
-                            </div>
-                            <div className="patient-form-group">
-                                <input 
-                                    type="date" 
-                                    value={appointmentDate} 
-                                    onChange={(e) => { setAppointmentDate(e.target.value); setAppointmentTime(""); setBookedSlots([]); setDoctorAvailable(true); setBookingError(""); }} 
-                                    required 
-                                    min={today}
-                                />
-                            </div>
-                            {checkingSlots && <div className="patient-slot-loading">⏳ Checking availability...</div>}
-                            {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === false && (<div className="patient-unavailable-msg">❌ Doctor is not available on {appointmentDate}</div>)}
-                            {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === true && bookedSlots.length === 0 && (<div className="patient-available-msg">✅ Doctor is available on this date</div>)}
-                            <div className="patient-form-group">
-                                <select 
-                                    value={appointmentTime} 
-                                    onChange={(e) => setAppointmentTime(e.target.value)} 
-                                    required 
-                                    disabled={doctorAvailable === false}
-                                >
-                                    <option value="">Select Time</option>
-                                    {availableTimeSlots.map(slot => (
-                                        <option key={slot.value} value={slot.value} disabled={bookedSlots.includes(slot.value) || doctorAvailable === false}>
-                                            {slot.label}{bookedSlots.includes(slot.value) && ' 🔴 Booked'}{doctorAvailable === false && ' ⛔ Unavailable'}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="patient-booking-actions">
-                                <button type="submit" disabled={bookingLoading || doctorAvailable === false}>
-                                    {bookingLoading ? "Booking..." : "Confirm Booking"}
-                                </button>
-                                <button type="button" onClick={() => { setShowBookingForm(false); setSelectedDoctor(""); setAppointmentDate(""); setAppointmentTime(""); setBookedSlots([]); setDoctorAvailable(true); setBookingError(""); }}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                        <div className="patient-time-info">⏰ Available: 9:00 AM - 8:00 PM (Lunch Break: 1:00 PM - 2:00 PM)</div>
+{/* Booking Form */}
+{showBookingForm && (
+    <div className="patient-booking-form-wrapper">
+        <div className="patient-booking-form">
+            <div className="patient-booking-header">
+                <h3>📅 Book New Appointment</h3>
+                <button className="patient-close-booking" onClick={() => setShowBookingForm(false)}>✕</button>
+            </div>
+            {bookingError && <div className="patient-booking-error">⚠️ {bookingError}</div>}
+            <form onSubmit={handleBookAppointment}>
+                {/* NEW: 3-column row for Doctor, Date, and Time */}
+                <div className="patient-form-row">
+                    <div className="patient-form-group">
+                        <select 
+                            value={selectedDoctor} 
+                            onChange={(e) => { setSelectedDoctor(e.target.value); setAppointmentTime(""); setBookedSlots([]); setDoctorAvailable(true); setBookingError(""); }} 
+                            required
+                        >
+                            <option value="">Select Doctor</option>
+                            {doctors.map(doc => (<option key={doc.id} value={doc.id}>{doc.name} - {doc.specialization}</option>))}
+                        </select>
+                    </div>
+                    
+                    <div className="patient-form-group">
+                        <input 
+                            type="date" 
+                            value={appointmentDate} 
+                            onChange={(e) => { setAppointmentDate(e.target.value); setAppointmentTime(""); setBookedSlots([]); setDoctorAvailable(true); setBookingError(""); }} 
+                            required 
+                            min={today}
+                        />
+                    </div>
+                    
+                    <div className="patient-form-group">
+                        <select 
+                            value={appointmentTime} 
+                            onChange={(e) => setAppointmentTime(e.target.value)} 
+                            required 
+                            disabled={doctorAvailable === false}
+                        >
+                            <option value="">Select Time</option>
+                            {availableTimeSlots.map(slot => (
+                                <option key={slot.value} value={slot.value} disabled={bookedSlots.includes(slot.value) || doctorAvailable === false}>
+                                    {slot.label}{bookedSlots.includes(slot.value) && ' 🔴 Booked'}{doctorAvailable === false && ' ⛔ Unavailable'}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
-            )}
+
+                {/* Availability Messages */}
+                {checkingSlots && <div className="patient-slot-loading">⏳ Checking availability...</div>}
+                {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === false && (
+                    <div className="patient-unavailable-msg">❌ Doctor is not available on {appointmentDate}</div>
+                )}
+                {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === true && bookedSlots.length === 0 && (
+                    <div className="patient-available-msg">✅ Doctor is available on this date</div>
+                )}
+                {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === true && bookedSlots.length > 0 && (
+                    <div className="patient-available-msg">✅ Doctor is available - {availableTimeSlots.filter(slot => !bookedSlots.includes(slot.value)).length} slots open</div>
+                )}
+
+                {/* Buttons Row */}
+                <div className="patient-booking-actions">
+                    <button type="submit" disabled={bookingLoading || doctorAvailable === false}>
+                        {bookingLoading ? "Booking..." : "Confirm Booking"}
+                    </button>
+                    <button type="button" onClick={() => { 
+                        setShowBookingForm(false); 
+                        setSelectedDoctor(""); 
+                        setAppointmentDate(""); 
+                        setAppointmentTime(""); 
+                        setBookedSlots([]); 
+                        setDoctorAvailable(true); 
+                        setBookingError(""); 
+                    }}>
+                        Cancel
+                    </button>
+                </div>
+            </form>
+            <div className="patient-time-info">⏰ Available: 9:00 AM - 8:00 PM (Lunch Break: 1:00 PM - 2:00 PM)</div>
+        </div>
+    </div>
+)}
 
             {/* Today's Schedule */}
             <div className="patient-today-schedule">

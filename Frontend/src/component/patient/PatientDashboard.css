@@ -182,7 +182,175 @@
     font-weight: 500;
 }
 
-/* ========== QUICK ACTIONS ========== */
+/* ========== BOOKING FORM ========== */
+.patient-booking-form-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.patient-booking-form {
+    background: white;
+    padding: 1.2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.patient-booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.patient-booking-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.patient-close-booking {
+    background: #fee2e2;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: #dc2626;
+    transition: all 0.3s;
+}
+
+.patient-close-booking:hover {
+    background: #dc2626;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* --- NEW: 3-column layout for form fields --- */
+.patient-form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.patient-form-group {
+    flex: 1;
+    min-width: 0; /* Prevents overflow issues */
+    width: 100%;
+}
+
+/* Ensure selects and inputs take full width inside their group */
+.patient-form-group select,
+.patient-form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    background: #f8fafc;
+    transition: all 0.3s;
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+}
+
+.patient-form-group select:focus,
+.patient-form-group input:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+}
+
+/* Message containers - keep them block level, not flex */
+.patient-slot-loading,
+.patient-unavailable-msg,
+.patient-available-msg {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+.patient-available-msg {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.patient-unavailable-msg {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.patient-slot-loading {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
+/* Buttons layout - 2 buttons in a row */
+.patient-booking-actions {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.patient-booking-actions button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+}
+
+.patient-booking-actions button[type="submit"] {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    color: white;
+    border: none;
+}
+
+.patient-booking-actions button[type="submit"]:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.35);
+}
+
+.patient-booking-actions button[type="button"] {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.patient-booking-actions button[type="button"]:hover {
+    background: #e2e8f0;
+}
+
+/* Error message */
+.patient-booking-error {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 0.6rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border-left: 3px solid #ef4444;
+}
+
+/* Time info at the bottom */
+.patient-time-info {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: #fef3c7;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    color: #b45309;
+    text-align: center;
+}
+
+/* Quick Actions - unchanged */
 .patient-quick-actions {
     background: white;
     padding: 1rem;
@@ -233,157 +401,12 @@
     font-weight: 600;
 }
 
-/* ========== BOOKING FORM ========== */
-.patient-booking-form-wrapper {
-    margin-bottom: 1.5rem;
-}
-
-.patient-booking-form {
-    background: white;
-    padding: 1.2rem;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e2e8f0;
-}
-
-.patient-booking-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.patient-booking-header h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 0;
-}
-
-.patient-close-booking {
-    background: #fee2e2;
-    border: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    font-size: 0.8rem;
-    cursor: pointer;
-    color: #dc2626;
-    transition: all 0.3s;
-}
-
-.patient-close-booking:hover {
-    background: #dc2626;
-    color: white;
-    transform: scale(1.05);
-}
-
-.patient-form-group {
-    margin-bottom: 1rem;
-    width: 100%;
-}
-
-.patient-form-group select,
-.patient-form-group input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    background: #f8fafc;
-    transition: all 0.3s;
-    font-family: 'Inter', sans-serif;
-}
-
-.patient-form-group select:focus,
-.patient-form-group input:focus {
-    outline: none;
-    border-color: #0284c7;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
-}
-
-.patient-booking-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-
-.patient-booking-actions button {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 0.85rem;
-}
-
-.patient-booking-actions button[type="submit"] {
-    background: linear-gradient(135deg, #0284c7, #0ea5e9);
-    color: white;
-    border: none;
-}
-
-.patient-booking-actions button[type="submit"]:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.35);
-}
-
-.patient-booking-actions button[type="button"] {
-    background: #f1f5f9;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
-}
-
-.patient-booking-actions button[type="button"]:hover {
-    background: #e2e8f0;
-}
-
-.patient-booking-error {
-    background: #fee2e2;
-    color: #b91c1c;
-    padding: 0.6rem;
-    border-radius: 10px;
-    font-size: 0.75rem;
-    text-align: center;
-    margin-bottom: 1rem;
-    border-left: 3px solid #ef4444;
-}
-
-.patient-time-info {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    background: #fef3c7;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    color: #b45309;
-    text-align: center;
-}
-
-/* ========== AVAILABILITY MESSAGES ========== */
-.patient-available-msg,
-.patient-unavailable-msg,
-.patient-slot-loading {
-    padding: 0.5rem;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    text-align: center;
-    margin: 0.5rem 0;
-}
-
-.patient-available-msg {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.patient-unavailable-msg {
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
-.patient-slot-loading {
-    background: #e0f2fe;
-    color: #0284c7;
+/* Responsive: Stack into 2 rows on smaller tablets */
+@media (max-width: 768px) {
+    .patient-form-row {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
 }
 
 /* ========== SECTION STYLES ========== */

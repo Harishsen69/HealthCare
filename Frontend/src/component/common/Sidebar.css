@@ -55,7 +55,7 @@
     top: 15px;
     right: 15px;
     z-index: 1100;
-background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
     border: none;
     width: 45px;
     height: 45px;
@@ -200,24 +200,55 @@ body.sidebar-open-mobile {
     transition: all 0.3s;
 }
 
-/* ✅ SIRF HOVER COLOR CHANGE - PURPLE SE BLUE */
+/* Hover effect */
 .sidebar-nav-item:hover {
-background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
     color: white;
     transform: translateX(5px);
 }
 
-/* ✅ ACTIVE COLOR BHI BLUE */
+/* Active state - Dark theme with gradient but no white line */
 .sidebar-nav-item-active {
-background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
     color: white;
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    position: relative;
+}
+
+/* Active icon and text styling */
+.sidebar-nav-item-active .sidebar-nav-icon {
+    color: white;
+}
+
+.sidebar-nav-item-active .sidebar-nav-label {
+    font-weight: 600;
 }
 
 .sidebar-nav-icon {
     font-size: 1.2rem;
     width: 24px;
     text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.3s;
+}
+
+/* Icon colors for different menu items - Dark theme */
+.sidebar-nav-item:nth-child(1) .sidebar-nav-icon { color: #60a5fa; }  /* Dashboard - Blue */
+.sidebar-nav-item:nth-child(2) .sidebar-nav-icon { color: #34d399; }  /* Doctors/Appointments - Green */
+.sidebar-nav-item:nth-child(3) .sidebar-nav-icon { color: #fbbf24; }  /* Appointments - Yellow */
+.sidebar-nav-item:nth-child(4) .sidebar-nav-icon { color: #f472b6; }  /* Reports/Profile - Pink */
+.sidebar-nav-item:nth-child(5) .sidebar-nav-icon { color: #a78bfa; }  /* Availability - Purple */
+.sidebar-nav-item:nth-child(6) .sidebar-nav-icon { color: #fb923c; }  /* Notifications - Orange */
+
+/* On hover, icons become white */
+.sidebar-nav-item:hover .sidebar-nav-icon {
+    color: white !important;
+}
+
+/* On active, icons become white with glow */
+.sidebar-nav-item-active .sidebar-nav-icon {
+    color: white !important;
+    filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.3));
 }
 
 /* Badges */
@@ -273,7 +304,7 @@ background: linear-gradient(135deg, #4f46e5, #7c3aed);
 .sidebar-home-btn {
     background: rgba(16, 185, 129, 0.12);
     border: 1px solid rgba(16, 185, 129, 0.3);
-    color: #a7f3d0;
+    color: #ffffff;
 }
 
 .sidebar-home-btn:hover {
@@ -282,14 +313,30 @@ background: linear-gradient(135deg, #4f46e5, #7c3aed);
     transform: translateX(5px);
 }
 
+.sidebar-home-btn .sidebar-nav-icon {
+    color: #00ff22;
+}
+
+.sidebar-home-btn:hover .sidebar-nav-icon {
+    color: white !important;
+}
+
 .sidebar-logout-btn {
     background: rgba(239, 68, 68, 0.12);
     border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #fca5a5;
+    color: #ffffff;
 }
 
 .sidebar-logout-btn:hover {
     background: rgba(239, 68, 68, 0.25);
     color: white;
     transform: translateX(5px);
+}
+
+.sidebar-logout-btn .sidebar-nav-icon {
+    color: #ff0000;
+}
+
+.sidebar-logout-btn:hover .sidebar-nav-icon {
+    color: white !important;
 }

@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
+import { 
+  FaHome, 
+  FaSignOutAlt, 
+  FaTachometerAlt, 
+  FaUserMd, 
+  FaCalendarAlt, 
+  FaUser, 
+  FaClock, 
+  FaFileAlt, 
+  FaBell,
+  FaClipboardList,
+  FaStethoscope,
+  FaChartLine
+} from "react-icons/fa";
 
 function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingAppointments, notificationCount, reportCount }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,14 +25,14 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
     useEffect(() => {
         if (isMobile && isOpen) {
             document.body.style.overflow = 'hidden';
-            // ✅ Hide mobile header when sidebar opens
+            // Hide mobile header when sidebar opens
             const mobileHeader = document.querySelector('.patient-mobile-header');
             if (mobileHeader) {
                 mobileHeader.style.display = 'none';
             }
         } else {
             document.body.style.overflow = '';
-            // ✅ Show mobile header when sidebar closes
+            // Show mobile header when sidebar closes
             if (isMobile && !isOpen) {
                 const mobileHeader = document.querySelector('.patient-mobile-header');
                 if (mobileHeader) {
@@ -28,7 +42,7 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
         }
         return () => {
             document.body.style.overflow = '';
-            // ✅ Ensure header is visible on cleanup
+            // Ensure header is visible on cleanup
             const mobileHeader = document.querySelector('.patient-mobile-header');
             if (mobileHeader && isMobile) {
                 mobileHeader.style.display = 'flex';
@@ -45,27 +59,27 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
     };
 
     const adminMenu = [
-        { id: "overview", icon: "📊", label: "Dashboard" },
-        { id: "doctors", icon: "👨‍⚕️", label: "Doctors" },
-        { id: "appointments", icon: "📅", label: "Appointments" },
-        { id: "profile", icon: "👤", label: "Profile" }
+        { id: "overview", icon: <FaTachometerAlt />, label: "Dashboard" },
+        { id: "doctors", icon: <FaUserMd />, label: "Doctors" },
+        { id: "appointments", icon: <FaCalendarAlt />, label: "Appointments" },
+        { id: "profile", icon: <FaUser />, label: "Profile" }
     ];
 
     const doctorMenu = [
-        { id: "overview", icon: "📊", label: "Dashboard" },
-        { id: "appointments", icon: "📅", label: "Appointments", showBadge: hasPendingAppointments },
-        { id: "availability", icon: "⏰", label: "Availability" },
-        { id: "reports", icon: "📋", label: "Reports" },
-        { id: "profile", icon: "👤", label: "Profile" },
-        { id: "notifications", icon: "🔔", label: "Notifications" }
+        { id: "overview", icon: <FaChartLine />, label: "Dashboard" },
+        { id: "appointments", icon: <FaCalendarAlt />, label: "Appointments", showBadge: hasPendingAppointments },
+        { id: "availability", icon: <FaClock />, label: "Availability" },
+        { id: "reports", icon: <FaClipboardList />, label: "Reports" },
+        { id: "profile", icon: <FaUser />, label: "Profile" },
+        { id: "notifications", icon: <FaBell />, label: "Notifications" }
     ];
 
     const patientMenu = [
-        { id: "overview", icon: "📊", label: "Dashboard" },
-        { id: "appointments", icon: "📅", label: "My Appointments" },
-        { id: "reports", icon: "📋", label: "My Reports", showBadge: reportCount > 0 },
-        { id: "profile", icon: "👤", label: "Profile" },
-        { id: "notifications", icon: "🔔", label: "Notifications", badge: notificationCount }
+        { id: "overview", icon: <FaTachometerAlt />, label: "Dashboard" },
+        { id: "appointments", icon: <FaCalendarAlt />, label: "My Appointments" },
+        { id: "reports", icon: <FaFileAlt />, label: "My Reports", showBadge: reportCount > 0 },
+        { id: "profile", icon: <FaUser />, label: "Profile" },
+        { id: "notifications", icon: <FaBell />, label: "Notifications", badge: notificationCount }
     ];
 
     let menuItems = [];
@@ -146,11 +160,11 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
                 
                 <div className="sidebar-footer">
                     <button className="sidebar-home-btn" onClick={handleHome}>
-                        <span className="sidebar-nav-icon">🏠</span>
+                        <span className="sidebar-nav-icon"><FaHome /></span>
                         <span className="sidebar-nav-label">Home</span>
                     </button>
                     <button className="sidebar-logout-btn" onClick={handleLogout}>
-                        <span className="sidebar-nav-icon">↪️</span>
+                        <span className="sidebar-nav-icon"><FaSignOutAlt /></span>
                         <span className="sidebar-nav-label">Logout</span>
                     </button>
                 </div>
