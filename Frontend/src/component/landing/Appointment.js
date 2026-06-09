@@ -22,9 +22,9 @@ function Appointment({ setPage }) {
 
     const token = localStorage.getItem('access_token');
     const userRole = localStorage.getItem('user_type');
-    const savedUser = useMemo(() => 
-        JSON.parse(localStorage.getItem('medicareUser') || '{}'), 
-    []);
+    const savedUser = useMemo(() =>
+        JSON.parse(localStorage.getItem('medicareUser') || '{}'),
+        []);
 
     const timeOptions = useMemo(() => [
         "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -40,13 +40,13 @@ function Appointment({ setPage }) {
                 setLoading(false);
                 return;
             }
-            
+
             if (userRole !== 'patient') {
                 setError("⚠️ Only patients can book appointments. Please login as patient.");
                 setLoading(false);
                 return;
             }
-            
+
             try {
                 setLoading(true);
                 const response = await API.get('doctors/');
@@ -59,7 +59,7 @@ function Appointment({ setPage }) {
                 setLoading(false);
             }
         };
-        
+
         fetchDoctors();
     }, [token, userRole]);
 
@@ -135,10 +135,10 @@ function Appointment({ setPage }) {
                 const [hours, minutes] = slot.split(':');
                 let slotHour = parseInt(hours);
                 const period = slot.includes('PM') ? 'PM' : 'AM';
-                
+
                 if (period === 'PM' && slotHour !== 12) slotHour += 12;
                 if (period === 'AM' && slotHour === 12) slotHour = 0;
-                
+
                 const slotTotalMinutes = slotHour * 60 + parseInt(minutes);
                 return slotTotalMinutes >= currentTotalMinutes + minAdvanceMinutes;
             });
@@ -146,9 +146,9 @@ function Appointment({ setPage }) {
         return slots;
     }, [formData.date, timeOptions]);
 
-    const availableTimeSlots = useMemo(() => 
-        getAvailableTimeSlots(), 
-    [getAvailableTimeSlots]);
+    const availableTimeSlots = useMemo(() =>
+        getAvailableTimeSlots(),
+        [getAvailableTimeSlots]);
 
     // ✅ UPDATED: handleSubmit with auto scroll to top
     const handleSubmit = useCallback(async (e) => {
@@ -191,17 +191,17 @@ function Appointment({ setPage }) {
             });
 
             setSubmitSuccess(true);
-            
+
             // ✅ AUTO SCROLL TO TOP - so user can see the success toast
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            
+
             setFormData(prev => ({
                 ...prev,
                 doctorId: "",
                 date: "",
                 time: ""
             }));
-            
+
             setTimeout(() => setSubmitSuccess(false), 3000);
             setTimeout(() => setPage("home"), 2000);
         } catch (error) {
@@ -235,14 +235,17 @@ function Appointment({ setPage }) {
                         {!token ? "Please login to book an appointment" : "Only patients can book appointments"}
                     </p>
                     <div className="ap-form-actions" style={{ justifyContent: 'center', maxWidth: '300px', margin: '0 auto' }}>
-                        <button className="ap-submit-btn" onClick={() => setPage("login")} style={{ width: '100%' }}>
-                            Go to Login
-                        </button>
-                    </div>
-                    <div className="ap-footer-nav" style={{ marginTop: '40px', borderTop: 'none' }}>
-                        <button className="ap-back-footer" onClick={() => setPage("services")}>
-                            ← Back to Services
-                        </button>
+                        <div>
+                            <button className="ap-submit-btn" onClick={() => setPage("login")} style={{ width: '100%' }}>
+                                Go to Login
+                            </button>
+                        </div>
+
+                        <div className="ap-footer-nav" style={{ marginTop: '40px', borderTop: 'none' }}>
+                            <button className="ap-submit-btn" onClick={() => setPage("services")}>
+                                ← Back to Services
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -257,7 +260,7 @@ function Appointment({ setPage }) {
                     ✓ Appointment booked successfully! Redirecting...
                 </div>
             )}
-            
+
             {/* Error Toast - Fixed at top */}
             {error && !submitSuccess && (
                 <div className="ap-error-msg">
@@ -352,11 +355,11 @@ function Appointment({ setPage }) {
                             <div className="ap-form-row">
                                 <div className="ap-form-group">
                                     <label>Select Time *</label>
-                                    <select 
-                                        name="time" 
-                                        value={formData.time} 
-                                        onChange={handleChange} 
-                                        required 
+                                    <select
+                                        name="time"
+                                        value={formData.time}
+                                        onChange={handleChange}
+                                        required
                                         disabled={doctorAvailable === false}
                                     >
                                         <option value="">Choose time slot</option>
@@ -388,9 +391,9 @@ function Appointment({ setPage }) {
                             <button type="button" className="ap-cancel-btn" onClick={() => setPage("services")}>
                                 Cancel
                             </button>
-                            <button 
-                                type="submit" 
-                                className="ap-submit-btn" 
+                            <button
+                                type="submit"
+                                className="ap-submit-btn"
                                 disabled={isSubmitting || doctorAvailable === false || (availableTimeSlots.filter(slot => !bookedSlots.includes(slot)).length === 0 && formData.doctorId && formData.date)}
                             >
                                 {isSubmitting ? "Booking..." : "Confirm Appointment"}
@@ -400,11 +403,7 @@ function Appointment({ setPage }) {
                 </div>
             </div>
 
-            <div className="ap-footer-nav">
-                <button className="ap-back-footer" onClick={() => setPage("services")}>
-                    ← Back to Services
-                </button>
-            </div>
+            
         </div>
     );
 }

@@ -1,5 +1,58 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
 
+/* ========== GLOBAL FIX - PREVENT CONTENT HIDING ========== */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f9ff;
+    overflow-x: hidden;
+}
+
+/* ========== LANDING PAGES (Home, About, Services, Contact) ========== */
+body.landing-page {
+    padding-top: 60px;
+}
+
+@media (max-width: 768px) {
+    body.landing-page {
+        padding-top: 110px;
+    }
+}
+
+@media (max-width: 600px) {
+    body.landing-page {
+        padding-top: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    body.landing-page {
+        padding-top: 110px;
+    }
+}
+
+/* ========== DASHBOARD PAGES (Patient, Doctor, Admin) ========== */
+body.dashboard-page {
+    padding-top: 60px;
+}
+
+@media (max-width: 768px) {
+    body.dashboard-page {
+        padding-top: 60px;
+    }
+}
+
+@media (max-width: 600px) {
+    body.dashboard-page {
+        padding-top: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    body.dashboard-page {
+        padding-top: 60px;
+    }
+}
+
 /* ========== HEADER WRAPPER ========== */
 .hc-wrapper {
     position: fixed;
@@ -19,17 +72,13 @@
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
-body {
-    padding-top: 60px;
-}
-
 .hc-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0.7rem 2.5rem;
 }
 
-/* ========== DESKTOP LAYOUT - All in One Row ========== */
+/* ========== DESKTOP LAYOUT - All in one row ========== */
 .hc-desktop-layout {
     display: flex;
     justify-content: space-between;
@@ -161,17 +210,12 @@ body {
     box-shadow: 0 8px 20px rgba(15, 43, 61, 0.3);
 }
 
-/* ========== MOBILE LAYOUT - Structure 1 (≤900px) ========== */
+/* ========== MOBILE LAYOUT ========== */
 @media (max-width: 900px) {
-    body {
-        padding-top: 0px;
-    }
-    
     .hc-container {
         padding: 0.8rem 1.5rem;
     }
     
-    /* Row 1: Logo (left) + Buttons (right) */
     .hc-mobile-row1 {
         display: flex;
         justify-content: space-between;
@@ -184,7 +228,6 @@ body {
         gap: 0.6rem;
     }
     
-    /* Row 2: Navigation Center */
     .hc-mobile-row2 {
         margin-top: 12px;
         width: 100%;
@@ -192,17 +235,17 @@ body {
         justify-content: center;
     }
     
-    .hc-nav {
+    .hc-mobile-row2 .hc-nav {
         width: 100%;
         justify-content: center;
     }
     
-    .hc-nav-list {
+    .hc-mobile-row2 .hc-nav-list {
         justify-content: center;
         flex-wrap: wrap;
     }
     
-    .hc-nav-item {
+    .hc-mobile-row2 .hc-nav-item {
         padding: 0.5rem 1rem;
         font-size: 0.8rem;
     }
@@ -216,11 +259,7 @@ body {
 }
 
 @media (max-width: 600px) {
-    body {
-        padding-top: 0px;
-    }
-    
-    .hc-nav-item {
+    .hc-mobile-row2 .hc-nav-item {
         padding: 0.4rem 0.8rem;
         font-size: 0.75rem;
     }
@@ -238,11 +277,11 @@ body {
 }
 
 @media (max-width: 480px) {
-    .hc-nav-list {
+    .hc-mobile-row2 .hc-nav-list {
         gap: 0.3rem;
     }
     
-    .hc-nav-item {
+    .hc-mobile-row2 .hc-nav-item {
         padding: 0.35rem 0.7rem;
         font-size: 0.7rem;
     }

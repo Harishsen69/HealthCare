@@ -22,12 +22,10 @@ function App() {
         const hash = window.location.hash.slice(1);
         const validPages = ['home', 'about', 'services', 'contact', 'appointment', 'login', 'register', 'patient_dashboard', 'doctor_dashboard', 'admin_dashboard'];
         
-        // If hash exists and is valid, use it
         if (hash && validPages.includes(hash)) {
             return hash;
         }
         
-        // ✅ Default to home on app start/restart (no localStorage check)
         return 'home';
     };
 
@@ -35,6 +33,27 @@ function App() {
     const [userRole, setUserRole] = useState(() => {
         return localStorage.getItem('user_type') || null;
     });
+
+    // ✅ Update body class based on page type
+    useEffect(() => {
+        const dashboardPages = ['patient_dashboard', 'doctor_dashboard', 'admin_dashboard'];
+        const landingPages = ['home', 'about', 'services', 'contact', 'appointment', 'login', 'register'];
+        
+        // Remove existing classes
+        document.body.classList.remove('landing-page', 'dashboard-page');
+        
+        // Add appropriate class
+        if (dashboardPages.includes(page)) {
+            document.body.classList.add('dashboard-page');
+        } else if (landingPages.includes(page)) {
+            document.body.classList.add('landing-page');
+        }
+        
+        // Cleanup on unmount
+        return () => {
+            document.body.classList.remove('landing-page', 'dashboard-page');
+        };
+    }, [page]);
 
     // ✅ Update URL and localStorage when page changes
     const handleSetPage = (newPage) => {

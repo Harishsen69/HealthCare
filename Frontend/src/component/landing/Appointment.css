@@ -17,7 +17,7 @@ body {
 .ap-container {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 80px 24px 60px;
+    padding: 0px 24px 60px;
     min-height: 100vh;
 }
 
@@ -207,23 +207,24 @@ body {
 }
 
 .ap-submit-btn {
-    flex: 2;
-    background: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
-    color: white;
-    border: none;
+    flex: 1;
+    background: #3b8ce9;
+    border: 2px solid #e2e8f0;
+    color: #ffffff;
     padding: 16px 24px;
     border-radius: 40px;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Inter', sans-serif;
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
 }
 
 .ap-submit-btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(2, 132, 199, 0.4);
+    background: #0011ff;
+
 }
 
 .ap-submit-btn:active:not(:disabled) {
@@ -238,9 +239,9 @@ body {
 
 .ap-cancel-btn {
     flex: 1;
-    background: white;
+    background: #fa5959;
     border: 2px solid #e2e8f0;
-    color: #64748b;
+    color: #ffffff;
     padding: 16px 24px;
     border-radius: 40px;
     font-size: 16px;
@@ -251,9 +252,9 @@ body {
 }
 
 .ap-cancel-btn:hover {
-    background: #f8fafc;
+    background: #ff0000;
     border-color: #cbd5e1;
-    color: #475569;
+    color: #ffffff;
     transform: translateY(-1px);
 }
 
@@ -299,6 +300,7 @@ body {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -313,26 +315,7 @@ body {
     border-top: 2px solid rgba(255, 255, 255, 0.5);
 }
 
-.ap-back-footer {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #e2e8f0;
-    padding: 12px 28px;
-    border-radius: 40px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #1e3a5f;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Inter', sans-serif;
-    backdrop-filter: blur(4px);
-}
 
-.ap-back-footer:hover {
-    background: #1e3a5f;
-    color: white;
-    transform: translateX(-3px);
-    box-shadow: 0 4px 12px rgba(30, 58, 95, 0.2);
-}
 
 /* ========== LOADING SCREEN ========== */
 .ap-loading-screen {
@@ -389,45 +372,45 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     .ap-container {
         padding: 60px 16px 32px;
     }
-    
+
     .ap-header h1 {
         font-size: 30px;
     }
-    
+
     .ap-header p {
         font-size: 14px;
     }
-    
+
     .ap-form-row {
         grid-template-columns: 1fr;
         gap: 18px;
     }
-    
+
     .ap-form-card {
         padding: 24px;
         border-radius: 28px;
     }
-    
+
     .ap-section-title h3 {
         font-size: 18px;
     }
-    
+
     .ap-form-actions {
         flex-direction: column;
         gap: 12px;
     }
-    
+
     .ap-submit-btn,
     .ap-cancel-btn {
         width: 100%;
         padding: 14px 20px;
     }
-    
+
     .ap-footer-nav {
         margin-top: 32px;
         padding-top: 24px;
     }
-    
+
     /* Toast position for mobile */
     .ap-success-msg,
     .ap-error-msg {
@@ -443,43 +426,39 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 @media (max-width: 480px) {
     .ap-container {
-        padding: 50px 12px 24px;
+        padding: 0px 15px;
     }
-    
+
     .ap-header h1 {
         font-size: 26px;
     }
-    
-    .ap-back-footer {
-        padding: 8px 18px;
-        font-size: 12px;
-    }
-    
+
+
     .ap-section-title span {
         font-size: 24px;
     }
-    
+
     .ap-section-title h3 {
         font-size: 16px;
     }
-    
+
     .ap-form-group input,
     .ap-form-group select {
         padding: 12px 14px;
         font-size: 13px;
     }
-    
+
     .ap-submit-btn,
     .ap-cancel-btn {
         padding: 12px 16px;
         font-size: 14px;
     }
-    
+
     .ap-time-info {
         font-size: 11px;
         padding: 10px 14px;
     }
-    
+
     /* Toast for small mobile */
     .ap-success-msg,
     .ap-error-msg {
@@ -524,6 +503,7 @@ html {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
