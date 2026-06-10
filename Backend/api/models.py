@@ -46,13 +46,12 @@ class Appointment(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.doctor.name} - {self.date}"
 
-# ========== OTP MODEL (UPDATED with 'reset' user_type) ==========
 class OTP(models.Model):
     USER_TYPE_CHOICES = [
         ('patient', 'Patient'),
         ('doctor', 'Doctor'),
         ('admin', 'Admin'),
-        ('reset', 'Password Reset'),  # ✅ Added for password reset
+        ('reset', 'Password Reset'),
     ]
     
     email = models.EmailField()
@@ -185,7 +184,7 @@ class ViewedReport(models.Model):
     viewed_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        unique_together = ['user', 'report']  # One user can view a report only once
+        unique_together = ['user', 'report']
     
     def __str__(self):
         return f"{self.user.email} viewed report {self.report.report_number}"

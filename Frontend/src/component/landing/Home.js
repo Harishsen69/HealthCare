@@ -14,17 +14,18 @@ function Home({ setPage }) {
     const [loading, setLoading] = useState(true);
     const [userProfile, setUserProfile] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
-    
+
     const [showAddDoctorForm, setShowAddDoctorForm] = useState(false);
     const [newDoctor, setNewDoctor] = useState({
         name: '', email: '', password: '', phone: '',
-        specialization: '', experience: '', fee: ''
+        specialization: '', experience: '', fee: '', image: null
     });
+    const [imagePreview, setImagePreview] = useState(null);
     const [addDoctorLoading, setAddDoctorLoading] = useState(false);
 
     const userRole = localStorage.getItem('user_type');
     const token = localStorage.getItem('access_token');
-    
+
     const timeOptions = [
         "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
         "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM",
@@ -40,22 +41,18 @@ function Home({ setPage }) {
         { icon: "🧘", name: "Psychiatry", desc: "Mental Health" }
     ];
 
-    // Get initial count based on screen size
     const getInitialCount = () => {
         return window.innerWidth <= 900 ? 4 : 6;
     };
 
-    // Get load more increment based on screen size
     const getLoadMoreIncrement = () => {
         return window.innerWidth <= 900 ? 4 : 3;
     };
 
-    // Check screen size for mobile/laptop
     useEffect(() => {
         const handleResize = () => {
             const mobile = window.innerWidth <= 900;
             setIsMobile(mobile);
-            // Reset visible doctors based on screen size if not showing all
             if (visibleDoctors !== doctors.length) {
                 if (mobile && visibleDoctors > 4) {
                     setVisibleDoctors(4);
@@ -64,7 +61,6 @@ function Home({ setPage }) {
                 }
             }
         };
-        
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [doctors.length, visibleDoctors]);
@@ -99,7 +95,6 @@ function Home({ setPage }) {
                 window.scrollTo(0, parseInt(scrollY || '0') * -1);
             }
         }
-        
         return () => {
             document.body.style.overflow = '';
             document.body.style.position = '';
@@ -115,7 +110,6 @@ function Home({ setPage }) {
                 if (showDoctorModal) closeDoctorModal();
             }
         };
-        
         window.addEventListener('keydown', handleEsc);
         return () => window.removeEventListener('keydown', handleEsc);
     }, [showAppointment, showDoctorModal]);
@@ -144,12 +138,22 @@ function Home({ setPage }) {
         }
     }, [token, userRole]);
 
+    // Helper function to get correct image URL
+    const getImageUrl = (imagePath) => {
+        if (!imagePath) return null;
+        return imagePath;
+    };
+
     const fetchDoctors = useCallback(async () => {
         try {
             setLoading(true);
             const response = await API.get('doctors/');
-            setDoctors(response.data || []);
-            // Set initial visible count based on screen size after doctors load
+            const doctorsData = response.data || [];
+            const doctorsWithImages = doctorsData.map((doc, index) => ({
+                ...doc,
+                image: doc.image || `https://randomuser.me/api/portraits/${index % 2 === 0 ? 'men' : 'women'}/${(index % 50) + 1}.jpg`
+            }));
+            setDoctors(doctorsWithImages);
             const initialCount = window.innerWidth <= 900 ? 4 : 6;
             setVisibleDoctors(initialCount);
         } catch (error) {
@@ -160,6 +164,18 @@ function Home({ setPage }) {
         }
     }, []);
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setNewDoctor(prev => ({ ...prev, image: file }));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleAddDoctorChange = (e) => {
         const { name, value } = e.target;
         if (name === 'phone' && !/^\d{0,10}$/.test(value)) return;
@@ -169,14 +185,29 @@ function Home({ setPage }) {
     const handleAddDoctorSubmit = async (e) => {
         e.preventDefault();
         setAddDoctorLoading(true);
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', newDoctor.name);
+        formDataToSend.append('email', newDoctor.email);
+        formDataToSend.append('password', newDoctor.password);
+        formDataToSend.append('phone', newDoctor.phone || '');
+        formDataToSend.append('specialization', newDoctor.specialization);
+        formDataToSend.append('experience', newDoctor.experience || '0');
+        formDataToSend.append('fee', newDoctor.fee);
+        if (newDoctor.image) {
+            formDataToSend.append('image', newDoctor.image);
+        }
         try {
-            const response = await API.post('admin/add-doctor/', newDoctor, {
-                headers: { Authorization: `Bearer ${token}` }
+            const response = await API.post('admin/add-doctor/', formDataToSend, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
             });
             if (response.status === 201) {
                 alert('Doctor added successfully!');
                 setShowAddDoctorForm(false);
-                setNewDoctor({ name: '', email: '', password: '', phone: '', specialization: '', experience: '', fee: '' });
+                setNewDoctor({ name: '', email: '', password: '', phone: '', specialization: '', experience: '', fee: '', image: null });
+                setImagePreview(null);
                 fetchDoctors();
             }
         } catch (error) {
@@ -236,7 +267,6 @@ function Home({ setPage }) {
             alert("Please fill all fields");
             return;
         }
-        
         setIsSubmitting(true);
         try {
             const time24 = convertTo24Hour(formData.time);
@@ -248,7 +278,6 @@ function Home({ setPage }) {
                 date: formData.date,
                 time: time24
             }, { headers: { Authorization: `Bearer ${token}` } });
-            
             setSubmitSuccess(true);
             setFormData({ doctorId: "", date: "", time: "" });
             setTimeout(() => setSubmitSuccess(false), 3000);
@@ -354,7 +383,6 @@ function Home({ setPage }) {
                         <button className="hm-admin-add-btn" onClick={() => setShowAddDoctorForm(!showAddDoctorForm)}>
                             {showAddDoctorForm ? 'Cancel' : '+ Add New Doctor'}
                         </button>
-                        
                         {showAddDoctorForm && (
                             <div className="hm-admin-form-container">
                                 <form onSubmit={handleAddDoctorSubmit}>
@@ -368,10 +396,24 @@ function Home({ setPage }) {
                                     </div>
                                     <div className="hm-form-row">
                                         <input type="text" name="specialization" placeholder="Specialization" value={newDoctor.specialization} onChange={handleAddDoctorChange} required />
-                                        <input type="text" name="experience" placeholder="Experience" value={newDoctor.experience} onChange={handleAddDoctorChange} />
+                                        <input type="text" name="experience" placeholder="Experience (years)" value={newDoctor.experience} onChange={handleAddDoctorChange} />
                                     </div>
                                     <div className="hm-form-row">
-                                        <input type="number" name="fee" placeholder="Consultation Fee" value={newDoctor.fee} onChange={handleAddDoctorChange} required />
+                                        <input type="number" name="fee" placeholder="Consultation Fee (₹)" value={newDoctor.fee} onChange={handleAddDoctorChange} required />
+                                    </div>
+                                    <div className="hm-form-row hm-image-upload-row">
+                                        <div className="hm-image-upload-container">
+                                            <label className="hm-image-upload-label">
+                                                <span>📷</span> Upload Doctor Image
+                                                <input type="file" name="image" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+                                            </label>
+                                            {imagePreview && (
+                                                <div className="hm-image-preview">
+                                                    <img src={imagePreview} alt="Preview" />
+                                                    <button type="button" onClick={() => { setImagePreview(null); setNewDoctor(prev => ({ ...prev, image: null })); }}>✕</button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                     <button type="submit" disabled={addDoctorLoading} className="hm-submit-btn">
                                         {addDoctorLoading ? "Adding..." : "Add Doctor"}
@@ -411,7 +453,6 @@ function Home({ setPage }) {
                         <h2>Top Rated Doctors</h2>
                         <p>Tap on any doctor to see complete details</p>
                     </div>
-                    
                     {doctors.length === 0 ? (
                         <div className="hm-no-doctors">
                             <div className="hm-no-doctors-icon">👨‍⚕️</div>
@@ -424,7 +465,14 @@ function Home({ setPage }) {
                                 {displayedDoctors.map((doctor) => (
                                     <div className="hm-doctor-card" key={doctor.id} onClick={() => handleDoctorClick(doctor)}>
                                         <div className="hm-doctor-img">
-                                            <img src={doctor.image || "https://randomuser.me/api/portraits/men/32.jpg"} alt={doctor.name} />
+                                            <img
+                                                src={doctor.image}
+                                                alt={doctor.name}
+                                                onError={(e) => {
+                                                    console.log("Image Error:", doctor.image);
+                                                    e.target.src = "https://randomuser.me/api/portraits/men/1.jpg";
+                                                }}
+                                            />
                                             <div className="hm-doctor-overlay"><span>View Profile</span></div>
                                         </div>
                                         <h3>Dr. {doctor.name}</h3>
@@ -433,25 +481,11 @@ function Home({ setPage }) {
                                     </div>
                                 ))}
                             </div>
-                            
-                            {/* Load More / View All / Show Less Buttons */}
                             {doctors.length > initialCount && (
                                 <div className="hm-load-more-container">
-                                    {showLoadMore && (
-                                        <button className="hm-load-more-btn" onClick={loadMoreDoctors}>
-                                            Load More {isMobile ? "(+4)" : "(+3)"}
-                                        </button>
-                                    )}
-                                    {showViewAll && !showLoadMore && (
-                                        <button className="hm-view-all-btn" onClick={viewAllDoctors}>
-                                            View All Doctors ({doctors.length})
-                                        </button>
-                                    )}
-                                    {isShowingAll && doctors.length > initialCount && (
-                                        <button className="hm-show-less-btn" onClick={showLessDoctors}>
-                                            Show Less ↑
-                                        </button>
-                                    )}
+                                    {showLoadMore && <button className="hm-load-more-btn" onClick={loadMoreDoctors}>Load More {isMobile ? "(+4)" : "(+3)"}</button>}
+                                    {showViewAll && !showLoadMore && <button className="hm-view-all-btn" onClick={viewAllDoctors}>View All Doctors ({doctors.length})</button>}
+                                    {isShowingAll && doctors.length > initialCount && <button className="hm-show-less-btn" onClick={showLessDoctors}>Show Less ↑</button>}
                                 </div>
                             )}
                         </>
@@ -517,10 +551,15 @@ function Home({ setPage }) {
                 <div className="hm-modal-overlay" onClick={closeDoctorModal}>
                     <div className="hm-doctor-modal" onClick={stopPropagation}>
                         <button className="hm-modal-close-icon" onClick={closeDoctorModal}>✕</button>
-                        
                         <div className="hm-doc-header">
                             <div className="hm-doc-avatar">
-                                <img src={selectedDoctor.image || "https://randomuser.me/api/portraits/men/32.jpg"} alt={selectedDoctor.name} />
+                                <img
+                                    src={getImageUrl(selectedDoctor?.image)}
+                                    alt={selectedDoctor?.name}
+                                    onError={(e) => {
+                                        e.target.src = "https://randomuser.me/api/portraits/men/1.jpg";
+                                    }}
+                                />
                                 <div className="hm-available-tag">Available Today</div>
                             </div>
                             <div className="hm-doc-info">
@@ -533,7 +572,6 @@ function Home({ setPage }) {
                                 </div>
                             </div>
                         </div>
-                        
                         <div className="hm-doc-scroll-area">
                             <div className="hm-doc-details">
                                 <div className="hm-doc-detail-item">
@@ -565,12 +603,10 @@ function Home({ setPage }) {
                                     </div>
                                 </div>
                             </div>
-                            
                             <div className="hm-about-doc">
                                 <h3>📖 About Doctor</h3>
                                 <p>{selectedDoctor.about || `Dr. ${selectedDoctor.name} is an expert ${selectedDoctor.specialization} with over ${selectedDoctor.experience || 15} years of experience.`}</p>
                             </div>
-                            
                             <div className="hm-services-tags">
                                 <span>🏥 Specialist</span>
                                 <span>🚑 Emergency</span>
@@ -578,7 +614,6 @@ function Home({ setPage }) {
                                 <span>🔄 Free Follow-up</span>
                             </div>
                         </div>
-                        
                         <div className="hm-doc-footer">
                             <button className="hm-book-now" onClick={() => quickBook(selectedDoctor.id)}>📅 Book Appointment Now</button>
                             <button className="hm-video-consult">🎥 Video Consultation</button>

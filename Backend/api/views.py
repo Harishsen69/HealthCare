@@ -233,7 +233,9 @@ def forgot_password(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_doctors(request):
-    return Response(DoctorSerializer(Doctor.objects.all(), many=True).data)
+    doctors = Doctor.objects.all()
+    serializer = DoctorSerializer(doctors, many=True, context={'request': request})
+    return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -479,14 +481,63 @@ def admin_add_doctor(request):
         specialization = request.data.get('specialization', '')
         experience = request.data.get('experience', '0')
         fee = request.data.get('fee', 0)
+        image = request.FILES.get('image')  # ✅ Get image file
         
         if User.objects.filter(email=email).exists():
             return Response({'error': 'User with this email already exists'}, status=400)
         
         username = email.split('@')[0]
-        user = User.objects.create_user(username=username, email=email, password=password, first_name=name.split()[0] if ' ' in name else name, last_name=name.split()[1] if len(name.split()) > 1 else '')
-        doctor = Doctor.objects.create(user=user, name=name, email=email, phone=phone, specialization=specialization, experience=experience, fee=fee, is_doctor=True)
-        return Response({'message': 'Doctor added successfully', 'doctor': {'id': doctor.id, 'name': doctor.name, 'email': doctor.email, 'specialization': doctor.specialization, 'phone': doctor.phone, 'fee': doctor.fee}}, status=201)
+        # Create username that is unique
+        base_username = username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+        
+        user = User.objects.create_user(
+            username=username, 
+            email=email, 
+            password=password, 
+            first_name=name.split()[0] if ' ' in name else name, 
+            last_name=name.split()[1] if len(name.split()) > 1 else ''
+        )
+        doctor = Doctor.objects.create(
+            user=user, 
+            name=name, 
+            email=email, 
+            phone=phone, 
+            specialization=specialization, 
+            experience=experience, 
+            fee=fee, 
+            is_doctor=True
+        )
+        
+        # ✅ Save image if provided
+        if image:
+            # Validate image type
+            allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif']
+            if image.content_type not in allowed_types:
+                return Response({'error': 'Invalid image type. Only JPEG, PNG, GIF allowed'}, status=400)
+            
+            # Validate image size (max 5MB)
+            if image.size > 5 * 1024 * 1024:
+                return Response({'error': 'Image size should be less than 5MB'}, status=400)
+            
+            doctor.image = image
+            doctor.save()
+        
+        return Response({
+            'message': 'Doctor added successfully', 
+            'doctor': {
+                'id': doctor.id, 
+                'name': doctor.name, 
+                'email': doctor.email, 
+                'specialization': doctor.specialization, 
+                'phone': doctor.phone, 
+                'fee': doctor.fee,
+                'image': doctor.image.url if doctor.image else None
+            }
+        }, status=201)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
 

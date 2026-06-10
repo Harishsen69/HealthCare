@@ -194,19 +194,19 @@
 
 /* ========== DELETE BUTTON ========== */
 .doctor-delete-availability {
-    background: #fee2e2;
+    background: #fa6969;
     border: none;
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.65rem;
     font-weight: 600;
-    color: #dc2626;
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .doctor-delete-availability:hover {
-    background: #dc2626;
+    background: #ff0000;
     color: white;
     transform: translateY(-1px);
 }

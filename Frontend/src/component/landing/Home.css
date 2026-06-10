@@ -1396,3 +1396,79 @@ body {
         font-size: 10px;
     }
 }
+/* ========== IMAGE UPLOAD STYLES ========== */
+
+.hm-image-upload-row {
+    margin: 0.5rem 0;
+}
+
+.hm-image-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+}
+
+.hm-image-upload-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f1f5f9;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e3a5f;
+    border: 1px dashed #cbd5e1;
+    transition: all 0.2s;
+    width: fit-content;
+}
+
+.hm-image-upload-label:hover {
+    background: #e2e8f0;
+    border-color: #0284c7;
+}
+
+.hm-image-preview {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.hm-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+}
+
+.hm-image-preview button {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .hm-image-upload-label {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .hm-image-preview {
+        width: 80px;
+        height: 80px;
+    }
+}

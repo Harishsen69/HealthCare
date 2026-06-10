@@ -27,14 +27,43 @@
     }
 }
 
-/* Desktop Sidebar - Always visible (No change) */
+/* Desktop Sidebar - Always visible */
 @media (min-width: 769px) {
     .sidebar-container {
         transform: translateX(0);
     }
 }
 
-/* Scrollbar */
+/* 🔥 NEW: When sidebar is open on mobile, disable scrolling on main content */
+body.sidebar-open-mobile {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Main content wrapper - Add this class to your main content area */
+.main-content-wrapper {
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+/* When sidebar is open on mobile, main content should not receive pointer events */
+body.sidebar-open-mobile .main-content-wrapper {
+    pointer-events: none !important;
+    user-select: none !important;
+    opacity: 0.95;
+}
+
+/* Desktop: Main content margin adjustment */
+@media (min-width: 769px) {
+    .main-content-wrapper {
+        margin-left: 270px;
+        width: calc(100% - 270px);
+    }
+}
+
+/* Scrollbar styling */
 .sidebar-container::-webkit-scrollbar {
     width: 4px;
 }
@@ -68,6 +97,11 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* When sidebar is open, hamburger stays clickable */
+.hamburger-menu.open {
+    z-index: 1101;
+}
+
 .hamburger-menu span {
     width: 25px;
     height: 3px;
@@ -94,7 +128,7 @@
     }
 }
 
-/* Overlay for mobile */
+/* Overlay for mobile - Now with higher z-index and click blocking */
 .sidebar-overlay {
     display: none;
     position: fixed;
@@ -104,20 +138,21 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
+    backdrop-filter: blur(2px);
 }
 
 .sidebar-overlay.show {
     display: block;
 }
 
-/* Prevent body scroll when sidebar is open on mobile */
-body.sidebar-open-mobile {
-    overflow: hidden;
+/* 🔥 NEW: Prevent any interaction with content behind overlay */
+.sidebar-overlay.show ~ *:not(.sidebar-container):not(.hamburger-menu) {
+    pointer-events: none;
 }
 
-/* ========== LOGO ========== */
+/* Rest of your existing CSS remains same */
 .sidebar-logo {
-    padding: 1.5rem;
+    padding: 0.8rem;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -144,9 +179,8 @@ body.sidebar-open-mobile {
     }
 }
 
-/* ========== USER INFO ========== */
 .sidebar-user-info {
-    padding: 1.2rem;
+    padding: 1.1rem;
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -177,10 +211,9 @@ body.sidebar-open-mobile {
     border-radius: 30px;
 }
 
-/* ========== NAVIGATION ========== */
 .sidebar-nav {
     flex: 1;
-    padding: 1rem 0;
+    padding: 2rem 0;
 }
 
 .sidebar-nav-item {
@@ -200,14 +233,12 @@ body.sidebar-open-mobile {
     transition: all 0.3s;
 }
 
-/* Hover effect */
 .sidebar-nav-item:hover {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
     color: white;
     transform: translateX(5px);
 }
 
-/* Active state - Dark theme with gradient but no white line */
 .sidebar-nav-item-active {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
     color: white;
@@ -215,7 +246,6 @@ body.sidebar-open-mobile {
     position: relative;
 }
 
-/* Active icon and text styling */
 .sidebar-nav-item-active .sidebar-nav-icon {
     color: white;
 }
@@ -232,26 +262,22 @@ body.sidebar-open-mobile {
     transition: all 0.3s;
 }
 
-/* Icon colors for different menu items - Dark theme */
-.sidebar-nav-item:nth-child(1) .sidebar-nav-icon { color: #60a5fa; }  /* Dashboard - Blue */
-.sidebar-nav-item:nth-child(2) .sidebar-nav-icon { color: #34d399; }  /* Doctors/Appointments - Green */
-.sidebar-nav-item:nth-child(3) .sidebar-nav-icon { color: #fbbf24; }  /* Appointments - Yellow */
-.sidebar-nav-item:nth-child(4) .sidebar-nav-icon { color: #f472b6; }  /* Reports/Profile - Pink */
-.sidebar-nav-item:nth-child(5) .sidebar-nav-icon { color: #a78bfa; }  /* Availability - Purple */
-.sidebar-nav-item:nth-child(6) .sidebar-nav-icon { color: #fb923c; }  /* Notifications - Orange */
+.sidebar-nav-item:nth-child(1) .sidebar-nav-icon { color: #60a5fa; }
+.sidebar-nav-item:nth-child(2) .sidebar-nav-icon { color: #34d399; }
+.sidebar-nav-item:nth-child(3) .sidebar-nav-icon { color: #fbbf24; }
+.sidebar-nav-item:nth-child(4) .sidebar-nav-icon { color: #f472b6; }
+.sidebar-nav-item:nth-child(5) .sidebar-nav-icon { color: #a78bfa; }
+.sidebar-nav-item:nth-child(6) .sidebar-nav-icon { color: #fb923c; }
 
-/* On hover, icons become white */
 .sidebar-nav-item:hover .sidebar-nav-icon {
-    color: white !important;
+    color: rgb(255, 255, 255) !important;
 }
 
-/* On active, icons become white with glow */
 .sidebar-nav-item-active .sidebar-nav-icon {
     color: white !important;
-    filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.3));
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
 }
 
-/* Badges */
 .new-badge {
     background: #ef4444;
     color: white;
@@ -274,7 +300,6 @@ body.sidebar-open-mobile {
     text-align: center;
 }
 
-/* ========== FOOTER BUTTONS ========== */
 .sidebar-footer {
     padding: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.08);

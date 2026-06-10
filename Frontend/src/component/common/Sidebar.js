@@ -21,17 +21,21 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
     // Check if mobile
     const isMobile = window.innerWidth <= 768;
 
-    // Prevent body scroll when sidebar is open on mobile
+    // 🔥 UPDATED: Better scroll prevention when sidebar is open
     useEffect(() => {
         if (isMobile && isOpen) {
-            document.body.style.overflow = 'hidden';
+            // Add class to body to prevent all scrolling on main content
+            document.body.classList.add('sidebar-open-mobile');
+            
             // Hide mobile header when sidebar opens
             const mobileHeader = document.querySelector('.patient-mobile-header');
             if (mobileHeader) {
                 mobileHeader.style.display = 'none';
             }
         } else {
-            document.body.style.overflow = '';
+            // Remove class when sidebar closes
+            document.body.classList.remove('sidebar-open-mobile');
+            
             // Show mobile header when sidebar closes
             if (isMobile && !isOpen) {
                 const mobileHeader = document.querySelector('.patient-mobile-header');
@@ -40,9 +44,10 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
                 }
             }
         }
+        
+        // Cleanup on unmount
         return () => {
-            document.body.style.overflow = '';
-            // Ensure header is visible on cleanup
+            document.body.classList.remove('sidebar-open-mobile');
             const mobileHeader = document.querySelector('.patient-mobile-header');
             if (mobileHeader && isMobile) {
                 mobileHeader.style.display = 'flex';
@@ -56,6 +61,14 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
 
     const closeSidebar = () => {
         setIsOpen(false);
+    };
+
+    // 🔥 NEW: Handle navigation with sidebar close
+    const handleNavigation = (tabId) => {
+        setActiveTab(tabId);
+        if (isMobile) {
+            closeSidebar();
+        }
     };
 
     const adminMenu = [
@@ -104,25 +117,28 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
         closeSidebar();
     };
 
-    const handleTabClick = (tabId) => {
-        setActiveTab(tabId);
-        closeSidebar();
-    };
-
     return (
         <>
             {/* Mobile Hamburger Menu Button - Right Side */}
             {isMobile && (
-                <button className={`hamburger-menu ${isOpen ? "open" : ""}`} onClick={toggleSidebar}>
+                <button 
+                    className={`hamburger-menu ${isOpen ? "open" : ""}`} 
+                    onClick={toggleSidebar}
+                    aria-label="Toggle menu"
+                >
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
             )}
 
-            {/* Mobile Overlay */}
+            {/* Mobile Overlay - Blocks clicks on main content */}
             {isMobile && isOpen && (
-                <div className="sidebar-overlay" onClick={closeSidebar}></div>
+                <div 
+                    className="sidebar-overlay show" 
+                    onClick={closeSidebar}
+                    aria-label="Close menu"
+                ></div>
             )}
 
             {/* Sidebar */}
@@ -145,7 +161,7 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
                         <button
                             key={item.id}
                             className={`sidebar-nav-item ${activeTab === item.id ? "sidebar-nav-item-active" : ""}`}
-                            onClick={() => handleTabClick(item.id)}
+                            onClick={() => handleNavigation(item.id)}
                         >
                             <span className="sidebar-nav-icon">{item.icon}</span>
                             <span className="sidebar-nav-label">{item.label}</span>

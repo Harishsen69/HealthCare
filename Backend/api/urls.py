@@ -1,4 +1,7 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.static import serve
 from . import views
 
 urlpatterns = [
@@ -55,13 +58,18 @@ urlpatterns = [
     path('reports/<int:id>/update/', views.update_report, name='update_report'),
     path('reports/<int:id>/delete/', views.delete_report, name='delete_report'),
     path('reports/<int:id>/download/', views.download_report_pdf, name='download_report_pdf'),
-
-    # Add these to urlpatterns
+    
+    # ========== PASSWORD RESET ==========
     path('send-reset-otp/', views.send_reset_otp, name='send_reset_otp'),
     path('verify-reset-otp/', views.verify_reset_otp, name='verify_reset_otp'),
     path('reset-password/', views.reset_password, name='reset_password'),
-
+    
+    # ========== REPORT VIEW STATUS ==========
     path('reports/mark-viewed/', views.mark_report_viewed, name='mark_report_viewed'),
     path('reports/with-status/', views.get_patient_reports_with_status, name='reports_with_status'),
     path('reports/unviewed-count/', views.get_unviewed_reports_count, name='unviewed_reports_count'),
 ]
+
+# ✅ Media serving - Final fix
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -31,10 +31,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         UserProfile.objects.create(user=user, phone=phone, address=address)
         return user
 
+# ✅ UPDATED DoctorSerializer with full image URL
 class DoctorSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    
     class Meta:
         model = Doctor
         fields = '__all__'
+    
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
 
 class AppointmentSerializer(serializers.ModelSerializer):
     doctor_name = serializers.ReadOnlyField(source='doctor.name')
@@ -75,7 +86,6 @@ class MedicalReportSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'report_number', 'created_at', 'updated_at']
 
-# ========== USER PROFILE SERIALIZER (NEW) ==========
 class UserProfileSerializer(serializers.ModelSerializer):
     age = serializers.SerializerMethodField()
     
