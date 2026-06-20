@@ -12,6 +12,8 @@
     margin-bottom: 1.5rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ========== SECTION HEADER ========== */
@@ -235,6 +237,92 @@
     font-size: 0.75rem;
 }
 
+/* ========== PAGINATION STYLES ========== */
+.doctor-pagination-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.doctor-pagination-info {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: center;
+}
+
+.doctor-pagination-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.doctor-pagination-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.doctor-pagination-per-page label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.doctor-pagination-per-page select {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    background: white;
+    cursor: pointer;
+    outline: none;
+}
+
+.doctor-pagination-per-page select:hover {
+    border-color: #0284c7;
+}
+
+.doctor-pagination-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+.doctor-pagination-btn {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #e2e8f0;
+    background: white;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #475569;
+}
+
+.doctor-pagination-btn:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.doctor-pagination-btn.active {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    border-color: #0284c7;
+    color: white;
+}
+
+.doctor-pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     .doctor-appointments-container {
@@ -269,7 +357,20 @@
         white-space: nowrap;
     }
     
+    /* Pagination responsive */
+    .doctor-pagination-controls {
+        flex-direction: column;
+        justify-content: center;
+    }
     
+    .doctor-pagination-buttons {
+        justify-content: center;
+    }
+    
+    .doctor-pagination-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.7rem;
+    }
 }
 
 @media (max-width: 550px) {
@@ -331,8 +432,27 @@
         padding: 0.15rem 0.4rem;
         font-size: 0.5rem;
     }
-
+    
+    /* Pagination mobile */
+    .doctor-pagination-per-page label {
+        font-size: 0.7rem;
+    }
+    
+    .doctor-pagination-per-page select {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.7rem;
+    }
+    
+    .doctor-pagination-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.65rem;
+    }
+    
+    .doctor-pagination-info {
+        font-size: 0.65rem;
+    }
 }
+
 /* ========== VIEW DETAILS MODAL - ONLY ADD THIS AT THE END ========== */
 
 .doc-appointment-modal-overlay {

@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import API from "../../services/api";
+import Pagination from "../common/Pagination";
 import "./AdminDoctors.css";
 
 function AdminDoctors({ doctors, setDoctors }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [loading, setLoading] = useState(false);
+    
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    
     const [newDoctor, setNewDoctor] = useState({
         name: '',
         email: '',
@@ -14,6 +20,25 @@ function AdminDoctors({ doctors, setDoctors }) {
         experience: '',
         fee: ''
     });
+
+    // Calculate pagination
+    const totalItems = doctors.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentDoctors = doctors.slice(startIndex, endIndex);
+
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Handle items per page change
+    const handleItemsPerPageChange = (newItemsPerPage) => {
+        setItemsPerPage(newItemsPerPage);
+        setCurrentPage(1);
+    };
 
     // ========== HANDLE FORM INPUT CHANGE ==========
     const handleChange = (e) => {
@@ -51,6 +76,8 @@ function AdminDoctors({ doctors, setDoctors }) {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setDoctors(doctorsRes.data);
+                // Reset to first page
+                setCurrentPage(1);
             }
         } catch (error) {
             alert(error.response?.data?.error || 'Failed to add doctor');
@@ -83,7 +110,7 @@ function AdminDoctors({ doctors, setDoctors }) {
                         </div>
                         <div className="admin-form-row">
                             <input type="text" name="specialization" placeholder="Specialization" value={newDoctor.specialization} onChange={handleChange} />
-                            <input type="text" name="experience" placeholder="Experience" value={newDoctor.experience} onChange={handleChange} />
+                            <input type="text" name="experience" placeholder="Experience (years)" value={newDoctor.experience} onChange={handleChange} />
                         </div>
                         <div className="admin-form-row">
                             <input type="number" name="fee" placeholder="Consultation Fee" value={newDoctor.fee} onChange={handleChange} />
@@ -109,19 +136,39 @@ function AdminDoctors({ doctors, setDoctors }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {doctors.map((doc, index) => (
-                            <tr key={doc.id}>
-                                <td>{index + 1}</td>
-                                <td>{doc.name}</td>
-                                <td>{doc.specialization}</td>
-                                <td>{doc.email}</td>
-                                <td>{doc.phone || "N/A"}</td>
-                                <td>₹{doc.fee}</td>
+                        {currentDoctors.length === 0 ? (
+                            <tr>
+                                <td colSpan="6" className="admin-empty-table">No doctors found</td>
                             </tr>
-                        ))}
+                        ) : (
+                            currentDoctors.map((doc, index) => (
+                                <tr key={doc.id}>
+                                    <td>{startIndex + index + 1}</td>
+                                    <td>{doc.name}</td>
+                                    <td>{doc.specialization}</td>
+                                    <td>{doc.email}</td>
+                                    <td>{doc.phone || "N/A"}</td>
+                                    <td>₹{doc.fee}</td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
+            
+            {/* Pagination Component */}
+            {totalItems > 0 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    itemsPerPage={itemsPerPage}
+                    onItemsPerPageChange={handleItemsPerPageChange}
+                    totalItems={totalItems}
+                    startIndex={startIndex}
+                    endIndex={endIndex}
+                />
+            )}
         </div>
     );
 }

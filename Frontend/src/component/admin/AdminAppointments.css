@@ -5,6 +5,9 @@
     padding: 1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
 }
 
 /* ========== HEADER ========== */
@@ -25,6 +28,7 @@
 .admin-appointments-table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    flex: 1;
 }
 
 /* ========== APPOINTMENTS TABLE ========== */

@@ -7,7 +7,7 @@
 html, body {
     height: 100%;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: auto;  /* 🔥 FIX: hidden se wapas auto karo */
 }
 
 body {
@@ -36,7 +36,7 @@ img, video, iframe {
     height: auto;
 }
 
-/* Scrollbar */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
     width: 6px;
 }

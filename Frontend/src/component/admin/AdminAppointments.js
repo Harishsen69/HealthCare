@@ -1,7 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
+import Pagination from "../common/Pagination";
 import "./AdminAppointments.css";
 
 function AdminAppointments({ appointments, formatTimeTo12Hour }) {
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    
+    // Calculate pagination
+    const totalItems = appointments.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentAppointments = appointments.slice(startIndex, endIndex);
+    
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    
+    // Handle items per page change
+    const handleItemsPerPageChange = (newItemsPerPage) => {
+        setItemsPerPage(newItemsPerPage);
+        setCurrentPage(1);
+    };
+
     return (
         <div className="admin-appointments-container">
             <div className="admin-appointments-header">
@@ -21,14 +45,14 @@ function AdminAppointments({ appointments, formatTimeTo12Hour }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {appointments.length === 0 ? (
+                        {currentAppointments.length === 0 ? (
                             <tr>
                                 <td colSpan="6" className="admin-empty-table">No appointments found</td>
                             </tr>
                         ) : (
-                            appointments.map((apt, index) => (
+                            currentAppointments.map((apt, index) => (
                                 <tr key={apt.id}>
-                                    <td>{index + 1}</td>
+                                    <td>{startIndex + index + 1}</td>
                                     <td>{apt.patient_name || apt.user?.username || "N/A"}</td>
                                     <td>{apt.doctor_name}</td>
                                     <td>{apt.date}</td>
@@ -40,6 +64,20 @@ function AdminAppointments({ appointments, formatTimeTo12Hour }) {
                     </tbody>
                 </table>
             </div>
+            
+            {/* Pagination Component */}
+            {totalItems > 0 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    itemsPerPage={itemsPerPage}
+                    onItemsPerPageChange={handleItemsPerPageChange}
+                    totalItems={totalItems}
+                    startIndex={startIndex}
+                    endIndex={endIndex}
+                />
+            )}
         </div>
     );
 }

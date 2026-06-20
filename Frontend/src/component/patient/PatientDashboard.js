@@ -14,7 +14,6 @@ function PatientDashboard({ setPage }) {
         return savedUser ? JSON.parse(savedUser) : null;
     });
     
-    // Get activeTab from localStorage on refresh
     const [activeTab, setActiveTab] = useState(() => {
         const savedTab = localStorage.getItem('patientDashboardTab');
         return savedTab || "overview";
@@ -25,7 +24,6 @@ function PatientDashboard({ setPage }) {
     const [showAllCompleted, setShowAllCompleted] = useState(false);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     
-    // Patient data states
     const [appointments, setAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [notifications, setNotifications] = useState([]);
@@ -33,7 +31,6 @@ function PatientDashboard({ setPage }) {
     const [reportCount, setReportCount] = useState(0);
     const [hasNewReports, setHasNewReports] = useState(false);
     
-    // Booking form states
     const [showBookingForm, setShowBookingForm] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [appointmentDate, setAppointmentDate] = useState("");
@@ -43,16 +40,21 @@ function PatientDashboard({ setPage }) {
     const [bookedSlots, setBookedSlots] = useState([]);
     const [checkingSlots, setCheckingSlots] = useState(false);
     const [doctorAvailable, setDoctorAvailable] = useState(true);
+    
+    // 🔥 Search & Filter States
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [dateFilter, setDateFilter] = useState("all");
+    const [customDateRange, setCustomDateRange] = useState({ start: "", end: "" });
+    const [showDateRangePicker, setShowDateRangePicker] = useState(false);
+    const [doctorSearchTerm, setDoctorSearchTerm] = useState("");
 
-    // Check if mobile
     const isMobile = window.innerWidth <= 768;
 
-    // Save activeTab to localStorage when it changes
     useEffect(() => {
         localStorage.setItem('patientDashboardTab', activeTab);
     }, [activeTab]);
 
-    // ========== HELPER FUNCTIONS ==========
     const formatTimeTo12Hour = (time24) => {
         if (!time24) return '';
         let [hours, minutes] = time24.split(':');
@@ -99,6 +101,78 @@ function PatientDashboard({ setPage }) {
         };
         return pageNames[activeTab] || "Dashboard";
     };
+
+    // 🔥 Filter appointments
+    const filterAppointments = (appointmentsList) => {
+        let filtered = [...appointmentsList];
+        
+        if (searchTerm.trim()) {
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter(apt => 
+                apt.doctor_name?.toLowerCase().includes(term) ||
+                apt.doctor_specialty?.toLowerCase().includes(term)
+            );
+        }
+        
+        if (statusFilter !== "all") {
+            filtered = filtered.filter(apt => apt.status === statusFilter);
+        }
+        
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (dateFilter === "today") {
+            filtered = filtered.filter(apt => apt.date === today);
+        } else if (dateFilter === "upcoming") {
+            filtered = filtered.filter(apt => apt.date > today);
+        } else if (dateFilter === "past") {
+            filtered = filtered.filter(apt => apt.date < today);
+        } else if (dateFilter === "custom" && customDateRange.start && customDateRange.end) {
+            filtered = filtered.filter(apt => apt.date >= customDateRange.start && apt.date <= customDateRange.end);
+        }
+        
+        return filtered;
+    };
+
+    const resetFilters = () => {
+        setSearchTerm("");
+        setStatusFilter("all");
+        setDateFilter("all");
+        setCustomDateRange({ start: "", end: "" });
+        setShowDateRangePicker(false);
+    };
+
+    const exportToCSV = () => {
+        const filteredAppointments = filterAppointments(appointments);
+        
+        if (filteredAppointments.length === 0) {
+            alert("No appointments to export!");
+            return;
+        }
+        
+        const headers = ["S.No", "Doctor Name", "Specialization", "Date", "Time", "Status"];
+        const rows = filteredAppointments.map((apt, index) => [
+            index + 1,
+            apt.doctor_name,
+            apt.doctor_specialty,
+            apt.date,
+            formatTimeTo12Hour(apt.time),
+            apt.status
+        ]);
+        
+        const csvContent = [headers, ...rows].map(row => row.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `appointments_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const filteredDoctors = doctors.filter(doc => 
+        doc.name?.toLowerCase().includes(doctorSearchTerm.toLowerCase()) ||
+        doc.specialization?.toLowerCase().includes(doctorSearchTerm.toLowerCase())
+    );
 
     // ========== FETCH FUNCTIONS ==========
     const fetchDoctors = useCallback(async () => {
@@ -181,7 +255,6 @@ function PatientDashboard({ setPage }) {
         }
     }, []);
 
-    // ========== BOOK APPOINTMENT ==========
     const handleBookAppointment = useCallback(async (e) => {
         e.preventDefault();
         if (!selectedDoctor || !appointmentDate || !appointmentTime) {
@@ -211,6 +284,7 @@ function PatientDashboard({ setPage }) {
                 setBookedSlots([]);
                 setDoctorAvailable(true);
                 setBookingError("");
+                setDoctorSearchTerm("");
                 await fetchAppointments();
             }
         } catch (error) {
@@ -223,7 +297,6 @@ function PatientDashboard({ setPage }) {
         }
     }, [selectedDoctor, appointmentDate, appointmentTime, user, fetchAppointments]);
 
-    // ========== CANCEL APPOINTMENT ==========
     const handleCancelAppointment = useCallback(async (appointmentId) => {
         if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
         try {
@@ -253,7 +326,6 @@ function PatientDashboard({ setPage }) {
         setHasNewReports(unreadCount > 0);
     }, []);
 
-    // ========== LOAD ALL DATA ==========
     useEffect(() => {
         const loadData = async () => {
             setLoading(true);
@@ -270,11 +342,9 @@ function PatientDashboard({ setPage }) {
                 setLoading(false);
             }
         };
-        
         loadData();
     }, [fetchDoctors, fetchAppointments, fetchNotifications, fetchReportCount]);
 
-    // ========== WATCH FOR BOOKING DATE/DOCTOR CHANGES ==========
     useEffect(() => {
         if (selectedDoctor && appointmentDate) {
             fetchBookedSlots(selectedDoctor, appointmentDate);
@@ -284,7 +354,6 @@ function PatientDashboard({ setPage }) {
         }
     }, [selectedDoctor, appointmentDate, fetchBookedSlots]);
 
-    // ========== SHOW LOADING SCREEN ==========
     if (loading) {
         return (
             <div className="patient-loading">
@@ -294,27 +363,106 @@ function PatientDashboard({ setPage }) {
         );
     }
 
-    // ========== FILTER APPOINTMENTS ==========
     const today = new Date().toISOString().split('T')[0];
-    const upcomingAppointments = appointments.filter(a => a.status !== 'completed' && a.status !== 'cancelled');
-    const pastAppointments = appointments.filter(a => a.status === 'completed');
-    const todayAppointments = upcomingAppointments.filter(apt => apt.date === today);
-    const futureAppointments = upcomingAppointments.filter(apt => apt.date > today);
+    const upcomingAppointmentsRaw = appointments.filter(a => a.status !== 'completed' && a.status !== 'cancelled');
+    const pastAppointmentsRaw = appointments.filter(a => a.status === 'completed');
+    
+    const filteredUpcoming = filterAppointments(upcomingAppointmentsRaw);
+    const filteredPast = filterAppointments(pastAppointmentsRaw);
+    
+    const todayAppointments = filteredUpcoming.filter(apt => apt.date === today);
+    const futureAppointments = filteredUpcoming.filter(apt => apt.date > today);
     const totalDoctors = doctors.length;
-    const completedCount = pastAppointments.length;
-    const upcomingCount = upcomingAppointments.length;
+    const completedCount = filteredPast.length;
+    const upcomingCount = filteredUpcoming.length;
     const availableTimeSlots = getAvailableTimeSlots();
 
     const visibleFutureAppointments = showAllUpcoming ? futureAppointments : futureAppointments.slice(0, 5);
-    const visiblePastAppointments = showAllCompleted ? pastAppointments : pastAppointments.slice(0, 5);
+    const visiblePastAppointments = showAllCompleted ? filteredPast : filteredPast.slice(0, 5);
     const hasMoreFuture = futureAppointments.length > 5;
-    const hasMorePast = pastAppointments.length > 5;
+    const hasMorePast = filteredPast.length > 5;
 
     const toggleShowAllUpcoming = () => setShowAllUpcoming(!showAllUpcoming);
     const toggleShowAllCompleted = () => setShowAllCompleted(!showAllCompleted);
     const toggleMobileSidebar = () => setIsMobileSidebarOpen(!isMobileSidebarOpen);
 
-    // ========== RENDER OVERVIEW ==========
+    // 🔥 Render Filter Bar Component
+    const renderFilterBar = () => (
+    <div className="patient-filter-bar">
+        {/* Row 1: Search + Status + Date */}
+        <div className="patient-filter-row">
+            <div className="patient-search-input">
+                <input
+                    type="text"
+                    placeholder="🔍 Search by doctor or specialization..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+            
+            <select
+                className="patient-filter-select"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+            >
+                <option value="all">📊 All Status</option>
+                <option value="pending">⏳ Pending</option>
+                <option value="confirmed">✅ Confirmed</option>
+                <option value="completed">✔️ Completed</option>
+                <option value="cancelled">❌ Cancelled</option>
+            </select>
+            
+            <select
+                className="patient-filter-select"
+                value={dateFilter}
+                onChange={(e) => {
+                    setDateFilter(e.target.value);
+                    if (e.target.value === "custom") {
+                        setShowDateRangePicker(true);
+                    } else {
+                        setShowDateRangePicker(false);
+                    }
+                }}
+            >
+                <option value="all">📅 All Dates</option>
+                <option value="today">📍 Today</option>
+                <option value="upcoming">⏫ Upcoming</option>
+                <option value="past">⬇️ Past</option>
+                <option value="custom">📆 Custom Range</option>
+            </select>
+        </div>
+        
+        {/* Row 2: Date Range Picker (if custom selected) */}
+        {showDateRangePicker && dateFilter === "custom" && (
+            <div className="patient-date-range">
+                <input
+                    type="date"
+                    placeholder="Start Date"
+                    value={customDateRange.start}
+                    onChange={(e) => setCustomDateRange(prev => ({ ...prev, start: e.target.value }))}
+                />
+                <span>to</span>
+                <input
+                    type="date"
+                    placeholder="End Date"
+                    value={customDateRange.end}
+                    onChange={(e) => setCustomDateRange(prev => ({ ...prev, end: e.target.value }))}
+                />
+            </div>
+        )}
+        
+        {/* Row 2: Buttons */}
+        <div className="patient-filter-actions">
+            <button className="patient-reset-btn" onClick={resetFilters}>
+                🔄 Reset
+            </button>
+            <button className="patient-export-btn" onClick={exportToCSV}>
+                📥 Export
+            </button>
+        </div>
+    </div>
+);
+
     const renderOverview = () => (
         <div className="patient-dashboard-container">
             {/* Stats Cards */}
@@ -350,108 +498,137 @@ function PatientDashboard({ setPage }) {
             </div>
 
             {/* Quick Actions */}
-<div className="patient-quick-actions">
-    <h3>Quick Actions</h3>
-    <div className="patient-action-grid">
-        <button className="patient-action-card" onClick={() => setShowBookingForm(!showBookingForm)}>
-            <span>📅</span>
-            <p>Book New Appointment</p>
-        </button>
-        <button className="patient-action-card" onClick={() => setActiveTab("appointments")}>
-            <span>📋</span>
-            <p>View My Appointments</p>
-        </button>
-        <button className="patient-action-card" onClick={() => setActiveTab("profile")}>
-            <span>👤</span>
-            <p>Update Profile</p>
-        </button>
-    </div>
-</div>
-
-{/* Booking Form */}
-{showBookingForm && (
-    <div className="patient-booking-form-wrapper">
-        <div className="patient-booking-form">
-            <div className="patient-booking-header">
-                <h3>📅 Book New Appointment</h3>
-                <button className="patient-close-booking" onClick={() => setShowBookingForm(false)}>✕</button>
+            <div className="patient-quick-actions">
+                <h3>Quick Actions</h3>
+                <div className="patient-action-grid">
+                    <button className="patient-action-card" onClick={() => setShowBookingForm(!showBookingForm)}>
+                        <span>📅</span>
+                        <p>Book New Appointment</p>
+                    </button>
+                    <button className="patient-action-card" onClick={() => setActiveTab("appointments")}>
+                        <span>📋</span>
+                        <p>View My Appointments</p>
+                    </button>
+                    <button className="patient-action-card" onClick={() => setActiveTab("profile")}>
+                        <span>👤</span>
+                        <p>Update Profile</p>
+                    </button>
+                </div>
             </div>
-            {bookingError && <div className="patient-booking-error">⚠️ {bookingError}</div>}
-            <form onSubmit={handleBookAppointment}>
-                {/* NEW: 3-column row for Doctor, Date, and Time */}
-                <div className="patient-form-row">
-                    <div className="patient-form-group">
-                        <select 
-                            value={selectedDoctor} 
-                            onChange={(e) => { setSelectedDoctor(e.target.value); setAppointmentTime(""); setBookedSlots([]); setDoctorAvailable(true); setBookingError(""); }} 
-                            required
-                        >
-                            <option value="">Select Doctor</option>
-                            {doctors.map(doc => (<option key={doc.id} value={doc.id}>{doc.name} - {doc.specialization}</option>))}
-                        </select>
-                    </div>
-                    
-                    <div className="patient-form-group">
-                        <input 
-                            type="date" 
-                            value={appointmentDate} 
-                            onChange={(e) => { setAppointmentDate(e.target.value); setAppointmentTime(""); setBookedSlots([]); setDoctorAvailable(true); setBookingError(""); }} 
-                            required 
-                            min={today}
-                        />
-                    </div>
-                    
-                    <div className="patient-form-group">
-                        <select 
-                            value={appointmentTime} 
-                            onChange={(e) => setAppointmentTime(e.target.value)} 
-                            required 
-                            disabled={doctorAvailable === false}
-                        >
-                            <option value="">Select Time</option>
-                            {availableTimeSlots.map(slot => (
-                                <option key={slot.value} value={slot.value} disabled={bookedSlots.includes(slot.value) || doctorAvailable === false}>
-                                    {slot.label}{bookedSlots.includes(slot.value) && ' 🔴 Booked'}{doctorAvailable === false && ' ⛔ Unavailable'}
-                                </option>
-                            ))}
-                        </select>
+
+            {/* Booking Form */}
+            {showBookingForm && (
+                <div className="patient-booking-form-wrapper">
+                    <div className="patient-booking-form">
+                        <div className="patient-booking-header">
+                            <h3>📅 Book New Appointment</h3>
+                            <button className="patient-close-booking" onClick={() => {
+                                setShowBookingForm(false);
+                                setDoctorSearchTerm("");
+                            }}>✕</button>
+                        </div>
+                        {bookingError && <div className="patient-booking-error">⚠️ {bookingError}</div>}
+                        <form onSubmit={handleBookAppointment}>
+                            <div className="patient-form-row">
+                                <div className="patient-form-group">
+                                    <input
+                                        type="text"
+                                        placeholder="🔍 Search doctor by name or specialization..."
+                                        value={doctorSearchTerm}
+                                        onChange={(e) => setDoctorSearchTerm(e.target.value)}
+                                        className="patient-doctor-search"
+                                    />
+                                    <select 
+                                        value={selectedDoctor} 
+                                        onChange={(e) => { 
+                                            setSelectedDoctor(e.target.value); 
+                                            setAppointmentTime(""); 
+                                            setBookedSlots([]); 
+                                            setDoctorAvailable(true); 
+                                            setBookingError(""); 
+                                        }} 
+                                        required
+                                    >
+                                        <option value="">Select Doctor</option>
+                                        {filteredDoctors.map(doc => (
+                                            <option key={doc.id} value={doc.id}>
+                                                {doc.name} - {doc.specialization}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {filteredDoctors.length === 0 && doctorSearchTerm && (
+                                        <div className="patient-no-doctor-msg">
+                                            No doctor found matching "{doctorSearchTerm}"
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <div className="patient-form-group">
+                                    <input 
+                                        type="date" 
+                                        value={appointmentDate} 
+                                        onChange={(e) => { 
+                                            setAppointmentDate(e.target.value); 
+                                            setAppointmentTime(""); 
+                                            setBookedSlots([]); 
+                                            setDoctorAvailable(true); 
+                                            setBookingError(""); 
+                                        }} 
+                                        required 
+                                        min={today}
+                                    />
+                                </div>
+                                
+                                <div className="patient-form-group">
+                                    <select 
+                                        value={appointmentTime} 
+                                        onChange={(e) => setAppointmentTime(e.target.value)} 
+                                        required 
+                                        disabled={doctorAvailable === false}
+                                    >
+                                        <option value="">Select Time</option>
+                                        {availableTimeSlots.map(slot => (
+                                            <option key={slot.value} value={slot.value} disabled={bookedSlots.includes(slot.value) || doctorAvailable === false}>
+                                                {slot.label}{bookedSlots.includes(slot.value) && ' 🔴 Booked'}{doctorAvailable === false && ' ⛔ Unavailable'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {checkingSlots && <div className="patient-slot-loading">⏳ Checking availability...</div>}
+                            {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === false && (
+                                <div className="patient-unavailable-msg">❌ Doctor is not available on {appointmentDate}</div>
+                            )}
+                            {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === true && bookedSlots.length === 0 && (
+                                <div className="patient-available-msg">✅ Doctor is available on this date</div>
+                            )}
+                            {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === true && bookedSlots.length > 0 && (
+                                <div className="patient-available-msg">✅ Doctor is available - {availableTimeSlots.filter(slot => !bookedSlots.includes(slot.value)).length} slots open</div>
+                            )}
+
+                            <div className="patient-booking-actions">
+                                <button type="submit" disabled={bookingLoading || doctorAvailable === false}>
+                                    {bookingLoading ? "Booking..." : "Confirm Booking"}
+                                </button>
+                                <button type="button" onClick={() => { 
+                                    setShowBookingForm(false); 
+                                    setSelectedDoctor(""); 
+                                    setAppointmentDate(""); 
+                                    setAppointmentTime(""); 
+                                    setBookedSlots([]); 
+                                    setDoctorAvailable(true); 
+                                    setBookingError("");
+                                    setDoctorSearchTerm("");
+                                }}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                        <div className="patient-time-info">⏰ Available: 9:00 AM - 8:00 PM (Lunch Break: 1:00 PM - 2:00 PM)</div>
                     </div>
                 </div>
-
-                {/* Availability Messages */}
-                {checkingSlots && <div className="patient-slot-loading">⏳ Checking availability...</div>}
-                {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === false && (
-                    <div className="patient-unavailable-msg">❌ Doctor is not available on {appointmentDate}</div>
-                )}
-                {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === true && bookedSlots.length === 0 && (
-                    <div className="patient-available-msg">✅ Doctor is available on this date</div>
-                )}
-                {!checkingSlots && appointmentDate && selectedDoctor && doctorAvailable === true && bookedSlots.length > 0 && (
-                    <div className="patient-available-msg">✅ Doctor is available - {availableTimeSlots.filter(slot => !bookedSlots.includes(slot.value)).length} slots open</div>
-                )}
-
-                {/* Buttons Row */}
-                <div className="patient-booking-actions">
-                    <button type="submit" disabled={bookingLoading || doctorAvailable === false}>
-                        {bookingLoading ? "Booking..." : "Confirm Booking"}
-                    </button>
-                    <button type="button" onClick={() => { 
-                        setShowBookingForm(false); 
-                        setSelectedDoctor(""); 
-                        setAppointmentDate(""); 
-                        setAppointmentTime(""); 
-                        setBookedSlots([]); 
-                        setDoctorAvailable(true); 
-                        setBookingError(""); 
-                    }}>
-                        Cancel
-                    </button>
-                </div>
-            </form>
-            <div className="patient-time-info">⏰ Available: 9:00 AM - 8:00 PM (Lunch Break: 1:00 PM - 2:00 PM)</div>
-        </div>
-    </div>
-)}
+            )}
 
             {/* Today's Schedule */}
             <div className="patient-today-schedule">
@@ -512,11 +689,11 @@ function PatientDashboard({ setPage }) {
             )}
 
             {/* Recent Completed Visits */}
-            {pastAppointments.length > 0 && (
+            {filteredPast.length > 0 && (
                 <div className="patient-completed-visits">
                     <div className="patient-section-header">
                         <h3>✅ Recent Completed Visits</h3>
-                        <span className="patient-total-count">{pastAppointments.length} Total</span>
+                        <span className="patient-total-count">{filteredPast.length} Total</span>
                     </div>
                     <div className="patient-table-responsive">
                         <table className="patient-availability-table">
@@ -535,7 +712,7 @@ function PatientDashboard({ setPage }) {
                     </div>
                     {hasMorePast && (
                         <div className="patient-view-all" onClick={toggleShowAllCompleted}>
-                            {showAllCompleted ? "Show Less ↑" : `View All (${pastAppointments.length}) →`}
+                            {showAllCompleted ? "Show Less ↑" : `View All (${filteredPast.length}) →`}
                         </div>
                     )}
                 </div>
@@ -543,7 +720,6 @@ function PatientDashboard({ setPage }) {
         </div>
     );
 
-    // ========== MAIN RENDER ==========
     return (
         <div className="patient-dashboard-layout">
             <Sidebar 
@@ -559,10 +735,8 @@ function PatientDashboard({ setPage }) {
                 toggleMobileSidebar={toggleMobileSidebar}
             />
             
-            {/* ✅ Blur overlay wrapper - THIS IS IMPORTANT */}
             <div className={`patient-content-overlay ${isMobile && isMobileSidebarOpen ? 'blur-active' : ''}`}>
                 <div className="patient-main-content">
-                    {/* Mobile Header - Only Page Name */}
                     {isMobile && (
                         <div className="patient-mobile-header">
                             <div className="patient-mobile-page-title">
@@ -571,7 +745,6 @@ function PatientDashboard({ setPage }) {
                         </div>
                     )}
                     
-                    {/* Desktop Header */}
                     {!isMobile && (
                         <div className="patient-main-header">
                             <h1>Welcome back, <span>{user?.name?.split(" ")[0] || "Patient"}</span>!</h1>
@@ -580,14 +753,19 @@ function PatientDashboard({ setPage }) {
                     )}
                     
                     {activeTab === "overview" && renderOverview()}
+                    
                     {activeTab === "appointments" && (
-                        <PatientAppointments 
-                            upcomingAppointments={upcomingAppointments} 
-                            pastAppointments={pastAppointments} 
-                            handleCancelAppointment={handleCancelAppointment} 
-                            formatTimeTo12Hour={formatTimeTo12Hour} 
-                        />
+                        <>
+                            {renderFilterBar()}
+                            <PatientAppointments 
+                                upcomingAppointments={filteredUpcoming} 
+                                pastAppointments={filteredPast} 
+                                handleCancelAppointment={handleCancelAppointment} 
+                                formatTimeTo12Hour={formatTimeTo12Hour}
+                            />
+                        </>
                     )}
+                    
                     {activeTab === "profile" && <PatientProfile user={user} setUser={setUser} />}
                     {activeTab === "notifications" && (
                         <PatientNotifications 

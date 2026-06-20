@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import API from "../../services/api";
 import Sidebar from "../common/Sidebar";
 import AdminDoctors from "./AdminDoctors";
@@ -13,7 +13,6 @@ function AdminDashboard({ setPage }) {
         return savedUser ? JSON.parse(savedUser) : null;
     });
     
-    // Get activeTab from localStorage on refresh
     const [activeTab, setActiveTab] = useState(() => {
         const savedTab = localStorage.getItem('adminDashboardTab');
         return savedTab || "overview";
@@ -22,20 +21,33 @@ function AdminDashboard({ setPage }) {
     const [loading, setLoading] = useState(true);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     
-    // Dashboard data states
     const [doctors, setDoctors] = useState([]);
     const [patients, setPatients] = useState([]);
     const [appointments, setAppointments] = useState([]);
+    const [todayAppointments, setTodayAppointments] = useState([]);
+    const [pendingAppointments, setPendingAppointments] = useState([]);
 
-    // Check if mobile
+    // 🔥 Appointments Search & Filter States
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [dateFilter, setDateFilter] = useState("all");
+    const [doctorFilter, setDoctorFilter] = useState("all");
+    const [customDateRange, setCustomDateRange] = useState({ start: "", end: "" });
+    const [showDateRangePicker, setShowDateRangePicker] = useState(false);
+    const [uniqueDoctors, setUniqueDoctors] = useState([]);
+
+    // 🔥 Doctors Search & Filter States
+    const [doctorSearchTerm, setDoctorSearchTerm] = useState("");
+    const [specializationFilter, setSpecializationFilter] = useState("all");
+    const [doctorStatusFilter, setDoctorStatusFilter] = useState("all");
+    const [specializations, setSpecializations] = useState([]);
+
     const isMobile = window.innerWidth <= 768;
 
-    // Save activeTab to localStorage when it changes
     useEffect(() => {
         localStorage.setItem('adminDashboardTab', activeTab);
     }, [activeTab]);
 
-    // ========== FORMAT TIME TO 12-HOUR ==========
     const formatTimeTo12Hour = (time24) => {
         if (!time24) return '';
         let [hours, minutes] = time24.split(':');
@@ -55,23 +67,171 @@ function AdminDashboard({ setPage }) {
         return pageNames[activeTab] || "Dashboard";
     };
 
-    // ========== FETCH DASHBOARD DATA ==========
+    // 🔥 Filter appointments function
+    const filterAppointments = useCallback((appointmentsList) => {
+        let filtered = [...appointmentsList];
+        
+        if (searchTerm.trim()) {
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter(apt => 
+                apt.patient_name?.toLowerCase().includes(term) ||
+                apt.doctor_name?.toLowerCase().includes(term)
+            );
+        }
+        
+        if (statusFilter !== "all") {
+            filtered = filtered.filter(apt => apt.status === statusFilter);
+        }
+        
+        if (doctorFilter !== "all") {
+            filtered = filtered.filter(apt => apt.doctor_name === doctorFilter);
+        }
+        
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (dateFilter === "today") {
+            filtered = filtered.filter(apt => apt.date === today);
+        } else if (dateFilter === "upcoming") {
+            filtered = filtered.filter(apt => apt.date > today);
+        } else if (dateFilter === "past") {
+            filtered = filtered.filter(apt => apt.date < today);
+        } else if (dateFilter === "custom" && customDateRange.start && customDateRange.end) {
+            filtered = filtered.filter(apt => apt.date >= customDateRange.start && apt.date <= customDateRange.end);
+        }
+        
+        return filtered;
+    }, [searchTerm, statusFilter, doctorFilter, dateFilter, customDateRange]);
+
+    // 🔥 Filter doctors function
+    const filterDoctors = useCallback((doctorsList) => {
+        let filtered = [...doctorsList];
+        
+        // Search by name or specialization or email
+        if (doctorSearchTerm.trim()) {
+            const term = doctorSearchTerm.toLowerCase();
+            filtered = filtered.filter(doc => 
+                doc.name?.toLowerCase().includes(term) ||
+                doc.specialization?.toLowerCase().includes(term) ||
+                doc.email?.toLowerCase().includes(term)
+            );
+        }
+        
+        // Specialization filter
+        if (specializationFilter !== "all") {
+            filtered = filtered.filter(doc => doc.specialization === specializationFilter);
+        }
+        
+        // Status filter (is_active)
+        if (doctorStatusFilter !== "all") {
+            const isActive = doctorStatusFilter === "active";
+            filtered = filtered.filter(doc => doc.is_active === isActive);
+        }
+        
+        return filtered;
+    }, [doctorSearchTerm, specializationFilter, doctorStatusFilter]);
+
+    // 🔥 Reset appointments filters
+    const resetAppointmentsFilters = () => {
+        setSearchTerm("");
+        setStatusFilter("all");
+        setDateFilter("all");
+        setDoctorFilter("all");
+        setCustomDateRange({ start: "", end: "" });
+        setShowDateRangePicker(false);
+    };
+
+    // 🔥 Reset doctors filters
+    const resetDoctorsFilters = () => {
+        setDoctorSearchTerm("");
+        setSpecializationFilter("all");
+        setDoctorStatusFilter("all");
+    };
+
+    // 🔥 Export Appointments to CSV
+    const exportAppointmentsToCSV = () => {
+        const filteredAppointments = filterAppointments(appointments);
+        
+        if (filteredAppointments.length === 0) {
+            alert("No appointments to export!");
+            return;
+        }
+        
+        const headers = ["S.No", "Patient Name", "Doctor Name", "Date", "Time", "Status"];
+        const rows = filteredAppointments.map((apt, index) => [
+            index + 1,
+            apt.patient_name || "N/A",
+            apt.doctor_name,
+            apt.date,
+            formatTimeTo12Hour(apt.time),
+            apt.status
+        ]);
+        
+        const csvContent = [headers, ...rows].map(row => row.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `admin_appointments_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    // 🔥 Export Doctors to CSV
+    const exportDoctorsToCSV = () => {
+        const filteredDoctors = filterDoctors(doctors);
+        
+        if (filteredDoctors.length === 0) {
+            alert("No doctors to export!");
+            return;
+        }
+        
+        const headers = ["S.No", "Doctor Name", "Specialization", "Email", "Phone", "Fee", "Experience", "Status"];
+        const rows = filteredDoctors.map((doc, index) => [
+            index + 1,
+            doc.name,
+            doc.specialization,
+            doc.email,
+            doc.phone || "N/A",
+            doc.fee || "N/A",
+            doc.experience || "N/A",
+            doc.is_active ? "Active" : "Inactive"
+        ]);
+        
+        const csvContent = [headers, ...rows].map(row => row.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `doctors_list_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     const fetchDashboardData = async () => {
         try {
             const token = localStorage.getItem('access_token');
             const headers = { Authorization: `Bearer ${token}` };
             
-            // Fetch doctors list
             const doctorsRes = await API.get('admin/doctors/', { headers });
             setDoctors(doctorsRes.data);
             
-            // Fetch all users (patients)
+            // Extract unique specializations for filter
+            const uniqueSpecs = [...new Set(doctorsRes.data.map(doc => doc.specialization).filter(Boolean))];
+            setSpecializations(uniqueSpecs);
+            
             const usersRes = await API.get('admin/users/', { headers });
             setPatients(usersRes.data.filter(u => !u.is_superuser));
             
-            // Fetch all appointments
             const appointmentsRes = await API.get('admin/appointments/', { headers });
-            setAppointments(appointmentsRes.data);
+            const allAppointments = appointmentsRes.data;
+            setAppointments(allAppointments);
+            
+            const uniqueDoctorNames = [...new Set(allAppointments.map(apt => apt.doctor_name).filter(Boolean))];
+            setUniqueDoctors(uniqueDoctorNames);
+            
+            const today = new Date().toISOString().split('T')[0];
+            setTodayAppointments(allAppointments.filter(apt => apt.date === today));
+            setPendingAppointments(allAppointments.filter(apt => apt.status === 'pending'));
             
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
@@ -80,15 +240,144 @@ function AdminDashboard({ setPage }) {
         }
     };
 
-    // ========== TOGGLE MOBILE SIDEBAR ==========
     const toggleMobileSidebar = () => {
         setIsMobileSidebarOpen(!isMobileSidebarOpen);
     };
 
-    // ========== LOAD DATA ON MOUNT ==========
     useEffect(() => {
         fetchDashboardData();
     }, []);
+
+    // 🔥 Render Appointments Filter Bar
+    const renderAppointmentsFilterBar = () => (
+        <div className="admin-filter-bar">
+            <div className="admin-filter-row">
+                <div className="admin-search-input">
+                    <input
+                        type="text"
+                        placeholder="🔍 Search by patient or doctor..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                
+                <select
+                    className="admin-filter-select"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="all">📊 All Status</option>
+                    <option value="pending">⏳ Pending</option>
+                    <option value="confirmed">✅ Confirmed</option>
+                    <option value="completed">✔️ Completed</option>
+                    <option value="cancelled">❌ Cancelled</option>
+                </select>
+                
+                <select
+                    className="admin-filter-select"
+                    value={doctorFilter}
+                    onChange={(e) => setDoctorFilter(e.target.value)}
+                >
+                    <option value="all">👨‍⚕️ All Doctors</option>
+                    {uniqueDoctors.map((doc, idx) => (
+                        <option key={idx} value={doc}>{doc}</option>
+                    ))}
+                </select>
+                
+                <select
+                    className="admin-filter-select"
+                    value={dateFilter}
+                    onChange={(e) => {
+                        setDateFilter(e.target.value);
+                        if (e.target.value === "custom") {
+                            setShowDateRangePicker(true);
+                        } else {
+                            setShowDateRangePicker(false);
+                        }
+                    }}
+                >
+                    <option value="all">📅 All Dates</option>
+                    <option value="today">📍 Today</option>
+                    <option value="upcoming">⏫ Upcoming</option>
+                    <option value="past">⬇️ Past</option>
+                    <option value="custom">📆 Custom Range</option>
+                </select>
+            </div>
+            
+            {showDateRangePicker && dateFilter === "custom" && (
+                <div className="admin-date-range">
+                    <input
+                        type="date"
+                        placeholder="Start Date"
+                        value={customDateRange.start}
+                        onChange={(e) => setCustomDateRange(prev => ({ ...prev, start: e.target.value }))}
+                    />
+                    <span>to</span>
+                    <input
+                        type="date"
+                        placeholder="End Date"
+                        value={customDateRange.end}
+                        onChange={(e) => setCustomDateRange(prev => ({ ...prev, end: e.target.value }))}
+                    />
+                </div>
+            )}
+            
+            <div className="admin-filter-actions">
+                <button className="admin-reset-btn" onClick={resetAppointmentsFilters}>
+                    🔄 Reset
+                </button>
+                <button className="admin-export-btn" onClick={exportAppointmentsToCSV}>
+                    📥 Export
+                </button>
+            </div>
+        </div>
+    );
+
+    // 🔥 Render Doctors Filter Bar
+    const renderDoctorsFilterBar = () => (
+        <div className="admin-doctors-filter-bar">
+            <div className="admin-filter-row">
+                <div className="admin-search-input">
+                    <input
+                        type="text"
+                        placeholder="🔍 Search by name, specialization or email..."
+                        value={doctorSearchTerm}
+                        onChange={(e) => setDoctorSearchTerm(e.target.value)}
+                    />
+                </div>
+                
+                <select
+                    className="admin-filter-select"
+                    value={specializationFilter}
+                    onChange={(e) => setSpecializationFilter(e.target.value)}
+                >
+                    <option value="all">📚 All Specializations</option>
+                    {specializations.map((spec, idx) => (
+                        <option key={idx} value={spec}>{spec}</option>
+                    ))}
+                </select>
+                
+                <select
+                    className="admin-filter-select"
+                    value={doctorStatusFilter}
+                    onChange={(e) => setDoctorStatusFilter(e.target.value)}
+                >
+                    <option value="all">📊 All Status</option>
+                    <option value="active">✅ Active</option>
+                    <option value="inactive">❌ Inactive</option>
+                </select>
+            </div>
+            
+            <div className="admin-filter-actions">
+                <button className="admin-reset-btn" onClick={resetDoctorsFilters}>
+                    🔄 Reset
+                </button>
+                <button className="admin-export-btn" onClick={exportDoctorsToCSV}>
+                    📥 Export Doctors
+                </button>
+            </div>
+        </div>
+    );
 
     if (loading) return (
         <div className="admin-loading">
@@ -97,10 +386,13 @@ function AdminDashboard({ setPage }) {
         </div>
     );
 
-    // ========== RENDER OVERVIEW DASHBOARD ==========
+    const filteredAppointmentsForOverview = filterAppointments(appointments);
+    const filteredAppointmentsForTable = filterAppointments(appointments).slice(0, 10);
+    const filteredDoctors = filterDoctors(doctors);
+
     const renderOverview = () => (
         <div className="admin-dashboard-container">
-            {/* Stats Cards */}
+            {/* Stats Cards - 4 Cards */}
             <div className="admin-stats-cards">
                 <div className="admin-stat-card">
                     <div className="admin-stat-icon">👨‍⚕️</div>
@@ -123,12 +415,23 @@ function AdminDashboard({ setPage }) {
                         <p>Total Appointments</p>
                     </div>
                 </div>
+                <div className="admin-stat-card">
+                    <div className="admin-stat-icon">📍</div>
+                    <div className="admin-stat-details">
+                        <h3>{todayAppointments.length}</h3>
+                        <p>Today's Appointments</p>
+                    </div>
+                </div>
             </div>
+
+            {/* Appointments Filter Bar in Overview */}
+            {renderAppointmentsFilterBar()}
 
             {/* Recent Appointments Table */}
             <div className="admin-recent-section">
                 <div className="admin-section-header">
                     <h3>📋 Recent Appointments</h3>
+                    <span className="admin-total-count">{filteredAppointmentsForOverview.length} Total</span>
                 </div>
                 <div className="admin-table-responsive">
                     <table className="admin-data-table">
@@ -143,29 +446,36 @@ function AdminDashboard({ setPage }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {appointments.slice(0, 10).map((apt, index) => (
-                                <tr key={apt.id}>
-                                    <td>{index + 1}</td>
-                                    <td>{apt.patient_name || apt.user?.username || "N/A"}</td>
-                                    <td>{apt.doctor_name}</td>
-                                    <td>{apt.date}</td>
-                                    <td>{formatTimeTo12Hour(apt.time)}</td>
-                                    <td><span className={`admin-status-badge ${apt.status}`}>{apt.status}</span></td>
+                            {filteredAppointmentsForTable.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="admin-empty-table">
+                                        No appointments found matching your filters
+                                    </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                filteredAppointmentsForTable.map((apt, index) => (
+                                    <tr key={apt.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{apt.patient_name || apt.user?.username || "N/A"}</td>
+                                        <td>{apt.doctor_name}</td>
+                                        <td>{apt.date}</td>
+                                        <td>{formatTimeTo12Hour(apt.time)}</td>
+                                        <td><span className={`admin-status-badge ${apt.status}`}>{apt.status}</span></td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
-                {appointments.length > 10 && (
+                {filteredAppointmentsForOverview.length > 10 && (
                     <div className="admin-view-all" onClick={() => setActiveTab("appointments")}>
-                        View all appointments →
+                        View all {filteredAppointmentsForOverview.length} appointments →
                     </div>
                 )}
             </div>
         </div>
     );
 
-    // ========== MAIN RENDER ==========
     return (
         <div className="admin-dashboard-layout">
             <Sidebar 
@@ -179,10 +489,8 @@ function AdminDashboard({ setPage }) {
                 toggleMobileSidebar={toggleMobileSidebar}
             />
             
-            {/* ✅ Blur overlay wrapper - SAME AS PATIENT */}
             <div className={`admin-content-overlay ${isMobile && isMobileSidebarOpen ? 'blur-active' : ''}`}>
                 <div className="admin-main-content">
-                    {/* Mobile Header - Only Page Name */}
                     {isMobile && (
                         <div className="admin-mobile-header">
                             <div className="admin-mobile-page-title">
@@ -191,7 +499,6 @@ function AdminDashboard({ setPage }) {
                         </div>
                     )}
                     
-                    {/* Desktop Header */}
                     {!isMobile && (
                         <div className="admin-main-header">
                             <h1>Welcome back, <span>{user?.name?.split(" ")[0] || "Admin"}</span>!</h1>
@@ -200,8 +507,26 @@ function AdminDashboard({ setPage }) {
                     )}
                     
                     {activeTab === "overview" && renderOverview()}
-                    {activeTab === "doctors" && <AdminDoctors doctors={doctors} setDoctors={setDoctors} />}
-                    {activeTab === "appointments" && <AdminAppointments appointments={appointments} formatTimeTo12Hour={formatTimeTo12Hour} />}
+                    
+                    {/* 🔥 Doctors Tab - WITH filter bar */}
+                    {activeTab === "doctors" && (
+                        <>
+                            {renderDoctorsFilterBar()}
+                            <AdminDoctors doctors={filteredDoctors} setDoctors={setDoctors} />
+                        </>
+                    )}
+                    
+                    {/* 🔥 Appointments Tab - WITH filter bar */}
+                    {activeTab === "appointments" && (
+                        <>
+                            {renderAppointmentsFilterBar()}
+                            <AdminAppointments 
+                                appointments={filterAppointments(appointments)} 
+                                formatTimeTo12Hour={formatTimeTo12Hour} 
+                            />
+                        </>
+                    )}
+                    
                     {activeTab === "profile" && <AdminProfile user={user} setUser={setUser} />}
                 </div>
             </div>
