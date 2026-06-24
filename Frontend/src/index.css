@@ -1,21 +1,24 @@
+/* ========== RESET ========== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html, body {
+/* ========== GLOBAL - LANDING PAGE KE LIYE ========== */
+html {
+    scroll-behavior: smooth;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;  /* 🔥 FIX: hidden se wapas auto karo */
 }
 
 body {
-    margin: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-family: 'Inter', sans-serif;
     background: #f0f9ff;
     overflow-x: hidden;
-    width: 100%;
+    overflow-y: auto;
+    height: 100%;
+    margin: 0;
+    -webkit-overflow-scrolling: touch;
 }
 
 #root {
@@ -28,15 +31,11 @@ body {
     min-height: 100vh;
     width: 100%;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Prevent horizontal scroll */
-img, video, iframe {
-    max-width: 100%;
-    height: auto;
-}
-
-/* Scrollbar styling */
+/* ========== SCROLLBAR - GLOBAL ========== */
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -49,4 +48,117 @@ img, video, iframe {
 ::-webkit-scrollbar-thumb {
     background: linear-gradient(135deg, #0284c7, #0ea5e9);
     border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+}
+
+/* ========== MOBILE RESPONSIVE VARIABLES ========== */
+:root {
+    --mobile-breakpoint: 768px;
+    --tablet-breakpoint: 1024px;
+}
+
+/* ========== RESPONSIVE UTILITIES ========== */
+.hide-on-mobile {
+    display: block;
+}
+
+.show-on-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none;
+    }
+    
+    .show-on-mobile {
+        display: block;
+    }
+}
+
+/* ========== CONTAINER ========== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* ========== PREVENT HORIZONTAL SCROLL ========== */
+img, video, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ========== MOBILE RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+}
+
+/* 🔥🔥🔥 DASHBOARD SPECIFIC FIX - Double Scrollbar Remove */
+.patient-dashboard-layout,
+.admin-dashboard-layout {
+    overflow: hidden;
+}
+
+.patient-dashboard-layout *::-webkit-scrollbar,
+.admin-dashboard-layout *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.patient-content-overlay::-webkit-scrollbar,
+.admin-content-overlay::-webkit-scrollbar {
+    display: block !important;
+    width: 6px !important;
+}
+
+.patient-table-responsive,
+.admin-table-responsive,
+.patient-appointments-table-wrapper,
+.admin-appointments-table-wrapper {
+    overflow-y: visible !important;
+    overflow-x: auto !important;
+}
+
+/* 🔥 SMOOTH SCROLL FIX - Dashboard Overlay */
+.patient-content-overlay,
+.admin-content-overlay,
+.doctor-content-overlay {
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    /* 🔥 FIX: Scroll down atakna band */
+    overflow-y: auto !important;
+    height: 100vh;
+}
+
+/* 🔥 FIX: Mobile scroll down */
+@media (max-width: 768px) {
+    .patient-content-overlay,
+    .admin-content-overlay,
+    .doctor-content-overlay {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-behavior: smooth !important;
+        height: 100vh;
+        height: -webkit-fill-available;
+        /* 🔥 FIX: Scroll down properly */
+        overscroll-behavior: none !important;
+    }
+    
+    .patient-main-content,
+    .admin-main-content,
+    .doctor-main-content {
+        padding-bottom: 120px !important;
+    }
 }

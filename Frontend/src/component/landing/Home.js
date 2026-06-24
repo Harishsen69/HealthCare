@@ -14,6 +14,11 @@ function Home({ setPage }) {
     const [loading, setLoading] = useState(true);
     const [userProfile, setUserProfile] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+    const [scrollPosition, setScrollPosition] = useState(0);
+
+    const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
+    const [selectedSpecialty, setSelectedSpecialty] = useState(null);
+    const [specialtyDoctors, setSpecialtyDoctors] = useState([]);
 
     const [showAddDoctorForm, setShowAddDoctorForm] = useState(false);
     const [newDoctor, setNewDoctor] = useState({
@@ -33,12 +38,48 @@ function Home({ setPage }) {
     ];
 
     const specialties = [
-        { icon: "❤️", name: "Cardiology", desc: "Heart Specialists" },
-        { icon: "🧠", name: "Neurology", desc: "Brain & Nerves" },
-        { icon: "👶", name: "Pediatrics", desc: "Child Care" },
-        { icon: "🦴", name: "Orthopedics", desc: "Bone & Joints" },
-        { icon: "🩺", name: "Dermatology", desc: "Skin Care" },
-        { icon: "🧘", name: "Psychiatry", desc: "Mental Health" }
+        { 
+            icon: "❤️", 
+            name: "Cardiology", 
+            desc: "Heart Specialists",
+            fullDesc: "Cardiology is the branch of medicine that deals with disorders of the heart and blood vessels.",
+            symptoms: "Chest pain, Shortness of breath, Palpitations, Dizziness, Swelling in legs"
+        },
+        { 
+            icon: "🧠", 
+            name: "Neurology", 
+            desc: "Brain & Nerves",
+            fullDesc: "Neurology is the branch of medicine dealing with disorders of the nervous system.",
+            symptoms: "Headaches, Numbness, Memory problems, Seizures, Difficulty speaking"
+        },
+        { 
+            icon: "👶", 
+            name: "Pediatrics", 
+            desc: "Child Care",
+            fullDesc: "Pediatrics is the branch of medicine that involves the medical care of infants, children, and adolescents.",
+            symptoms: "Fever, Growth concerns, Developmental delays, Behavioral issues"
+        },
+        { 
+            icon: "🦴", 
+            name: "Orthopedics", 
+            desc: "Bone & Joints",
+            fullDesc: "Orthopedics is the branch of surgery concerned with conditions involving the musculoskeletal system.",
+            symptoms: "Joint pain, Fractures, Back pain, Sports injuries, Arthritis"
+        },
+        { 
+            icon: "🩺", 
+            name: "Dermatology", 
+            desc: "Skin Care",
+            fullDesc: "Dermatology is the branch of medicine dealing with the skin, nails, hair and their diseases.",
+            symptoms: "Rashes, Itching, Skin discoloration, Moles, Hair loss, Acne"
+        },
+        { 
+            icon: "🧘", 
+            name: "Psychiatry", 
+            desc: "Mental Health",
+            fullDesc: "Psychiatry is the medical specialty devoted to the diagnosis, prevention, and treatment of mental disorders.",
+            symptoms: "Anxiety, Depression, Mood swings, Sleep problems, Stress"
+        }
     ];
 
     const getInitialCount = () => {
@@ -53,21 +94,15 @@ function Home({ setPage }) {
         const handleResize = () => {
             const mobile = window.innerWidth <= 900;
             setIsMobile(mobile);
-            if (visibleDoctors !== doctors.length) {
-                if (mobile && visibleDoctors > 4) {
-                    setVisibleDoctors(4);
-                } else if (!mobile && visibleDoctors < 6) {
-                    setVisibleDoctors(6);
-                }
-            }
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [doctors.length, visibleDoctors]);
+    }, []);
 
     const loadMoreDoctors = () => {
         const increment = getLoadMoreIncrement();
-        setVisibleDoctors(prev => prev + increment);
+        const newCount = visibleDoctors + increment;
+        setVisibleDoctors(Math.min(newCount, doctors.length));
     };
 
     const viewAllDoctors = () => {
@@ -79,40 +114,57 @@ function Home({ setPage }) {
         setVisibleDoctors(initialCount);
     };
 
+    // 🔥 FIX: Modal body control with exact scroll position - NO BLINK
     useEffect(() => {
-        if (showAppointment || showDoctorModal) {
+        if (showAppointment || showDoctorModal || showSpecialtyModal) {
+            const scrollY = window.scrollY;
+            setScrollPosition(scrollY);
+            
             document.body.style.overflow = 'hidden';
             document.body.style.position = 'fixed';
             document.body.style.width = '100%';
-            document.body.style.top = `-${window.scrollY}px`;
+            document.body.style.height = '100%';
+            document.body.style.top = `-${scrollY}px`;
         } else {
-            const scrollY = document.body.style.top;
             document.body.style.overflow = '';
             document.body.style.position = '';
             document.body.style.width = '';
+            document.body.style.height = '';
             document.body.style.top = '';
-            if (scrollY) {
-                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            
+            // 🔥 FIX: Exact position restore - NO SCROLL DOWN
+            if (scrollPosition > 0) {
+                // Use requestAnimationFrame for smooth restore
+                requestAnimationFrame(() => {
+                    window.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'instant'
+                    });
+                    // Don't reset scrollPosition immediately, keep it
+                });
             }
         }
+
         return () => {
             document.body.style.overflow = '';
             document.body.style.position = '';
             document.body.style.width = '';
+            document.body.style.height = '';
             document.body.style.top = '';
         };
-    }, [showAppointment, showDoctorModal]);
+    }, [showAppointment, showDoctorModal, showSpecialtyModal]);
 
     useEffect(() => {
         const handleEsc = (e) => {
             if (e.key === 'Escape') {
                 if (showAppointment) closeAppointmentModal();
                 if (showDoctorModal) closeDoctorModal();
+                if (showSpecialtyModal) closeSpecialtyModal();
             }
         };
         window.addEventListener('keydown', handleEsc);
         return () => window.removeEventListener('keydown', handleEsc);
-    }, [showAppointment, showDoctorModal]);
+    }, [showAppointment, showDoctorModal, showSpecialtyModal]);
 
     const fetchUserProfile = useCallback(async () => {
         if (!token) return;
@@ -138,7 +190,6 @@ function Home({ setPage }) {
         }
     }, [token, userRole]);
 
-    // Helper function to get correct image URL
     const getImageUrl = (imagePath) => {
         if (!imagePath) return null;
         return imagePath;
@@ -163,6 +214,25 @@ function Home({ setPage }) {
             setLoading(false);
         }
     }, []);
+
+    const getDoctorsBySpecialty = (specialtyName) => {
+        return doctors.filter(doc => 
+            doc.specialization?.toLowerCase().includes(specialtyName.toLowerCase())
+        );
+    };
+
+    const handleSpecialtyClick = (specialty) => {
+        const specialtyDoctorsList = getDoctorsBySpecialty(specialty.name);
+        setSelectedSpecialty(specialty);
+        setSpecialtyDoctors(specialtyDoctorsList);
+        setShowSpecialtyModal(true);
+    };
+
+    const closeSpecialtyModal = () => {
+        setShowSpecialtyModal(false);
+        setSelectedSpecialty(null);
+        setSpecialtyDoctors([]);
+    };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -314,6 +384,7 @@ function Home({ setPage }) {
         setFormData(prev => ({ ...prev, doctorId: doctorId.toString() }));
         setShowAppointment(true);
         setShowDoctorModal(false);
+        setShowSpecialtyModal(false);
     };
 
     const stopPropagation = (e) => e.stopPropagation();
@@ -325,9 +396,8 @@ function Home({ setPage }) {
 
     const displayedDoctors = doctors.slice(0, visibleDoctors);
     const initialCount = isMobile ? 4 : 6;
-    const isShowingAll = visibleDoctors === doctors.length;
-    const showLoadMore = !isShowingAll && visibleDoctors < doctors.length;
-    const showViewAll = !isShowingAll && doctors.length > visibleDoctors;
+    const showMoreButton = visibleDoctors < doctors.length;
+    const showLessButton = visibleDoctors > initialCount;
 
     if (loading) {
         return (
@@ -425,20 +495,23 @@ function Home({ setPage }) {
                 </section>
             )}
 
-            {/* Specialties Section */}
+            {/* Specialties Section - Clickable */}
             <section className="hm-specialties-section">
                 <div className="hm-container">
                     <div className="hm-section-header">
                         <span className="hm-section-badge">Specialties</span>
                         <h2>Browse by Medical Specialty</h2>
-                        <p>Find the right specialist for your health needs</p>
+                        <p>Click on any specialty to see specialist doctors</p>
                     </div>
                     <div className="hm-specialties-grid">
                         {specialties.map((item, idx) => (
-                            <div className="hm-spec-card" key={idx}>
+                            <div className="hm-spec-card" key={idx} onClick={() => handleSpecialtyClick(item)}>
                                 <div className="hm-spec-icon">{item.icon}</div>
                                 <h3>{item.name}</h3>
                                 <p>{item.desc}</p>
+                                <span className="hm-spec-doctor-count">
+                                    {getDoctorsBySpecialty(item.name).length} Doctors
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -481,11 +554,24 @@ function Home({ setPage }) {
                                     </div>
                                 ))}
                             </div>
+
                             {doctors.length > initialCount && (
                                 <div className="hm-load-more-container">
-                                    {showLoadMore && <button className="hm-load-more-btn" onClick={loadMoreDoctors}>Load More {isMobile ? "(+4)" : "(+3)"}</button>}
-                                    {showViewAll && !showLoadMore && <button className="hm-view-all-btn" onClick={viewAllDoctors}>View All Doctors ({doctors.length})</button>}
-                                    {isShowingAll && doctors.length > initialCount && <button className="hm-show-less-btn" onClick={showLessDoctors}>Show Less ↑</button>}
+                                    {showMoreButton && (
+                                        <button className="hm-load-more-btn" onClick={loadMoreDoctors}>
+                                            Show More {isMobile ? "(+4)" : "(+3)"}
+                                        </button>
+                                    )}
+                                    {showMoreButton && visibleDoctors < doctors.length && (
+                                        <button className="hm-view-all-btn" onClick={viewAllDoctors}>
+                                            View All ({doctors.length})
+                                        </button>
+                                    )}
+                                    {showLessButton && (
+                                        <button className="hm-show-less-btn" onClick={showLessDoctors}>
+                                            Show Less ↑
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </>
@@ -617,6 +703,68 @@ function Home({ setPage }) {
                         <div className="hm-doc-footer">
                             <button className="hm-book-now" onClick={() => quickBook(selectedDoctor.id)}>📅 Book Appointment Now</button>
                             <button className="hm-video-consult">🎥 Video Consultation</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Specialty Modal */}
+            {showSpecialtyModal && selectedSpecialty && (
+                <div className="hm-modal-overlay" onClick={closeSpecialtyModal}>
+                    <div className="hm-specialty-modal" onClick={stopPropagation}>
+                        <button className="hm-modal-close-icon" onClick={closeSpecialtyModal}>✕</button>
+                        
+                        <div className="hm-specialty-header">
+                            <div className="hm-specialty-icon">{selectedSpecialty.icon}</div>
+                            <div>
+                                <h2>{selectedSpecialty.name}</h2>
+                                <p>{selectedSpecialty.desc}</p>
+                            </div>
+                        </div>
+
+                        <div className="hm-specialty-scroll-area">
+                            <div className="hm-specialty-description">
+                                <h3>📖 About {selectedSpecialty.name}</h3>
+                                <p>{selectedSpecialty.fullDesc}</p>
+                            </div>
+
+                            <div className="hm-specialty-symptoms">
+                                <h3>🩺 Common Symptoms</h3>
+                                <div className="hm-symptoms-tags">
+                                    {selectedSpecialty.symptoms.split(',').map((symptom, idx) => (
+                                        <span key={idx} className="hm-symptom-tag">{symptom.trim()}</span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="hm-specialty-doctors">
+                                <h3>👨‍⚕️ Specialist Doctors ({specialtyDoctors.length})</h3>
+                                {specialtyDoctors.length === 0 ? (
+                                    <p className="hm-no-specialist-doctors">No {selectedSpecialty.name} specialists available currently.</p>
+                                ) : (
+                                    <div className="hm-specialty-doctors-list">
+                                        {specialtyDoctors.map(doc => (
+                                            <div key={doc.id} className="hm-specialty-doctor-item" onClick={() => { closeSpecialtyModal(); handleDoctorClick(doc); }}>
+                                                <div className="hm-specialty-doc-avatar">
+                                                    <img
+                                                        src={doc.image || "https://randomuser.me/api/portraits/men/1.jpg"}
+                                                        alt={doc.name}
+                                                        onError={(e) => { e.target.src = "https://randomuser.me/api/portraits/men/1.jpg"; }}
+                                                    />
+                                                </div>
+                                                <div className="hm-specialty-doc-info">
+                                                    <h4>Dr. {doc.name}</h4>
+                                                    <p>{doc.specialization}</p>
+                                                    <span className="hm-specialty-doc-fee">₹{doc.fee}</span>
+                                                </div>
+                                                <button className="hm-specialty-book-btn" onClick={(e) => { e.stopPropagation(); quickBook(doc.id); }}>
+                                                    Book
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

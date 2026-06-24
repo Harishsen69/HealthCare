@@ -473,6 +473,9 @@ function AdminDashboard({ setPage }) {
                     </div>
                 )}
             </div>
+            
+            {/* 🔥 EXTRA SPACE AT BOTTOM */}
+            <div style={{ height: '30px' }}></div>
         </div>
     );
 

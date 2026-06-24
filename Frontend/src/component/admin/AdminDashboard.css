@@ -1,3 +1,15 @@
+/* ========== GLOBAL FIXES ========== */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
 /* ========== MAIN LAYOUT ========== */
 .admin-dashboard-layout {
     display: flex;
@@ -7,7 +19,6 @@
     overflow: hidden;
 }
 
-/* ✅ Blur overlay wrapper - FIXED */
 .admin-content-overlay {
     flex: 1;
     transition: filter 0.3s ease;
@@ -16,6 +27,10 @@
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+    
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
 /* Scrollbar */
@@ -42,13 +57,11 @@
     scrollbar-color: #0284c7 #e2e8f0;
 }
 
-/* ✅ Active blur on mobile */
 .admin-content-overlay.blur-active {
     filter: blur(5px);
     pointer-events: none;
 }
 
-/* ✅ Desktop - no blur */
 @media (min-width: 769px) {
     .admin-content-overlay.blur-active {
         filter: none;
@@ -60,12 +73,20 @@
     flex: 1;
     margin-left: 270px;
     padding: 1rem;
+    padding-bottom: 4rem;
     overflow: visible;
+    min-height: 100%;
+    height: auto;
 }
 
-/* Ensure sidebar stays on top */
 .sidebar-container {
     z-index: 1000;
+}
+
+.admin-dashboard-container {
+    width: 100%;
+    padding-bottom: 2rem;
+    overflow: visible;
 }
 
 /* ========== MOBILE HEADER ========== */
@@ -85,7 +106,6 @@
     transition: all 0.3s ease;
 }
 
-/* Show header only on mobile */
 @media (max-width: 768px) {
     .admin-mobile-header {
         display: flex;
@@ -128,11 +148,12 @@
     color: transparent;
 }
 
-/* Add padding to main content for fixed header on mobile */
 @media (max-width: 768px) {
     .admin-main-content {
         padding-top: 70px;
         margin-left: 0;
+        padding-bottom: 100px;
+        overflow: visible;
     }
 }
 
@@ -160,12 +181,13 @@
     margin-top: 0.2rem;
 }
 
-/* ========== STATS CARDS - 4 COLUMNS ========== */
+/* ========== STATS CARDS ========== */
 .admin-stats-cards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     margin-bottom: 1.5rem;
+    overflow: visible;
 }
 
 .admin-stat-card {
@@ -220,6 +242,7 @@
     padding: 1rem;
     border-radius: 16px;
     border: 1px solid #e2e8f0;
+    overflow: visible;
 }
 
 .admin-filter-row {
@@ -310,7 +333,7 @@
     box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
 }
 
-/* ========== DOCTORS FILTER BAR (NEW) ========== */
+/* ========== DOCTORS FILTER BAR ========== */
 .admin-doctors-filter-bar {
     display: flex;
     flex-direction: column;
@@ -320,6 +343,7 @@
     padding: 1rem;
     border-radius: 16px;
     border: 1px solid #e2e8f0;
+    overflow: visible;
 }
 
 .admin-doctors-filter-row {
@@ -402,6 +426,7 @@
     padding: 1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
+    overflow: visible;
 }
 
 .admin-section-header {
@@ -434,7 +459,10 @@
 /* ========== DATA TABLE ========== */
 .admin-table-responsive {
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    width: 100%;
 }
 
 .admin-data-table {
@@ -553,6 +581,17 @@
     font-size: 0.9rem;
 }
 
+/* 🔥 HIDE ALL CHILD SCROLLBARS */
+.admin-main-content::-webkit-scrollbar,
+.admin-dashboard-container::-webkit-scrollbar,
+.admin-filter-bar::-webkit-scrollbar,
+.admin-doctors-filter-bar::-webkit-scrollbar,
+.admin-recent-section::-webkit-scrollbar,
+.admin-stat-card::-webkit-scrollbar,
+.admin-stats-cards::-webkit-scrollbar {
+    display: none;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
     .admin-stats-cards {
@@ -569,12 +608,18 @@
     
     .admin-content-overlay {
         height: 100vh;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 30px;
     }
     
     .admin-main-content {
         margin-left: 0;
         padding: 0.8rem;
         padding-top: 70px;
+        padding-bottom: 100px;
+        overflow: visible;
+        min-height: 100%;
+        height: auto;
     }
     
     .admin-main-header {
@@ -617,7 +662,6 @@
         padding: 0.5rem 0.4rem;
     }
     
-    /* Mobile filter bars */
     .admin-filter-row,
     .admin-doctors-filter-row {
         flex-direction: column;
@@ -656,6 +700,8 @@
     .admin-main-content {
         padding: 0.6rem;
         padding-top: 65px;
+        padding-bottom: 90px;
+        overflow: visible;
     }
     
     .admin-mobile-header {
@@ -727,11 +773,10 @@
     .doctor-main-content,
     .admin-main-content {
         margin-left: 0;
-        padding-top: 70px;
+        padding-top: 0px;
     }
 }
 
-/* For desktop */
 @media (min-width: 769px) {
     .patient-main-content,
     .doctor-main-content,

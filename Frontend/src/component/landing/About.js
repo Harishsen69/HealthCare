@@ -1,7 +1,53 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./About.css";
 
 function About({ setPage }) {
+    const [selectedFeature, setSelectedFeature] = useState(null);
+    const [selectedValue, setSelectedValue] = useState(null);
+    const [selectedTestimonial, setSelectedTestimonial] = useState(null);
+    const [showFeatureModal, setShowFeatureModal] = useState(false);
+    const [showValueModal, setShowValueModal] = useState(false);
+    const [showTestimonialModal, setShowTestimonialModal] = useState(false);
+    const [scrollPosition, setScrollPosition] = useState(0);
+
+    // 🔥 Load More States for Features
+    const [visibleFeatures, setVisibleFeatures] = useState(6);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+
+    // 🔥 Check screen size - NO AUTO RESIZE
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth <= 900;
+            setIsMobile(mobile);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const getInitialCount = () => {
+        return window.innerWidth <= 900 ? 4 : 6;
+    };
+
+    const getLoadMoreIncrement = () => {
+        return window.innerWidth <= 900 ? 4 : 3;
+    };
+
+    // 🔥 Show More - +4 on mobile, +3 on laptop
+    const loadMoreFeatures = () => {
+        const increment = getLoadMoreIncrement();
+        const newCount = visibleFeatures + increment;
+        setVisibleFeatures(Math.min(newCount, features.length));
+    };
+
+    const viewAllFeatures = () => {
+        setVisibleFeatures(features.length);
+    };
+
+    const showLessFeatures = () => {
+        const initialCount = getInitialCount();
+        setVisibleFeatures(initialCount);
+    };
+
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -15,29 +61,144 @@ function About({ setPage }) {
         return () => observer.disconnect();
     }, []);
 
+    // 🔥 FIX: Modal body control with exact scroll position - NO BLINK
+    useEffect(() => {
+        if (showFeatureModal || showValueModal || showTestimonialModal) {
+            const scrollY = window.scrollY;
+            setScrollPosition(scrollY);
+            
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.height = '100%';
+            document.body.style.top = `-${scrollY}px`;
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.style.top = '';
+            
+            // 🔥 FIX: Exact position restore - NO SCROLL DOWN
+            if (scrollPosition > 0) {
+                requestAnimationFrame(() => {
+                    window.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'instant'
+                    });
+                });
+            }
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.style.top = '';
+        };
+    }, [showFeatureModal, showValueModal, showTestimonialModal]);
+
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                closeModals();
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, []);
+
     const features = [
-        { icon: "👨‍⚕️", title: "Expert Doctors", desc: "Board-certified specialists with years of experience" },
-        { icon: "🏥", title: "Modern Facilities", desc: "State-of-the-art equipment and infrastructure" },
-        { icon: "⏰", title: "24/7 Support", desc: "Round-the-clock medical assistance" },
-        { icon: "💙", title: "Patient First", desc: "Personalized care for every patient" },
-        { icon: "🚑", title: "Emergency Care", desc: "Immediate response in critical situations" },
-        { icon: "🔬", title: "Advanced Tech", desc: "Latest medical technology for accurate diagnosis" }
+        { 
+            icon: "👨‍⚕️", 
+            title: "Expert Doctors", 
+            desc: "Board-certified specialists with years of experience",
+            fullDesc: "Our team consists of highly qualified doctors who are experts in their respective fields. Each doctor is board-certified and has completed rigorous training from top medical institutions.",
+            highlights: ["500+ Experienced Doctors", "10+ Years Average Experience", "Continuing Medical Education", "Published Research Papers"]
+        },
+        { 
+            icon: "🏥", 
+            title: "Modern Facilities", 
+            desc: "State-of-the-art equipment and infrastructure",
+            fullDesc: "Our hospital is equipped with the latest medical technology and infrastructure. From advanced diagnostic equipment to modern operation theaters, we ensure the highest standard of care.",
+            highlights: ["Advanced Diagnostic Labs", "Modern Operation Theaters", "Comfortable Patient Rooms", "24/7 Pharmacy"]
+        },
+        { 
+            icon: "⏰", 
+            title: "24/7 Support", 
+            desc: "Round-the-clock medical assistance",
+            fullDesc: "Healthcare emergencies don't follow a schedule. That's why we offer round-the-clock medical assistance with dedicated doctors, nurses, and support staff available 24/7.",
+            highlights: ["Emergency Services", "Night Shift Staff", "Quick Response Team", "Ambulance Services"]
+        },
+        { 
+            icon: "💙", 
+            title: "Patient First", 
+            desc: "Personalized care for every patient",
+            fullDesc: "We believe that every patient is unique and deserves personalized attention. Our patient-first approach ensures we listen to your concerns and create customized treatment plans.",
+            highlights: ["Personalized Treatment Plans", "Patient Education Programs", "Follow-up Care", "Family Support"]
+        },
+        { 
+            icon: "🚑", 
+            title: "Emergency Care", 
+            desc: "Immediate response in critical situations",
+            fullDesc: "In critical situations, every second counts. Our emergency care team is trained to respond immediately with advanced life support systems and trauma care.",
+            highlights: ["24/7 Emergency Room", "Advanced Life Support", "Trauma Care", "Critical Care Unit"]
+        },
+        { 
+            icon: "🔬", 
+            title: "Advanced Tech", 
+            desc: "Latest medical technology for accurate diagnosis",
+            fullDesc: "We invest in the latest medical technology to ensure accurate diagnosis and effective treatment. From AI-powered tools to advanced imaging equipment.",
+            highlights: ["AI-Powered Diagnostics", "Advanced Imaging", "Minimally Invasive Surgery", "Digital Health Records"]
+        }
     ];
 
     const values = [
-        { num: "01", title: "Compassion", desc: "We treat every patient with empathy and respect" },
-        { num: "02", title: "Excellence", desc: "We strive for the highest quality in everything we do" },
-        { num: "03", title: "Integrity", desc: "We are honest, ethical, and transparent" },
-        { num: "04", title: "Innovation", desc: "We embrace new technology and ideas" },
-        { num: "05", title: "Teamwork", desc: "Collaborative approach for better outcomes" },
-        { num: "06", title: "Accessibility", desc: "Healthcare for everyone, everywhere" }
+        { num: "01", title: "Compassion", desc: "We treat every patient with empathy and respect", fullDesc: "Compassion is at the heart of everything we do. We believe treating patients with empathy, kindness, and respect is as important as medical care.", examples: ["Active Listening", "Patient Support Groups", "Counselling Services", "Family Involvement"] },
+        { num: "02", title: "Excellence", desc: "We strive for the highest quality in everything we do", fullDesc: "Excellence is not just a goal, it's our standard. We constantly strive to improve our services and deliver the highest quality healthcare.", examples: ["Quality Standards", "Continuous Improvement", "Patient Safety", "Outcome Tracking"] },
+        { num: "03", title: "Integrity", desc: "We are honest, ethical, and transparent", fullDesc: "Integrity is the foundation of our relationships. We are committed to honesty, transparency, and ethical practices in all our dealings.", examples: ["Transparent Pricing", "Informed Consent", "Ethical Practices", "Open Communication"] },
+        { num: "04", title: "Innovation", desc: "We embrace new technology and ideas", fullDesc: "Innovation drives better healthcare outcomes. We actively embrace new technologies, research findings, and innovative approaches to treatment.", examples: ["Research Initiatives", "Technology Adoption", "Clinical Trials", "Continuous Learning"] },
+        { num: "05", title: "Teamwork", desc: "Collaborative approach for better outcomes", fullDesc: "Healthcare is a team sport. We believe in collaborative care where doctors, nurses, and specialists work together for comprehensive care.", examples: ["Multidisciplinary Teams", "Regular Consultations", "Care Coordination", "Shared Decision Making"] },
+        { num: "06", title: "Accessibility", desc: "Healthcare for everyone, everywhere", fullDesc: "We believe quality healthcare should be accessible to everyone. We offer affordable services and flexible payment options.", examples: ["Affordable Care", "Multiple Locations", "Telehealth Services", "Insurance Coverage"] }
     ];
 
     const testimonials = [
-        { quote: "Excellent doctors and staff. My surgery was successful and recovery was smooth.", name: "Rajesh Kumar", rating: "⭐⭐⭐⭐⭐" },
-        { quote: "Best hospital in town. Very clean, professional, and caring staff.", name: "Priya Sharma", rating: "⭐⭐⭐⭐⭐" },
-        { quote: "Quick appointment and excellent treatment. The doctors explained everything clearly.", name: "Amit Patel", rating: "⭐⭐⭐⭐⭐" }
+        { quote: "Excellent doctors and staff. My surgery was successful and recovery was smooth.", name: "Rajesh Kumar", rating: "⭐⭐⭐⭐⭐", fullReview: "I had a life-changing experience at MediCare. The doctors were highly professional and explained every step of the procedure. The nursing staff was caring and attentive. My recovery was faster than expected. I highly recommend MediCare to anyone seeking quality healthcare.", treatment: "Surgery & Recovery", duration: "3 months ago" },
+        { quote: "Best hospital in town. Very clean, professional, and caring staff.", name: "Priya Sharma", rating: "⭐⭐⭐⭐⭐", fullReview: "From the moment I walked in, I felt welcomed and cared for. The hospital is spotless and well-maintained. The doctors took time to listen to my concerns and answered all my questions. The entire team made my treatment journey comfortable and stress-free.", treatment: "General Medicine", duration: "2 weeks ago" },
+        { quote: "Quick appointment and excellent treatment. The doctors explained everything clearly.", name: "Amit Patel", rating: "⭐⭐⭐⭐⭐", fullReview: "Getting an appointment was quick and easy. The doctor was thorough and explained my condition in simple language. The treatment was effective and I recovered quickly. The follow-up care was also excellent. Thank you MediCare for your wonderful service.", treatment: "Consultation", duration: "1 month ago" }
     ];
+
+    const handleFeatureClick = (feature) => {
+        setSelectedFeature(feature);
+        setShowFeatureModal(true);
+    };
+
+    const handleValueClick = (value) => {
+        setSelectedValue(value);
+        setShowValueModal(true);
+    };
+
+    const handleTestimonialClick = (testimonial) => {
+        setSelectedTestimonial(testimonial);
+        setShowTestimonialModal(true);
+    };
+
+    const closeModals = () => {
+        setShowFeatureModal(false);
+        setShowValueModal(false);
+        setShowTestimonialModal(false);
+        setSelectedFeature(null);
+        setSelectedValue(null);
+        setSelectedTestimonial(null);
+    };
+
+    const stopPropagation = (e) => e.stopPropagation();
+
+    const displayedFeatures = features.slice(0, visibleFeatures);
+    const initialCount = isMobile ? 4 : 6;
+    const showMoreButton = visibleFeatures < features.length;
+    const showLessButton = visibleFeatures > initialCount;
 
     return (
         <div className="ab-about-container">
@@ -128,23 +289,45 @@ function About({ setPage }) {
                 </div>
             </section>
 
-            {/* Why Choose Us */}
+            {/* Why Choose Us - Clickable Cards with Load More */}
             <section className="ab-features-section ab-fade-up">
                 <div className="ab-container">
                     <div className="ab-section-header">
                         <span className="ab-section-badge">Why Choose Us</span>
                         <h2>What Makes Us Different</h2>
-                        <p>We are committed to providing the highest standard of medical care</p>
+                        <p>Tap on any card to learn more</p>
                     </div>
                     <div className="ab-features-grid">
-                        {features.map((item, idx) => (
-                            <div className="ab-feature-card" key={idx}>
+                        {displayedFeatures.map((item, idx) => (
+                            <div className="ab-feature-card clickable" key={idx} onClick={() => handleFeatureClick(item)}>
                                 <div className="ab-feature-icon">{item.icon}</div>
                                 <h3>{item.title}</h3>
                                 <p>{item.desc}</p>
+                                <span className="ab-click-hint">Tap to learn more →</span>
                             </div>
                         ))}
                     </div>
+
+                    {/* 🔥 SHOW MORE / VIEW ALL / SHOW LESS BUTTONS */}
+                    {features.length > initialCount && (
+                        <div className="ab-load-more-container">
+                            {showMoreButton && (
+                                <button className="ab-load-more-btn" onClick={loadMoreFeatures}>
+                                    Show More {isMobile ? "(+4)" : "(+3)"}
+                                </button>
+                            )}
+                            {showMoreButton && visibleFeatures < features.length && (
+                                <button className="ab-view-all-btn" onClick={viewAllFeatures}>
+                                    View All ({features.length})
+                                </button>
+                            )}
+                            {showLessButton && (
+                                <button className="ab-show-less-btn" onClick={showLessFeatures}>
+                                    Show Less ↑
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -154,14 +337,15 @@ function About({ setPage }) {
                     <div className="ab-section-header">
                         <span className="ab-section-badge">Core Values</span>
                         <h2>Guided by Excellence</h2>
-                        <p>The principles that drive everything we do</p>
+                        <p>Tap on any card to learn more</p>
                     </div>
                     <div className="ab-values-grid">
                         {values.map((item, idx) => (
-                            <div className="ab-value-card" key={idx}>
+                            <div className="ab-value-card clickable" key={idx} onClick={() => handleValueClick(item)}>
                                 <div className="ab-value-num">{item.num}</div>
                                 <h3>{item.title}</h3>
                                 <p>{item.desc}</p>
+                                <span className="ab-click-hint">Tap to learn more →</span>
                             </div>
                         ))}
                     </div>
@@ -174,17 +358,18 @@ function About({ setPage }) {
                     <div className="ab-section-header">
                         <span className="ab-section-badge">Testimonials</span>
                         <h2>What Our Patients Say</h2>
-                        <p>Trusted by thousands of patients across India</p>
+                        <p>Tap on any review to read full story</p>
                     </div>
                     <div className="ab-testimonials-grid">
                         {testimonials.map((item, idx) => (
-                            <div className="ab-testimonial-card" key={idx}>
+                            <div className="ab-testimonial-card clickable" key={idx} onClick={() => handleTestimonialClick(item)}>
                                 <div className="ab-quote">"</div>
                                 <p>{item.quote}</p>
                                 <div className="ab-patient-info">
                                     <strong>{item.name}</strong>
                                     <span>{item.rating}</span>
                                 </div>
+                                <span className="ab-click-hint">Read full review →</span>
                             </div>
                         ))}
                     </div>
@@ -199,6 +384,79 @@ function About({ setPage }) {
                     <button className="ab-cta-btn" onClick={() => setPage("services")}>Get Started →</button>
                 </div>
             </section>
+
+            {/* ========== MODALS ========== */}
+            {showFeatureModal && selectedFeature && (
+                <div className="ab-modal-overlay" onClick={closeModals}>
+                    <div className="ab-modal-content" onClick={stopPropagation}>
+                        <button className="ab-modal-close" onClick={closeModals}>✕</button>
+                        <div className="ab-modal-header">
+                            <span className="ab-modal-icon">{selectedFeature.icon}</span>
+                            <h2>{selectedFeature.title}</h2>
+                        </div>
+                        <div className="ab-modal-body">
+                            <p className="ab-modal-desc">{selectedFeature.fullDesc}</p>
+                            <div className="ab-modal-highlights">
+                                <h4>✨ Key Highlights</h4>
+                                <ul>
+                                    {selectedFeature.highlights.map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                        <button className="ab-modal-action-btn" onClick={closeModals}>Got it</button>
+                    </div>
+                </div>
+            )}
+
+            {showValueModal && selectedValue && (
+                <div className="ab-modal-overlay" onClick={closeModals}>
+                    <div className="ab-modal-content" onClick={stopPropagation}>
+                        <button className="ab-modal-close" onClick={closeModals}>✕</button>
+                        <div className="ab-modal-header">
+                            <span className="ab-modal-number">{selectedValue.num}</span>
+                            <h2>{selectedValue.title}</h2>
+                        </div>
+                        <div className="ab-modal-body">
+                            <p className="ab-modal-desc">{selectedValue.fullDesc}</p>
+                            <div className="ab-modal-highlights">
+                                <h4>💡 How We Practice</h4>
+                                <ul>
+                                    {selectedValue.examples.map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                        <button className="ab-modal-action-btn" onClick={closeModals}>Got it</button>
+                    </div>
+                </div>
+            )}
+
+            {showTestimonialModal && selectedTestimonial && (
+                <div className="ab-modal-overlay" onClick={closeModals}>
+                    <div className="ab-modal-content" onClick={stopPropagation}>
+                        <button className="ab-modal-close" onClick={closeModals}>✕</button>
+                        <div className="ab-modal-header">
+                            <span className="ab-modal-icon">💬</span>
+                            <h2>Patient Review</h2>
+                        </div>
+                        <div className="ab-modal-body">
+                            <div className="ab-modal-testimonial">
+                                <div className="ab-modal-rating">{selectedTestimonial.rating}</div>
+                                <p className="ab-modal-review">{selectedTestimonial.fullReview}</p>
+                                <div className="ab-modal-patient">
+                                    <strong>{selectedTestimonial.name}</strong>
+                                    <span>• {selectedTestimonial.treatment}</span>
+                                    <span>• {selectedTestimonial.duration}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button className="ab-modal-action-btn" onClick={closeModals}>Got it</button>
+                    </div>
+                </div>
+            )}
 
             {/* Footer */}
             <footer className="ab-footer">

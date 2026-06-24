@@ -4,20 +4,24 @@ import "./Service.css";
 function Service({ setPage }) {
     const [visibleServices, setVisibleServices] = useState(6);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
-    const [showAllServices, setShowAllServices] = useState(false);
+    const [scrollPosition, setScrollPosition] = useState(0);
+
+    // 🔥 Modal States
+    const [selectedService, setSelectedService] = useState(null);
+    const [showServiceModal, setShowServiceModal] = useState(false);
 
     // Check screen size for mobile/laptop
     useEffect(() => {
         const handleResize = () => {
             const mobile = window.innerWidth <= 900;
             setIsMobile(mobile);
+            // Reset visible count on resize
             if (mobile && visibleServices > 4) {
                 setVisibleServices(4);
             } else if (!mobile && visibleServices < 6) {
                 setVisibleServices(6);
             }
         };
-        
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [visibleServices]);
@@ -36,16 +40,120 @@ function Service({ setPage }) {
         return () => observer.disconnect();
     }, []);
 
+    // Modal body control with exact scroll position - NO BLINK
+    useEffect(() => {
+        if (showServiceModal) {
+            const scrollY = window.scrollY;
+            setScrollPosition(scrollY);
+            
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.height = '100%';
+            document.body.style.top = `-${scrollY}px`;
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.style.top = '';
+            
+            if (scrollPosition > 0) {
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'auto'
+                    });
+                    setScrollPosition(0);
+                }, 10);
+            }
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.style.top = '';
+        };
+    }, [showServiceModal]);
+
+    // ESC key handler
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape' && showServiceModal) {
+                closeServiceModal();
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [showServiceModal]);
+
+    // 🔥 Services with Full Details
     const services = [
-        { icon: "❤️", name: "Cardiology", desc: "Expert heart care with advanced diagnostic and treatment options for all cardiac conditions." },
-        { icon: "🧠", name: "Neurology", desc: "Specialized care for brain, spine, and nervous system disorders with advanced treatments." },
-        { icon: "👶", name: "Pediatrics", desc: "Comprehensive child healthcare from newborns to adolescents in a friendly environment." },
-        { icon: "🦴", name: "Orthopedics", desc: "Expert care for bones, joints, and muscles with modern surgical techniques." },
-        { icon: "👁️", name: "Ophthalmology", desc: "Complete eye care services including cataract surgery and laser treatments." },
-        { icon: "🦷", name: "Dentistry", desc: "Comprehensive dental care including root canals, crowns, and cosmetic dentistry." },
-        { icon: "🤰", name: "Gynecology", desc: "Complete women's health services from adolescence to menopause." },
-        { icon: "🩺", name: "Dermatology", desc: "Expert skin, hair, and nail care with advanced cosmetic treatments." },
-        { icon: "🚑", name: "Emergency Care", desc: "24/7 emergency services with rapid response and critical care." }
+        { 
+            icon: "❤️", 
+            name: "Cardiology", 
+            desc: "Expert heart care with advanced diagnostic and treatment options for all cardiac conditions.",
+            fullDesc: "Our Cardiology department offers comprehensive heart care services including diagnostic testing, interventional procedures, and cardiac rehabilitation. We specialize in treating coronary artery disease, heart failure, arrhythmias, and valvular heart disease using state-of-the-art technology.",
+            treatments: ["ECG & Stress Testing", "Echocardiography", "Angiography & Angioplasty", "Pacemaker Implantation", "Cardiac Rehabilitation"]
+        },
+        { 
+            icon: "🧠", 
+            name: "Neurology", 
+            desc: "Specialized care for brain, spine, and nervous system disorders with advanced treatments.",
+            fullDesc: "Our Neurology department provides expert diagnosis and treatment for disorders of the nervous system. We offer comprehensive care for stroke, epilepsy, Parkinson's disease, multiple sclerosis, and other neurological conditions using advanced imaging and therapeutic techniques.",
+            treatments: ["Brain & Spine MRI", "EEG & EMG Studies", "Stroke Management", "Epilepsy Treatment", "Movement Disorder Care"]
+        },
+        { 
+            icon: "👶", 
+            name: "Pediatrics", 
+            desc: "Comprehensive child healthcare from newborns to adolescents in a friendly environment.",
+            fullDesc: "Our Pediatrics department offers complete healthcare for children from birth to adolescence. We provide routine check-ups, vaccinations, growth monitoring, and treatment of childhood illnesses in a child-friendly environment with specialized pediatricians.",
+            treatments: ["Well-baby Check-ups", "Vaccinations", "Growth Monitoring", "Childhood Illness Treatment", "Adolescent Health Care"]
+        },
+        { 
+            icon: "🦴", 
+            name: "Orthopedics", 
+            desc: "Expert care for bones, joints, and muscles with modern surgical techniques.",
+            fullDesc: "Our Orthopedics department specializes in diagnosing and treating musculoskeletal conditions. We provide comprehensive care for fractures, joint disorders, sports injuries, and perform advanced orthopedic surgeries including joint replacement and arthroscopy.",
+            treatments: ["Fracture Treatment", "Joint Replacement", "Arthroscopy", "Spine Surgery", "Sports Injury Management"]
+        },
+        { 
+            icon: "👁️", 
+            name: "Ophthalmology", 
+            desc: "Complete eye care services including cataract surgery and laser treatments.",
+            fullDesc: "Our Ophthalmology department provides comprehensive eye care services for all age groups. We offer advanced diagnostic testing, medical treatments, and surgical procedures including cataract surgery, LASIK, and treatment for glaucoma, diabetic retinopathy, and other eye conditions.",
+            treatments: ["Cataract Surgery", "LASIK & Vision Correction", "Glaucoma Treatment", "Diabetic Retinopathy Care", "Pediatric Eye Care"]
+        },
+        { 
+            icon: "🦷", 
+            name: "Dentistry", 
+            desc: "Comprehensive dental care including root canals, crowns, and cosmetic dentistry.",
+            fullDesc: "Our Dentistry department offers complete oral healthcare services. We provide preventive care, restorative treatments, and cosmetic procedures using modern dental technology. Our experienced dentists ensure comfortable and effective treatment for all dental conditions.",
+            treatments: ["Root Canal Treatment", "Dental Crowns & Bridges", "Cosmetic Dentistry", "Teeth Whitening", "Orthodontics"]
+        },
+        { 
+            icon: "🤰", 
+            name: "Gynecology", 
+            desc: "Complete women's health services from adolescence to menopause.",
+            fullDesc: "Our Gynecology department provides comprehensive healthcare for women at all stages of life. We offer routine check-ups, pregnancy care, fertility treatments, and management of various gynecological conditions with compassionate and expert care.",
+            treatments: ["Prenatal & Postnatal Care", "Infertility Treatment", "Menstrual Disorder Management", "Menopause Care", "Gynecological Surgeries"]
+        },
+        { 
+            icon: "🩺", 
+            name: "Dermatology", 
+            desc: "Expert skin, hair, and nail care with advanced cosmetic treatments.",
+            fullDesc: "Our Dermatology department offers comprehensive care for skin, hair, and nail conditions. We provide medical treatments for acne, eczema, psoriasis, and skin infections, as well as advanced cosmetic procedures like laser treatments, chemical peels, and scar reduction.",
+            treatments: ["Acne & Eczema Treatment", "Psoriasis Management", "Laser Skin Treatments", "Chemical Peels", "Scar & Pigmentation Treatment"]
+        },
+        { 
+            icon: "🚑", 
+            name: "Emergency Care", 
+            desc: "24/7 emergency services with rapid response and critical care.",
+            fullDesc: "Our Emergency Care department is available 24/7 with a dedicated team of emergency physicians and support staff. We provide immediate medical care for critical conditions, traumatic injuries, and medical emergencies with advanced life support systems.",
+            treatments: ["Trauma Care", "Stroke & Heart Attack Care", "Respiratory Emergencies", "Critical Care Unit", "24/7 Ambulance Services"]
+        }
     ];
 
     const whyUs = [
@@ -60,6 +168,21 @@ function Service({ setPage }) {
         { quote: "Best hospital in town. Very clean, professional, and caring staff. Thank you MediCare!", name: "Priya Sharma", rating: "⭐⭐⭐⭐⭐" },
         { quote: "Quick appointment and excellent treatment. The doctors explained everything clearly.", name: "Amit Patel", rating: "⭐⭐⭐⭐⭐" }
     ];
+
+    // 🔥 Service Click Handler
+    const handleServiceClick = (service) => {
+        setSelectedService(service);
+        setShowServiceModal(true);
+    };
+
+    // 🔥 Close Service Modal
+    const closeServiceModal = () => {
+        setShowServiceModal(false);
+        setSelectedService(null);
+    };
+
+    // 🔥 Stop Propagation
+    const stopPropagation = (e) => e.stopPropagation();
 
     // Get initial count based on screen size
     const getInitialCount = () => {
@@ -78,13 +201,11 @@ function Service({ setPage }) {
 
     const viewAllServices = () => {
         setVisibleServices(services.length);
-        setShowAllServices(true);
     };
 
     const showLessServices = () => {
         const initialCount = getInitialCount();
         setVisibleServices(initialCount);
-        setShowAllServices(false);
     };
 
     const displayedServices = services.slice(0, visibleServices);
@@ -103,7 +224,7 @@ function Service({ setPage }) {
                         <h1>Comprehensive <span className="sc-gradient-text">Healthcare Services</span></h1>
                         <p>We offer a wide range of medical services to meet all your healthcare needs. From preventive care to complex surgeries, our expert team is here for you.</p>
                         <div className="sc-hero-buttons">
-                            <button className="sc-btn-primary" onClick={() => setPage("appointment")}>Book Appointment </button>
+                            <button className="sc-btn-primary" onClick={() => setPage("appointment")}>Book Appointment</button>
                             <button className="sc-btn-secondary" onClick={() => setPage("contact")}>Contact Us</button>
                         </div>
                         <div className="sc-hero-stats">
@@ -122,26 +243,26 @@ function Service({ setPage }) {
                 </div>
             </section>
 
-            {/* Services Grid Section - With Load More */}
+            {/* Services Grid Section - Clickable Cards */}
             <section className="sc-services-section sc-fade-up">
                 <div className="sc-container">
                     <div className="sc-section-header">
                         <span className="sc-section-badge">What We Offer</span>
                         <h2>Complete Medical Care</h2>
-                        <p>Advanced technology meets compassionate care</p>
+                        <p>Tap on any service to learn more</p>
                     </div>
                     <div className="sc-services-grid">
                         {displayedServices.map((service, idx) => (
-                            <div className="sc-service-card" key={idx}>
+                            <div className="sc-service-card clickable" key={idx} onClick={() => handleServiceClick(service)}>
                                 <div className="sc-service-icon">{service.icon}</div>
                                 <h3>{service.name}</h3>
                                 <p>{service.desc}</p>
-                                <button className="sc-service-btn" onClick={() => setPage("appointment")}>Book Consultation →</button>
+                                <span className="sc-click-hint">Tap to learn more →</span>
                             </div>
                         ))}
                     </div>
 
-                    {/* Load More / View All / Show Less Buttons */}
+                    {/* 🔥 LOAD MORE / VIEW ALL / SHOW LESS BUTTONS */}
                     {services.length > initialCount && (
                         <div className="sc-load-more-container">
                             {showLoadMore && (
@@ -215,6 +336,37 @@ function Service({ setPage }) {
                     <button className="sc-cta-btn" onClick={() => setPage("appointment")}>Book Appointment Now →</button>
                 </div>
             </section>
+
+            {/* ========== SERVICE MODAL ========== */}
+            {showServiceModal && selectedService && (
+                <div className="sc-modal-overlay" onClick={closeServiceModal}>
+                    <div className="sc-modal-content" onClick={stopPropagation}>
+                        <button className="sc-modal-close" onClick={closeServiceModal}>✕</button>
+                        
+                        <div className="sc-modal-header">
+                            <span className="sc-modal-icon">{selectedService.icon}</span>
+                            <h2>{selectedService.name}</h2>
+                        </div>
+
+                        <div className="sc-modal-body">
+                            <p className="sc-modal-desc">{selectedService.fullDesc}</p>
+                            
+                            <div className="sc-modal-treatments">
+                                <h4>🩺 Key Treatments</h4>
+                                <ul>
+                                    {selectedService.treatments.map((treatment, idx) => (
+                                        <li key={idx}>{treatment}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            
+                            <button className="sc-modal-action-btn" onClick={() => { closeServiceModal(); setPage("appointment"); }}>
+                                Book Appointment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Footer */}
             <footer className="sc-footer">

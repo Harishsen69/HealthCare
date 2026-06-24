@@ -16,6 +16,9 @@ import PatientDashboard from "./component/patient/PatientDashboard";
 import DoctorDashboard from "./component/doctor/DoctorDashboard";
 import AdminDashboard from "./component/admin/AdminDashboard";
 
+// ✅ Chatbot Component
+import Chatbot from "./component/Chatbot/Chatbot";
+
 function App() {
     // ✅ Get current page from URL hash ONLY (no localStorage on app start)
     const getCurrentPageFromUrl = () => {
@@ -102,7 +105,12 @@ function App() {
     // ========== DASHBOARD RENDERING ==========
     if (page === 'patient_dashboard') {
         if (token && role === 'patient') {
-            return <PatientDashboard setPage={handleSetPage} />;
+            return (
+                <>
+                    <PatientDashboard setPage={handleSetPage} />
+                    <Chatbot />
+                </>
+            );
         } else {
             handleSetPage('home');
             return null;
@@ -111,7 +119,12 @@ function App() {
     
     if (page === 'doctor_dashboard') {
         if (token && role === 'doctor') {
-            return <DoctorDashboard setPage={handleSetPage} />;
+            return (
+                <>
+                    <DoctorDashboard setPage={handleSetPage} />
+                    <Chatbot />
+                </>
+            );
         } else {
             handleSetPage('home');
             return null;
@@ -120,7 +133,12 @@ function App() {
     
     if (page === 'admin_dashboard') {
         if (token && role === 'admin') {
-            return <AdminDashboard setPage={handleSetPage} />;
+            return (
+                <>
+                    <AdminDashboard setPage={handleSetPage} />
+                    <Chatbot />
+                </>
+            );
         } else {
             handleSetPage('home');
             return null;
@@ -135,6 +153,9 @@ function App() {
     // ========== LANDING PAGES RENDERING ==========
     const isDashboard = page === 'patient_dashboard' || page === 'doctor_dashboard' || page === 'admin_dashboard';
     const showHeader = !isDashboard && page !== "login" && page !== "register" && page !== "appointment";
+    
+    // ✅ Landing pages par bhi chatbot show karo
+    const showChatbot = page !== 'login' && page !== 'register';
 
     return (
         <div className="app">
@@ -147,6 +168,9 @@ function App() {
             {page === "login" && <Login setPage={handleSetPage} />}
             {page === "register" && <Register setPage={handleSetPage} />}
             {page === "appointment" && <Appointment setPage={handleSetPage} />}
+            
+            {/* ✅ Chatbot - Landing pages par bhi dikhega */}
+            {showChatbot && <Chatbot />}
         </div>
     );
 }

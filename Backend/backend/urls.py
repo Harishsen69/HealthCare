@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path('api/chatbot/', include('chatbot.urls')),  # ✅ ADDED
 ]
 
 # Media files serve karne ke liye

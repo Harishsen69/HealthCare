@@ -12,8 +12,34 @@ function Contact({ setPage }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [error, setError] = useState("");
+    const [scrollPosition, setScrollPosition] = useState(0);
 
-    // Scroll animations - same as Home
+    // 🔥 Load More States for FAQ
+    const [visibleFaqs, setVisibleFaqs] = useState(4);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+
+    const faqsData = [
+        { q: "How do I book an appointment?", a: "You can book an appointment online through our website or call our helpline number." },
+        { q: "What are the consultation fees?", a: "Consultation fees vary by doctor and specialty. Starting from ₹500 for general physicians." },
+        { q: "Do you accept insurance?", a: "Yes, we accept all major health insurance plans. Contact us for more details." },
+        { q: "Is emergency service available 24/7?", a: "Yes, we have 24/7 emergency services with dedicated ambulance support." },
+        { q: "How can I reschedule my appointment?", a: "You can reschedule your appointment by logging into your account or calling our support team." },
+        { q: "What documents should I bring for my first visit?", a: "Please bring your ID proof, insurance card, and previous medical reports if any." },
+        { q: "Do you offer telemedicine services?", a: "Yes, we offer video consultations with our doctors for your convenience." },
+        { q: "How do I access my medical reports?", a: "You can access your medical reports through your patient dashboard after login." }
+    ];
+
+    // 🔥 Check screen size - NO AUTO RESIZE
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth <= 900;
+            setIsMobile(mobile);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Scroll animations
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -24,9 +50,45 @@ function Contact({ setPage }) {
         }, { threshold: 0.1 });
 
         document.querySelectorAll('.ct-fade-up').forEach(el => observer.observe(el));
-        
         return () => observer.disconnect();
     }, []);
+
+    // 🔥 FIX: Modal/Form body control with exact scroll position - NO BLINK
+    useEffect(() => {
+        if (submitSuccess || error) {
+            const scrollY = window.scrollY;
+            setScrollPosition(scrollY);
+            
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.height = '100%';
+            document.body.style.top = `-${scrollY}px`;
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.style.top = '';
+            
+            if (scrollPosition > 0) {
+                requestAnimationFrame(() => {
+                    window.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'instant'
+                    });
+                });
+            }
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.height = '';
+            document.body.style.top = '';
+        };
+    }, [submitSuccess, error]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,7 +100,6 @@ function Contact({ setPage }) {
         
         if (!formData.name || !formData.email || !formData.message) {
             setError("Please fill all required fields");
-            window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
         
@@ -48,9 +109,32 @@ function Contact({ setPage }) {
             setIsSubmitting(false);
             setSubmitSuccess(true);
             setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => setSubmitSuccess(false), 3000);
         }, 1500);
+    };
+
+    // 🔥 FAQ Load More Functions
+    const getInitialCount = () => {
+        return window.innerWidth <= 900 ? 4 : 6;
+    };
+
+    const getLoadMoreIncrement = () => {
+        return window.innerWidth <= 900 ? 4 : 3;
+    };
+
+    const loadMoreFaqs = () => {
+        const increment = getLoadMoreIncrement();
+        const newCount = visibleFaqs + increment;
+        setVisibleFaqs(Math.min(newCount, faqsData.length));
+    };
+
+    const viewAllFaqs = () => {
+        setVisibleFaqs(faqsData.length);
+    };
+
+    const showLessFaqs = () => {
+        const initialCount = getInitialCount();
+        setVisibleFaqs(initialCount);
     };
 
     const contactCards = [
@@ -60,12 +144,10 @@ function Contact({ setPage }) {
         { icon: "🕐", title: "Working Hours", details: ["Mon - Fri: 9AM - 8PM", "Sat: 9AM - 5PM"] }
     ];
 
-    const faqs = [
-        { q: "How do I book an appointment?", a: "You can book an appointment online through our website or call our helpline number." },
-        { q: "What are the consultation fees?", a: "Consultation fees vary by doctor and specialty. Starting from ₹500 for general physicians." },
-        { q: "Do you accept insurance?", a: "Yes, we accept all major health insurance plans. Contact us for more details." },
-        { q: "Is emergency service available 24/7?", a: "Yes, we have 24/7 emergency services with dedicated ambulance support." }
-    ];
+    const displayedFaqs = faqsData.slice(0, visibleFaqs);
+    const initialCount = isMobile ? 4 : 6;
+    const showMoreButton = visibleFaqs < faqsData.length;
+    const showLessButton = visibleFaqs > initialCount;
 
     return (
         <div className="ct-contact-container">
@@ -179,17 +261,38 @@ function Contact({ setPage }) {
                         <p>Find quick answers to common questions</p>
                     </div>
                     <div className="ct-faq-grid">
-                        {faqs.map((faq, idx) => (
+                        {displayedFaqs.map((faq, idx) => (
                             <div className="ct-faq-card" key={idx}>
                                 <h4>📅 {faq.q}</h4>
                                 <p>{faq.a}</p>
                             </div>
                         ))}
                     </div>
+
+                    {/* 🔥 SHOW MORE / VIEW ALL / SHOW LESS BUTTONS */}
+                    {faqsData.length > initialCount && (
+                        <div className="ct-load-more-container">
+                            {showMoreButton && (
+                                <button className="ct-load-more-btn" onClick={loadMoreFaqs}>
+                                    Show More {isMobile ? "(+4)" : "(+3)"}
+                                </button>
+                            )}
+                            {showMoreButton && visibleFaqs < faqsData.length && (
+                                <button className="ct-view-all-btn" onClick={viewAllFaqs}>
+                                    View All ({faqsData.length})
+                                </button>
+                            )}
+                            {showLessButton && (
+                                <button className="ct-show-less-btn" onClick={showLessFaqs}>
+                                    Show Less ↑
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </section>
 
-            {/* CTA Section - Same as Home */}
+            {/* CTA Section */}
             <section className="ct-cta-section">
                 <div className="ct-cta-content">
                     <h2>Need Immediate Medical Assistance?</h2>
@@ -200,7 +303,7 @@ function Contact({ setPage }) {
                 </div>
             </section>
 
-            {/* Footer - Exactly like Home */}
+            {/* Footer */}
             <footer className="ct-footer">
                 <div className="ct-footer-inner">
                     <div className="ct-footer-grid">

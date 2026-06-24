@@ -5,7 +5,7 @@ const BACKEND_PORT = 8000;
 const FRONTEND_PORT = 3000;
 
 // ✅ YOUR LAPTOP IP (Change this to your laptop's IP address)
-const LAPTOP_IP = '10.65.173.205';  // ← Apna IP daalo
+const LAPTOP_IP = '10.122.186.205';  // ← Apna IP daalo
 
 // ✅ Auto-detect base URL
 const getBaseURL = () => {

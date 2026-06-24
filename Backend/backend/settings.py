@@ -5,6 +5,10 @@ Django settings for backend project.
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv  # ✅ ADDED
+
+# ✅ Load .env file
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'api',
+    'chatbot',  # ✅ Already added
 ]
 
 MIDDLEWARE = [

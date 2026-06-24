@@ -188,3 +188,14 @@ class ViewedReport(models.Model):
     
     def __str__(self):
         return f"{self.user.email} viewed report {self.report.report_number}"
+    
+class UserDailyRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    count = models.IntegerField(default=0)
+    
+    class Meta:
+        unique_together = ['user', 'date']  # Ek user ka ek din mein sirf ek record
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.date} - {self.count}"

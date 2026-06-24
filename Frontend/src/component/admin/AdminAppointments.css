@@ -8,13 +8,20 @@
     display: flex;
     flex-direction: column;
     min-height: 400px;
+    width: 100%;
+    overflow: visible;
 }
 
 /* ========== HEADER ========== */
 .admin-appointments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #eef2ff;
+    flex-wrap: wrap;
+    gap: 0.8rem;
 }
 
 .admin-appointments-header h2 {
@@ -24,14 +31,25 @@
     margin: 0;
 }
 
-/* ========== TABLE WRAPPER - HORIZONTAL SCROLL ========== */
+.admin-appointments-header .admin-appointments-count {
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 0.25rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* ========== TABLE WRAPPER - HORIZONTAL SCROLL ONLY ========== */
 .admin-appointments-table-wrapper {
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
     flex: 1;
 }
 
-/* ========== APPOINTMENTS TABLE ========== */
+/* ========== TABLE ========== */
 .admin-appointments-table {
     width: 100%;
     border-collapse: collapse;
@@ -62,6 +80,10 @@
     background: #f8fafc;
 }
 
+.admin-appointments-table tr:last-child td {
+    border-bottom: none;
+}
+
 /* ========== STATUS BADGES ========== */
 .admin-status-badge {
     padding: 0.2rem 0.6rem;
@@ -69,6 +91,7 @@
     font-size: 0.6rem;
     font-weight: 600;
     display: inline-block;
+    text-transform: capitalize;
 }
 
 .admin-status-badge.pending {
@@ -91,6 +114,11 @@
     color: #b91c1c;
 }
 
+.admin-status-badge.scheduled {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
 /* ========== EMPTY STATE ========== */
 .admin-empty-table {
     text-align: center;
@@ -99,23 +127,86 @@
     font-size: 0.8rem;
 }
 
+/* ========== SCROLLBAR STYLING ========== */
+.admin-appointments-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.admin-appointments-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.admin-appointments-table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.admin-appointments-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ========== ROW ANIMATION ========== */
+.admin-appointments-table tbody tr {
+    animation: adminAppointmentFadeIn 0.3s ease;
+}
+
+@keyframes adminAppointmentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== PAGINATION CONTAINER ========== */
+.admin-appointments-container .pagination-container {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* ========== ALTERNATIVE ROW STRIPING ========== */
+.admin-appointments-table tbody tr:nth-child(even) {
+    background: #fafcfc;
+}
+
+.admin-appointments-table tbody tr:nth-child(even):hover {
+    background: #f8fafc;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     .admin-appointments-container {
         padding: 0.8rem;
     }
     
+    .admin-appointments-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
     .admin-appointments-header h2 {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
     
     .admin-appointments-table {
-        min-width: 620px;
+        min-width: 600px;
     }
     
     .admin-appointments-table th,
     .admin-appointments-table td {
         padding: 0.5rem 0.4rem;
+        font-size: 0.7rem;
+    }
+    
+    .admin-status-badge {
+        font-size: 0.55rem;
+        padding: 0.15rem 0.5rem;
     }
 }
 
@@ -125,11 +216,16 @@
     }
     
     .admin-appointments-header h2 {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+    }
+    
+    .admin-appointments-header .admin-appointments-count {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.6rem;
     }
     
     .admin-appointments-table {
-        min-width: 550px;
+        min-width: 520px;
     }
     
     .admin-appointments-table th,
@@ -138,13 +234,21 @@
         font-size: 0.65rem;
     }
     
-    .admin-status-badge {
-        font-size: 0.55rem;
-        padding: 0.15rem 0.5rem;
+    .admin-empty-table {
+        padding: 1.5rem;
+        font-size: 0.7rem;
     }
     
-    .admin-empty-table {
-        padding: 1rem;
-        font-size: 0.7rem;
+    .admin-status-badge {
+        font-size: 0.5rem;
+        padding: 0.1rem 0.4rem;
+    }
+}
+
+/* ========== SAFARI FIX ========== */
+@supports (-webkit-touch-callout: none) {
+    .admin-appointments-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }

@@ -1,3 +1,15 @@
+/* ========== GLOBAL FIXES ========== */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
 /* ========== MAIN LAYOUT ========== */
 .patient-dashboard-layout {
     display: flex;
@@ -5,6 +17,7 @@
     background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
     font-family: 'Inter', sans-serif;
     overflow: hidden;
+    position: relative;
 }
 
 .patient-content-overlay {
@@ -15,9 +28,13 @@
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+    
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
-/* Scrollbar */
+/* Scrollbar - ONLY ONE */
 .patient-content-overlay::-webkit-scrollbar {
     width: 6px;
 }
@@ -53,15 +70,22 @@
     }
 }
 
+/* 🔥 FIX: NO SCROLLBAR */
 .patient-main-content {
     flex: 1;
     margin-left: 270px;
     padding: 1rem;
-    overflow: visible;
+    padding-bottom: 4rem;
+    overflow: visible !important;
+    min-height: 100%;
+    height: auto;
 }
 
-.sidebar-container {
-    z-index: 1000;
+/* 🔥 FIX: NO SCROLLBAR */
+.patient-dashboard-container {
+    width: 100%;
+    padding-bottom: 2rem;
+    overflow: visible !important;
 }
 
 /* ========== MOBILE HEADER ========== */
@@ -125,6 +149,8 @@
     .patient-main-content {
         padding-top: 70px;
         margin-left: 0;
+        padding-bottom: 100px;
+        overflow: visible !important;
     }
 }
 
@@ -158,6 +184,7 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     margin-bottom: 1.5rem;
+    overflow: visible !important;
 }
 
 .patient-stat-card {
@@ -210,6 +237,7 @@
     margin-bottom: 1.5rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
+    overflow: visible !important;
 }
 
 .patient-quick-actions h3 {
@@ -253,7 +281,7 @@
     font-weight: 600;
 }
 
-/* ========== FILTER BAR - UPDATED ========== */
+/* ========== FILTER BAR ========== */
 .patient-filter-bar {
     display: flex;
     flex-direction: column;
@@ -263,9 +291,9 @@
     padding: 1rem;
     border-radius: 16px;
     border: 1px solid #e2e8f0;
+    overflow: visible !important;
 }
 
-/* Row 1: Search, Status, Date filters */
 .patient-filter-row {
     display: flex;
     flex-wrap: wrap;
@@ -300,7 +328,6 @@
     cursor: pointer;
 }
 
-/* Date Range Picker */
 .patient-date-range {
     display: flex;
     gap: 0.5rem;
@@ -316,7 +343,6 @@
     outline: none;
 }
 
-/* Row 2: Reset and Export buttons */
 .patient-filter-actions {
     display: flex;
     gap: 1rem;
@@ -390,6 +416,7 @@
 /* ========== BOOKING FORM ========== */
 .patient-booking-form-wrapper {
     margin-bottom: 1.5rem;
+    overflow: visible !important;
 }
 
 .patient-booking-form {
@@ -398,6 +425,7 @@
     border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
+    overflow: visible !important;
 }
 
 .patient-booking-header {
@@ -574,6 +602,7 @@
     margin-bottom: 1.5rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
+    overflow: visible !important;
 }
 
 .patient-section-header {
@@ -603,6 +632,10 @@
 /* ========== TABLES ========== */
 .patient-table-responsive {
     overflow-x: auto;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    width: 100%;
 }
 
 .patient-availability-table {
@@ -720,6 +753,47 @@
     font-size: 0.9rem;
 }
 
+/* ========== ANIMATION ========== */
+@keyframes patientFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 🔥 FORCE HIDE ALL CHILD SCROLLBARS - CRITICAL FIX */
+.patient-main-content::-webkit-scrollbar,
+.patient-dashboard-container::-webkit-scrollbar,
+.patient-today-schedule::-webkit-scrollbar,
+.patient-upcoming-appointments::-webkit-scrollbar,
+.patient-completed-visits::-webkit-scrollbar,
+.patient-quick-actions::-webkit-scrollbar,
+.patient-booking-form-wrapper::-webkit-scrollbar,
+.patient-booking-form::-webkit-scrollbar,
+.patient-stats-cards::-webkit-scrollbar,
+.patient-stat-card::-webkit-scrollbar,
+.patient-filter-bar::-webkit-scrollbar,
+.patient-table-responsive::-webkit-scrollbar,
+.patient-availability-table::-webkit-scrollbar,
+.patient-section-header::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* 🔥 FORCE FIX - Sabhi child containers se scrollbar hatao */
+.patient-content-overlay *::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* 🔥 Sirf main container mein scrollbar rakho */
+.patient-content-overlay::-webkit-scrollbar {
+    display: block !important;
+    width: 6px;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
     .patient-stats-cards {
@@ -732,16 +806,23 @@
     .patient-dashboard-layout {
         flex-direction: column;
         height: 100vh;
+        overflow: hidden;
     }
     
     .patient-content-overlay {
         height: 100vh;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 30px;
     }
     
     .patient-main-content {
         margin-left: 0;
         padding: 0.8rem;
         padding-top: 70px;
+        padding-bottom: 100px;
+        overflow: visible !important;
+        min-height: 100%;
+        height: auto;
     }
     
     .patient-main-header {
@@ -784,6 +865,34 @@
         font-size: 1.1rem;
     }
     
+    .patient-filter-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .patient-search-input,
+    .patient-filter-select {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .patient-filter-actions {
+        justify-content: stretch;
+    }
+    
+    .patient-filter-actions button {
+        flex: 1;
+    }
+    
+    .patient-date-range {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .patient-date-range input {
+        width: 100%;
+    }
+    
     .patient-form-row {
         flex-direction: column;
         gap: 0.8rem;
@@ -814,23 +923,12 @@
     .patient-upcoming-appointments,
     .patient-completed-visits {
         padding: 0.8rem;
+        overflow: visible !important;
     }
     
     .patient-filter-bar {
         flex-direction: column;
         align-items: stretch;
-    }
-    
-    .patient-filter-group {
-        flex-direction: column;
-    }
-    
-    .patient-filter-actions {
-        justify-content: flex-end;
-    }
-    
-    .patient-date-range {
-        flex-direction: column;
     }
 }
 
@@ -838,6 +936,8 @@
     .patient-main-content {
         padding: 0.6rem;
         padding-top: 65px;
+        padding-bottom: 90px;
+        overflow: visible !important;
     }
     
     .patient-mobile-header {
@@ -888,6 +988,7 @@
     .patient-upcoming-appointments,
     .patient-completed-visits {
         padding: 0.7rem;
+        overflow: visible !important;
     }
     
     .patient-availability-table th,
