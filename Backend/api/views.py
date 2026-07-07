@@ -11,7 +11,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta, date
 from .models import Doctor, Appointment, OTP, Notification, DoctorAvailability, UserProfile, MedicalReport, ViewedReport
 from .serializers import (
-    UserSerializer, RegisterSerializer, DoctorSerializer,
+    UserSerializer, RegisterSerializer, DoctorSerializer, AdminDoctorSerializer,
     AppointmentSerializer, SendOTPSerializer, VerifyOTPSerializer,
     DoctorAvailabilitySerializer, MedicalReportSerializer, 
 )
@@ -189,7 +189,6 @@ def login(request):
     except UserProfile.DoesNotExist:
         pass
     
-    # ✅ Create full name from first_name and last_name
     full_name = f"{user.first_name} {user.last_name}".strip()
     if not full_name:
         full_name = user.username
@@ -202,7 +201,7 @@ def login(request):
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'name': full_name,  # ✅ This is important for display
+            'name': full_name,
             'user_type': user_type,
             'is_superuser': user.is_superuser,
             **profile_data
@@ -241,7 +240,92 @@ def get_doctors(request):
 @permission_classes([AllowAny])
 def get_doctor(request, id):
     try:
-        return Response(DoctorSerializer(Doctor.objects.get(id=id)).data)
+        return Response(DoctorSerializer(Doctor.objects.get(id=id), context={'request': request}).data)
+    except Doctor.DoesNotExist:
+        return Response({'error': 'Doctor not found'}, status=404)
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_doctor_profile(request, id):
+    try:
+        doctor = Doctor.objects.get(id=id)
+    except Doctor.DoesNotExist:
+        return Response({'error': 'Doctor not found'}, status=404)
+    
+    # Check authorization
+    if request.user != doctor.user and not request.user.is_superuser:
+        return Response({'error': 'You are not authorized to update this doctor'}, status=403)
+    
+    # ✅ Update basic fields
+    if request.data.get('name'):
+        doctor.name = request.data.get('name')
+    if request.data.get('phone'):
+        doctor.phone = request.data.get('phone')
+    if request.data.get('specialization'):
+        doctor.specialization = request.data.get('specialization')
+    if request.data.get('experience'):
+        doctor.experience = request.data.get('experience')
+    if request.data.get('fee'):
+        doctor.fee = request.data.get('fee')
+    if request.data.get('about') is not None:
+        doctor.about = request.data.get('about')
+    if request.data.get('education') is not None:
+        doctor.education = request.data.get('education')
+    if request.data.get('languages') is not None:
+        doctor.languages = request.data.get('languages')
+    if request.data.get('location') is not None:
+        doctor.location = request.data.get('location')
+    if request.data.get('available') is not None:
+        doctor.available = request.data.get('available')
+    
+    # ✅ Update address fields
+    if request.data.get('clinic_name') is not None:
+        doctor.clinic_name = request.data.get('clinic_name')
+    if request.data.get('address') is not None:
+        doctor.address = request.data.get('address')
+    if request.data.get('city') is not None:
+        doctor.city = request.data.get('city')
+    if request.data.get('state') is not None:
+        doctor.state = request.data.get('state')
+    if request.data.get('pincode') is not None:
+        doctor.pincode = request.data.get('pincode')
+    if request.data.get('clinic_timings') is not None:
+        doctor.clinic_timings = request.data.get('clinic_timings')
+    if request.data.get('landmark') is not None:
+        doctor.landmark = request.data.get('landmark')
+    if request.data.get('latitude') is not None:
+        doctor.latitude = request.data.get('latitude')
+    if request.data.get('longitude') is not None:
+        doctor.longitude = request.data.get('longitude')
+    
+    # ✅ Handle image upload
+    if request.FILES.get('image'):
+        doctor.image = request.FILES.get('image')
+    
+    doctor.save()
+    
+    serializer = DoctorSerializer(doctor, context={'request': request})
+    return Response({
+        'message': 'Doctor profile updated successfully',
+        'doctor': serializer.data
+    }, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def admin_delete_doctor(request, id):
+    """Admin delete doctor"""
+    if not request.user.is_superuser:
+        return Response({'error': 'Admin access required'}, status=403)
+    
+    try:
+        doctor = Doctor.objects.get(id=id)
+        user = doctor.user
+        
+        # Delete doctor and associated user
+        doctor.delete()
+        user.delete()
+        
+        return Response({'message': 'Doctor deleted successfully'}, status=200)
     except Doctor.DoesNotExist:
         return Response({'error': 'Doctor not found'}, status=404)
 
@@ -301,7 +385,6 @@ def update_appointment_status(request, id):
     
     formatted_time = format_to_12hr(appointment.time)
     
-    # Mark related notifications as read
     Notification.objects.filter(user=request.user, appointment_id=appointment.id, is_read=False).update(is_read=True)
     
     if new_status == 'confirmed':
@@ -414,9 +497,8 @@ def create_appointment(request):
         if Appointment.objects.filter(user=request.user, doctor=doctor, date=date_str).exclude(status='cancelled').count() >= 2:
             return Response({'error': f'You can only book maximum 2 appointments per day with Dr. {doctor.name}'}, status=400)
         
-        # ✅ Changed: 2 hours → 1 hour gap
         for existing in Appointment.objects.filter(user=request.user, date=date_str).exclude(status='cancelled'):
-            if abs(time_to_minutes(time_str) - time_to_minutes(existing.time)) < 60:  # 1 hour
+            if abs(time_to_minutes(time_str) - time_to_minutes(existing.time)) < 60:
                 return Response({'error': f'Please maintain at least 1 hour gap between appointments'}, status=400)
         
         if Appointment.objects.filter(user=request.user, date=date_str).exclude(status='cancelled').count() >= 3:
@@ -458,7 +540,8 @@ def admin_all_users(request):
 def admin_all_doctors(request):
     if not request.user.is_superuser:
         return Response({'error': 'Admin access required'}, status=403)
-    return Response(DoctorSerializer(Doctor.objects.all(), many=True).data)
+    serializer = DoctorSerializer(Doctor.objects.all(), many=True, context={'request': request})
+    return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -481,13 +564,22 @@ def admin_add_doctor(request):
         specialization = request.data.get('specialization', '')
         experience = request.data.get('experience', '0')
         fee = request.data.get('fee', 0)
-        image = request.FILES.get('image')  # ✅ Get image file
+        image = request.FILES.get('image')
+        
+        clinic_name = request.data.get('clinic_name', '')
+        address = request.data.get('address', '')
+        city = request.data.get('city', '')
+        state = request.data.get('state', '')
+        pincode = request.data.get('pincode', '')
+        clinic_timings = request.data.get('clinic_timings', '')
+        landmark = request.data.get('landmark', '')
+        latitude = request.data.get('latitude', None)
+        longitude = request.data.get('longitude', None)
         
         if User.objects.filter(email=email).exists():
             return Response({'error': 'User with this email already exists'}, status=400)
         
         username = email.split('@')[0]
-        # Create username that is unique
         base_username = username
         counter = 1
         while User.objects.filter(username=username).exists():
@@ -502,24 +594,30 @@ def admin_add_doctor(request):
             last_name=name.split()[1] if len(name.split()) > 1 else ''
         )
         doctor = Doctor.objects.create(
-            user=user, 
-            name=name, 
-            email=email, 
-            phone=phone, 
-            specialization=specialization, 
-            experience=experience, 
-            fee=fee, 
-            is_doctor=True
-        )
+    user=user, 
+    name=name, 
+    email=email, 
+    phone=phone, 
+    specialization=specialization, 
+    experience=experience, 
+    fee=fee, 
+    is_doctor=True,
+    clinic_name=clinic_name,      # ✅ Add
+    address=address,              # ✅ Add
+    city=city,                    # ✅ Add
+    state=state,                  # ✅ Add
+    pincode=pincode,              # ✅ Add
+    clinic_timings=clinic_timings,# ✅ Add
+    landmark=landmark,            # ✅ Add
+    latitude=latitude,            # ✅ Add
+    longitude=longitude           # ✅ Add
+)
         
-        # ✅ Save image if provided
         if image:
-            # Validate image type
             allowed_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif']
             if image.content_type not in allowed_types:
                 return Response({'error': 'Invalid image type. Only JPEG, PNG, GIF allowed'}, status=400)
             
-            # Validate image size (max 5MB)
             if image.size > 5 * 1024 * 1024:
                 return Response({'error': 'Image size should be less than 5MB'}, status=400)
             
@@ -535,7 +633,14 @@ def admin_add_doctor(request):
                 'specialization': doctor.specialization, 
                 'phone': doctor.phone, 
                 'fee': doctor.fee,
-                'image': doctor.image.url if doctor.image else None
+                'image': doctor.image.url if doctor.image else None,
+                'clinic_name': doctor.clinic_name,
+                'address': doctor.address,
+                'city': doctor.city,
+                'state': doctor.state,
+                'pincode': doctor.pincode,
+                'clinic_timings': doctor.clinic_timings,
+                'landmark': doctor.landmark,
             }
         }, status=201)
     except Exception as e:
@@ -547,13 +652,6 @@ def admin_add_doctor(request):
 def get_user_profile(request):
     return Response(UserSerializer(request.user).data)
 
-# ========== PROFILE APIs ==========
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_user_profile(request):
-    return Response(UserSerializer(request.user).data)
-
-# ========== UPDATE USER PROFILE ==========
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_user_profile(request):
@@ -565,14 +663,12 @@ def update_user_profile(request):
     print("Received data:", data)
     print("=" * 50)
     
-    # Handle full_name - split into first_name and last_name
     if 'full_name' in data and data['full_name']:
         name_parts = data['full_name'].strip().split(' ', 1)
         user.first_name = name_parts[0]
         user.last_name = name_parts[1] if len(name_parts) > 1 else ''
         print(f"Name split: first_name={user.first_name}, last_name={user.last_name}")
     
-    # Update Profile fields
     try:
         if 'phone' in data:
             profile.phone = data['phone']
@@ -621,8 +717,6 @@ def update_user_profile(request):
         }
     })
 
-
-# ========== GET PATIENT PROFILE ==========
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_patient_profile(request):
@@ -646,7 +740,6 @@ def get_patient_profile(request):
             'mother_name': '', 'age': None
         })
 
-# ========== DELETE AVATAR ==========
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_avatar(request):
@@ -1036,15 +1129,12 @@ def send_reset_otp(request):
     except User.DoesNotExist:
         return Response({'error': 'No account found with this email'}, status=404)
     
-    # Delete old OTPs
     OTP.objects.filter(email=email, user_type='reset').delete()
     
-    # Create new OTP
     otp_obj = OTP.objects.create(email=email, user_type='reset')
     otp_obj.generate_otp()
     otp_obj.save()
     
-    # Send OTP email
     subject = "MediCare - Password Reset OTP"
     message = f"""
     Hello {user.first_name or user.username},
@@ -1068,7 +1158,7 @@ def send_reset_otp(request):
         return Response({'error': 'Failed to send email'}, status=500)
 
 
-# ========== VERIFY RESET OTP ==========
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def verify_reset_otp(request):
@@ -1093,8 +1183,6 @@ def verify_reset_otp(request):
     except OTP.DoesNotExist:
         return Response({'error': 'Invalid OTP'}, status=400)
 
-
-# ========== RESET PASSWORD ==========
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def reset_password(request):
@@ -1108,7 +1196,6 @@ def reset_password(request):
         return Response({'error': 'Password must be at least 6 characters'}, status=400)
     
     try:
-        # Check if OTP was verified
         otp_obj = OTP.objects.filter(email=email, user_type='reset', is_verified=True).first()
         
         if not otp_obj:
@@ -1118,15 +1205,13 @@ def reset_password(request):
         user.set_password(new_password)
         user.save()
         
-        # Delete used OTP
         otp_obj.delete()
         
         return Response({'message': 'Password reset successfully'}, status=200)
         
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=404)
-    
-# ========== MARK REPORT AS VIEWED ==========
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def mark_report_viewed(request):
@@ -1140,7 +1225,6 @@ def mark_report_viewed(request):
     except MedicalReport.DoesNotExist:
         return Response({'error': 'Report not found'}, status=404)
     
-    # Check if already viewed
     viewed, created = ViewedReport.objects.get_or_create(
         user=request.user,
         report=report
@@ -1151,14 +1235,11 @@ def mark_report_viewed(request):
     else:
         return Response({'message': 'Report already viewed', 'viewed': True}, status=200)
 
-
-# ========== GET PATIENT REPORTS WITH VIEW STATUS ==========
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_patient_reports_with_status(request):
     reports = MedicalReport.objects.filter(patient=request.user, is_final=True).order_by('-created_at')
     
-    # Get all viewed report IDs for this user
     viewed_ids = ViewedReport.objects.filter(user=request.user).values_list('report_id', flat=True)
     
     reports_data = []
@@ -1183,8 +1264,6 @@ def get_patient_reports_with_status(request):
     
     return Response(reports_data)
 
-
-# ========== GET UNVIEWED REPORTS COUNT ==========
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_unviewed_reports_count(request):
@@ -1193,3 +1272,37 @@ def get_unviewed_reports_count(request):
     unviewed_count = reports.exclude(id__in=viewed_ids).count()
     
     return Response({'unviewed_count': unviewed_count})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_appointment_names(request):
+    """
+    User ke saare appointments mein patient_name update karo
+    """
+    try:
+        user = request.user
+        full_name = f"{user.first_name} {user.last_name}".strip()
+        if not full_name:
+            full_name = user.username
+        
+        # Saare pending/confirmed/completed appointments update karo
+        appointments = Appointment.objects.filter(
+            user=user,
+            status__in=['pending', 'confirmed', 'completed']
+        )
+        
+        updated_count = 0
+        for apt in appointments:
+            if apt.patient_name != full_name:
+                apt.patient_name = full_name
+                apt.save(update_fields=['patient_name'])
+                updated_count += 1
+        
+        return Response({
+            'message': f'Updated {updated_count} appointments with new name: {full_name}',
+            'updated_count': updated_count,
+            'name': full_name
+        }, status=200)
+        
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)

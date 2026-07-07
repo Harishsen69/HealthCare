@@ -9,10 +9,25 @@ import re
 
 load_dotenv()
 
-# 🔥 Active API Key - Only working key
-ACTIVE_API_KEY = 'AQ.Ab8RN6LTmswG1QUs3pxvak9BoJQaKW17GnLsDJYWY9b-ogJ17A'
+# 🔥 3 API Keys - Round Robin Support
+API_KEYS = [
+    'AQ.Ab8RN6L_ZqvR2_dDngB9FVWU4pTimmw_C2FpFXEs6VrEp6J-Ww',  # Key 1
+    'AQ.Ab8RN6LV6q0uH15YGgjcJvefSmvNHiV6Z9R1nQoGtNYIpaT7Jg',  # Key 2
+    'AQ.Ab8RN6KKrB9EZC_Q2kbonYDhOur40IuRPL0LTzi8l3m19y7L9A',  # Key 3
+]
 
-print(f"✅ API Key loaded successfully")
+ACTIVE_API_KEY = API_KEYS[0]
+current_key_index = 0
+
+def get_next_api_key():
+    """Get next API key (Round Robin)"""
+    global current_key_index
+    key = API_KEYS[current_key_index]
+    current_key_index = (current_key_index + 1) % len(API_KEYS)
+    print(f"🔄 Using API Key {current_key_index}/{len(API_KEYS)}")
+    return key
+
+print(f"✅ {len(API_KEYS)} API Keys loaded successfully")
 
 def detect_language(text):
     """Detect if text is Hindi, English, or Hinglish"""
@@ -20,7 +35,7 @@ def detect_language(text):
     hindi_count = sum(1 for char in text if char in hindi_chars)
     if hindi_count > len(text) * 0.1:
         return 'hindi'
-    elif any(word in text.lower() for word in ['hai', 'hain', 'hoon', 'hum', 'aap', 'kya', 'kaise']):
+    elif any(word in text.lower() for word in ['hai', 'hain', 'hoon', 'hum', 'aap', 'kya', 'kaise', 'nahi', 'hoga', 'sakta', 'chahiye']):
         return 'hinglish'
     else:
         return 'english'
@@ -154,24 +169,20 @@ def get_doctor_availability(doctor_name, date=None):
         return None, str(e)
 
 def get_todays_available_doctors():
-    """Get doctors available today (not fully booked)"""
     try:
         today = datetime.now().date().isoformat()
         all_doctors = get_doctors_list()
         available_doctors = []
-        
         for doc in all_doctors:
             availability, _ = get_doctor_availability(doc['name'], today)
             if availability and availability['is_available']:
                 available_doctors.append(doc)
-        
         return available_doctors
     except Exception as e:
         print(f"Error getting today's available doctors: {e}")
         return []
 
 def get_doctor_by_name(doctor_name):
-    """Get single doctor by name"""
     try:
         doctor = Doctor.objects.filter(
             name__icontains=doctor_name,
@@ -949,11 +960,13 @@ Example: **'Book with Dr. Mahadev'**"""
                     return "🔍 Which doctor's fee would you like to know?"
 
         # ========================================
-        # RULE: Default - Gemini AI
+        # RULE: Default - Gemini AI (Multi-Language)
         # ========================================
         else:
             try:
-                genai.configure(api_key=ACTIVE_API_KEY)
+                # 🔥 Round Robin: Next API key use karo
+                active_key = get_next_api_key()
+                genai.configure(api_key=active_key)
                 model = genai.GenerativeModel('gemini-2.5-flash')
                 
                 patient_info = None
@@ -961,32 +974,74 @@ Example: **'Book with Dr. Mahadev'**"""
                     patient_info, _ = get_patient_info(patient_email)
                 patient_name = patient_info['name'] if patient_info else ""
                 
+                # 🔥 Multi-Language Prompt
                 enhanced_prompt = f"""User Message: {user_message}
 Patient Name: {patient_name}
 Patient Email: {patient_email}
 Detected Language: {language}
 
-Instructions:
-1. Respond in the SAME language as the user (Hindi/English/Hinglish)
-2. If Hindi: Use Devanagari script
-3. If Hinglish: Use Roman script with Hindi words
-4. If English: Use proper English
-5. Use patient name if available
-6. You are MediBot - healthcare AI assistant
-7. Be helpful, professional and empathetic
-8. Add medical disclaimer when giving health advice
-9. Suggest booking appointments when relevant
-10. Keep responses friendly and conversational
+🔥 IMPORTANT: Respond in the EXACT SAME language as the user!
 
-Respond in {language} language only."""
+LANGUAGE RULES:
+- If user wrote in HINDI (Devanagari script) → Respond in HINDI (Devanagari script)
+- If user wrote in HINGLISH (Roman script with Hindi words) → Respond in HINGLISH (Roman script)
+- If user wrote in ENGLISH → Respond in ENGLISH
+
+EXAMPLES:
+- User: "kaise ho" → Hinglish: "Main theek hoon! Aap kaise ho?"
+- User: "नमस्ते" → Hindi: "नमस्ते! मैं आपकी कैसे मदद कर सकता हूँ?"
+- User: "Hello" → English: "Hello! How can I help you?"
+
+ABOUT YOU:
+- You are MediBot - a healthcare AI assistant
+- Be helpful, professional, empathetic
+- Add medical disclaimer when giving health advice
+- Suggest booking appointments when relevant
+- Keep responses friendly and conversational
+- Use patient name if available
+
+DISCLAIMER: You are an AI assistant, not a real doctor. Always advise consulting a qualified healthcare professional for medical concerns.
+
+RESPOND ONLY IN: {language} language
+
+User said: {user_message}"""
                 
                 response = model.generate_content(enhanced_prompt)
-                return response.text
+                
+                # 🔥 Response language double-check
+                response_text = response.text
+                return response_text
                 
             except Exception as e:
                 error_str = str(e)
                 if '429' in error_str or 'quota' in error_str.lower():
-                    return """⚠️ **Today's free quota exceeded!**
+                    # 🔥 Multi-language quota exceeded message
+                    if language == 'hindi':
+                        return """⚠️ **आज का फ्री कोटा खत्म हो गया है!**
+
+🔹 आप आज 20 बार chatbot use kar chuke hain.
+🔹 **कल सुबह** फिर से try karein (मिडनाइट के बाद रीसेट होगा)।
+🔹 या फिर **Google Cloud Billing** enable karke paid plan use karein.
+
+💡 ये commands अभी भी काम करती हैं:
+   - 📋 Doctor list
+   - 📅 My appointments  
+   - 📌 Next appointment
+   - ✅ Doctor availability"""
+                    elif language == 'hinglish':
+                        return """⚠️ **Aaj ka free quota khatam ho gaya hai!**
+
+🔹 Aap aaj 20 baar chatbot use kar chuke hain.
+🔹 **Kal subah** phir se try karein (midnight ke baad reset hoga).
+🔹 Ya phir **Google Cloud Billing** enable karke paid plan use karein.
+
+💡 Ye commands abhi bhi kaam karti hain:
+   - 📋 Doctor list
+   - 📅 My appointments  
+   - 📌 Next appointment
+   - ✅ Doctor availability"""
+                    else:
+                        return """⚠️ **Today's free quota exceeded!**
 
 🔹 You've used 20 free requests today.
 🔹 Try again **tomorrow** (resets at midnight).
@@ -997,9 +1052,36 @@ Respond in {language} language only."""
    - 📅 My appointments  
    - 📌 Next appointment
    - ✅ Doctor availability"""
+                elif '401' in error_str or 'invalid' in error_str.lower():
+                    # 🔥 API Key invalid - try next key
+                    try:
+                        # Try next API key
+                        active_key = get_next_api_key()
+                        genai.configure(api_key=active_key)
+                        model = genai.GenerativeModel('gemini-2.5-flash')
+                        response = model.generate_content(enhanced_prompt)
+                        return response.text
+                    except:
+                        if language == 'hindi':
+                            return "❌ सभी API keys काम नहीं कर रही हैं। कृपया .env फ़ाइल में नई API key डालें।"
+                        elif language == 'hinglish':
+                            return "❌ Sabhi API keys kaam nahi kar rahi hain. Kripya .env file mein nayi API key daalein."
+                        else:
+                            return "❌ All API keys are not working. Please add new API keys in .env file."
                 else:
-                    return f"Error: {error_str}"
+                    if language == 'hindi':
+                        return f"❌ Error: {error_str}"
+                    elif language == 'hinglish':
+                        return f"❌ Error: {error_str}"
+                    else:
+                        return f"❌ Error: {error_str}"
             
     except Exception as e:
         print(f"❌ Error in get_gemini_response: {e}")
-        return f"Error: {str(e)}"
+        language = detect_language(user_message) if 'user_message' in locals() else 'english'
+        if language == 'hindi':
+            return f"❌ Error: {str(e)}"
+        elif language == 'hinglish':
+            return f"❌ Error: {str(e)}"
+        else:
+            return f"❌ Error: {str(e)}"

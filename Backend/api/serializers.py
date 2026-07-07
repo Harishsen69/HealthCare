@@ -31,8 +31,35 @@ class RegisterSerializer(serializers.ModelSerializer):
         UserProfile.objects.create(user=user, phone=phone, address=address)
         return user
 
-# ✅ UPDATED DoctorSerializer with full image URL
+# ✅ UPDATED DoctorSerializer with address fields
 class DoctorSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    full_address = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Doctor
+        fields = ['id', 'name', 'email', 'phone', 'specialization', 'experience', 
+                  'fee', 'about', 'education', 'languages', 'location', 'rating', 
+                  'patients', 'available', 'is_doctor', 'image',
+                  # 🔥 NEW ADDRESS FIELDS
+                  'clinic_name', 'address', 'city', 'state', 'pincode', 
+                  'clinic_timings', 'landmark', 'latitude', 'longitude',
+                  'full_address']
+    
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+    
+    def get_full_address(self, obj):
+        """Return full address as a single string"""
+        return obj.get_full_address()
+
+# ✅ UPDATED DoctorSerializer for Admin (with all fields)
+class AdminDoctorSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     
     class Meta:
@@ -51,10 +78,13 @@ class AppointmentSerializer(serializers.ModelSerializer):
     doctor_name = serializers.ReadOnlyField(source='doctor.name')
     doctor_specialty = serializers.ReadOnlyField(source='doctor.specialization')
     doctor_fee = serializers.ReadOnlyField(source='doctor.fee')
+    doctor_clinic = serializers.ReadOnlyField(source='doctor.clinic_name')
+    doctor_address = serializers.ReadOnlyField(source='doctor.get_full_address')
     
     class Meta:
         model = Appointment
         fields = ['id', 'doctor', 'doctor_name', 'doctor_specialty', 'doctor_fee',
+                  'doctor_clinic', 'doctor_address',
                   'patient_name', 'patient_email', 'patient_phone', 'date', 'time', 'status', 'created_at']
         read_only_fields = ['id', 'created_at']
 

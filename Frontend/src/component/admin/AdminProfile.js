@@ -6,100 +6,144 @@ function AdminProfile({ user, setUser }) {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     
-    const [formData, setFormData] = useState({
-        full_name: user?.name || "",
-        phone: user?.phone || "",
-        address: user?.address || "",
-        dob: user?.dob || "",
-        blood_group: user?.blood_group || "",
-    });
+    const [fullName, setFullName] = useState(user?.name || "");
+    const [phone, setPhone] = useState(user?.phone || "");
+    const [address, setAddress] = useState(user?.address || "");
+    const [state, setState] = useState(user?.state || "");
+    const [dob, setDob] = useState(user?.dob || "");
+    const [bloodGroup, setBloodGroup] = useState(user?.blood_group || "");
 
-    // Fetch latest profile from backend
-    const fetchLatestProfile = async () => {
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await API.get('patient-profile/', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            
-            setFormData(prev => ({
-                ...prev,
-                phone: response.data.phone || "",
-                address: response.data.address || "",
-                dob: response.data.dob || "",
-                blood_group: response.data.blood_group || "",
-            }));
-        } catch (error) {
-            console.error("Error fetching profile:", error);
+    // 🔥 Force update function - localStorage se direct read
+    const syncFromLocalStorage = () => {
+        const savedUser = localStorage.getItem("medicareUser");
+        if (savedUser) {
+            try {
+                const userData = JSON.parse(savedUser);
+                setFullName(userData.name || "");
+                setPhone(userData.phone || "");
+                setAddress(userData.address || "");
+                setState(userData.state || "");
+                setDob(userData.dob || "");
+                setBloodGroup(userData.blood_group || "");
+                
+                // 🔥 Update parent user state bhi karo
+                if (setUser) {
+                    setUser(userData);
+                }
+                
+                console.log("✅ Profile synced from localStorage:", userData.name);
+            } catch (e) {
+                console.error("Error syncing profile:", e);
+            }
         }
     };
 
+    // 🔥 Initial load + storage event listener
     useEffect(() => {
-        fetchLatestProfile();
+        // Initial sync
+        syncFromLocalStorage();
+        
+        // 🔥 Listen for storage events (other tabs)
+        const handleStorageChange = (e) => {
+            if (e.key === 'medicareUser') {
+                console.log("🔄 Storage event detected, syncing profile...");
+                syncFromLocalStorage();
+            }
+        };
+        
+        window.addEventListener('storage', handleStorageChange);
+        
+        // 🔥 Custom event for same-tab updates
+        const handleCustomEvent = () => {
+            console.log("🔄 Custom event detected, syncing profile...");
+            syncFromLocalStorage();
+        };
+        
+        window.addEventListener('profileUpdated', handleCustomEvent);
+        
+        // 🔥 Polling for cross-device updates (every 3 seconds)
+        let lastCheckedName = fullName;
+        const interval = setInterval(() => {
+            const savedUser = localStorage.getItem("medicareUser");
+            if (savedUser) {
+                try {
+                    const userData = JSON.parse(savedUser);
+                    if (userData.name !== lastCheckedName) {
+                        console.log("🔄 Polling detected name change:", userData.name);
+                        syncFromLocalStorage();
+                        lastCheckedName = userData.name;
+                    }
+                } catch (e) {}
+            }
+        }, 3000);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('profileUpdated', handleCustomEvent);
+            clearInterval(interval);
+        };
     }, []);
 
+    // 🔥 Update when user prop changes
     useEffect(() => {
         if (user) {
-            setFormData(prev => ({
-                ...prev,
-                full_name: user.name || "",
-                phone: user.phone || "",
-                address: user.address || "",
-                dob: user.dob || "",
-                blood_group: user.blood_group || "",
-            }));
+            setFullName(user.name || "");
+            setPhone(user.phone || "");
+            setAddress(user.address || "");
+            setState(user.state || "");
+            setDob(user.dob || "");
+            setBloodGroup(user.blood_group || "");
         }
     }, [user]);
-
-    const handleChange = (e) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
 
     const handleSave = async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('access_token');
             
-            // Split full name into first and last name
-            const nameParts = formData.full_name.trim().split(' ');
+            const nameParts = fullName.trim().split(' ');
             const firstName = nameParts[0] || "";
             const lastName = nameParts.slice(1).join(' ') || "";
             
-            const payload = {
-                full_name: formData.full_name,
+            await API.put('profile/update/', {
+                full_name: fullName,
                 first_name: firstName,
                 last_name: lastName,
-                phone: formData.phone,
-                address: formData.address,
-                dob: formData.dob,
-                blood_group: formData.blood_group,
-            };
-            
-            const response = await API.put('profile/update/', payload, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                phone: phone,
+                address: address,
+                state: state,
+                dob: dob,
+                blood_group: bloodGroup,
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
             });
             
-            if (response.status === 200) {
-                const updatedUser = {
-                    ...user,
-                    name: formData.full_name,
-                    first_name: firstName,
-                    last_name: lastName,
-                    phone: formData.phone,
-                    address: formData.address,
-                    dob: formData.dob,
-                    blood_group: formData.blood_group,
-                };
-                
-                setUser(updatedUser);
-                localStorage.setItem("medicareUser", JSON.stringify(updatedUser));
-                setIsEditing(false);
-                alert("Profile updated successfully!");
-                fetchLatestProfile();
-            }
+            const updatedUser = {
+                ...user,
+                name: fullName,
+                first_name: firstName,
+                last_name: lastName,
+                phone: phone,
+                address: address,
+                state: state,
+                dob: dob,
+                blood_group: bloodGroup,
+            };
+            
+            setUser(updatedUser);
+            localStorage.setItem("medicareUser", JSON.stringify(updatedUser));
+            
+            // 🔥 Force update - multiple ways
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new CustomEvent('profileUpdated'));
+            
+            // 🔥 Force re-render for same tab
+            syncFromLocalStorage();
+            
+            setIsEditing(false);
+            alert("Profile updated successfully!");
+            console.log("✅ Profile saved and synced:", fullName);
+            
         } catch (error) {
             console.error("Save error:", error);
             alert(error.response?.data?.error || "Failed to update profile");
@@ -109,44 +153,43 @@ function AdminProfile({ user, setUser }) {
     };
 
     const getInitials = () => {
-        const name = user?.name || formData.full_name || "Admin";
+        const name = fullName || user?.name || "Admin";
         if (!name || name === "Admin") return "A";
         return name.charAt(0).toUpperCase();
     };
 
-    const displayName = formData.full_name || user?.name || "Admin";
+    const displayName = fullName || user?.name || "Admin";
 
     return (
-        <div className="profile-admin-container">
-            <div className="profile-admin-header">
-                <div className="profile-admin-avatar">
-                    <div className="profile-admin-avatar-initial">{getInitials()}</div>
-                    <div className="profile-admin-info">
+        <div className="admin-profile-container">
+            <div className="admin-profile-header">
+                <div className="admin-profile-avatar">
+                    <div className="admin-profile-avatar-initial">{getInitials()}</div>
+                    <div className="admin-profile-info">
                         <h2>{displayName}</h2>
-                        <span className="profile-admin-badge">Administrator</span>
+                        <span className="admin-profile-badge">🛡️ Administrator</span>
                     </div>
                 </div>
                 {!isEditing && (
-                    <button className="profile-admin-edit-btn" onClick={() => setIsEditing(true)}>
+                    <button className="admin-profile-edit-btn" onClick={() => setIsEditing(true)}>
                         ✏️ Edit Profile
                     </button>
                 )}
             </div>
 
-            <div className="profile-admin-content">
-                <div className="profile-admin-section">
-                    <div className="profile-admin-section-title">
+            <div className="admin-profile-content">
+                <div className="admin-profile-section">
+                    <div className="admin-profile-section-title">
                         <span>👤</span>
                         <h3>Personal Information</h3>
                     </div>
-                    <div className="profile-admin-grid">
-                        <div className="profile-admin-info-card full-width">
+                    <div className="admin-profile-grid">
+                        <div className="admin-profile-info-card full-width">
                             <label>Full Name</label>
                             {isEditing ? (
                                 <input 
-                                    name="full_name" 
-                                    value={formData.full_name} 
-                                    onChange={handleChange} 
+                                    value={fullName} 
+                                    onChange={(e) => setFullName(e.target.value)} 
                                     placeholder="Enter your full name"
                                 />
                             ) : (
@@ -154,44 +197,55 @@ function AdminProfile({ user, setUser }) {
                             )}
                         </div>
                         
-                        <div className="profile-admin-info-card">
+                        <div className="admin-profile-info-card">
                             <label>Email Address</label>
                             <p>{user?.email || "Not added"}</p>
                         </div>
                         
-                        <div className="profile-admin-info-card">
+                        <div className="admin-profile-info-card">
                             <label>Phone Number</label>
                             {isEditing ? (
                                 <input 
-                                    name="phone" 
-                                    value={formData.phone} 
-                                    onChange={handleChange} 
+                                    value={phone} 
+                                    onChange={(e) => setPhone(e.target.value)} 
                                     placeholder="Phone Number" 
                                     maxLength="10"
                                 />
                             ) : (
-                                <p>{formData.phone || "Not added"}</p>
+                                <p>{phone || "Not added"}</p>
                             )}
                         </div>
                         
-                        <div className="profile-admin-info-card">
+                        <div className="admin-profile-info-card">
+                            <label>State</label>
+                            {isEditing ? (
+                                <input 
+                                    value={state} 
+                                    onChange={(e) => setState(e.target.value)} 
+                                    placeholder="State"
+                                />
+                            ) : (
+                                <p>{state || "Not added"}</p>
+                            )}
+                        </div>
+                        
+                        <div className="admin-profile-info-card">
                             <label>Date of Birth</label>
                             {isEditing ? (
                                 <input 
                                     type="date" 
-                                    name="dob" 
-                                    value={formData.dob} 
-                                    onChange={handleChange} 
+                                    value={dob} 
+                                    onChange={(e) => setDob(e.target.value)} 
                                 />
                             ) : (
-                                <p>{formData.dob || "Not added"}</p>
+                                <p>{dob || "Not added"}</p>
                             )}
                         </div>
                         
-                        <div className="profile-admin-info-card">
+                        <div className="admin-profile-info-card">
                             <label>Blood Group</label>
                             {isEditing ? (
-                                <select name="blood_group" value={formData.blood_group} onChange={handleChange}>
+                                <select value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)}>
                                     <option value="">Select</option>
                                     <option value="A+">A+</option><option value="A-">A-</option>
                                     <option value="B+">B+</option><option value="B-">B-</option>
@@ -199,33 +253,32 @@ function AdminProfile({ user, setUser }) {
                                     <option value="AB+">AB+</option><option value="AB-">AB-</option>
                                 </select>
                             ) : (
-                                <p>{formData.blood_group || "Not added"}</p>
+                                <p>{bloodGroup || "Not added"}</p>
                             )}
                         </div>
                         
-                        <div className="profile-admin-info-card full-width">
+                        <div className="admin-profile-info-card full-width">
                             <label>Address</label>
                             {isEditing ? (
                                 <textarea 
-                                    name="address" 
-                                    value={formData.address} 
-                                    onChange={handleChange} 
+                                    value={address} 
+                                    onChange={(e) => setAddress(e.target.value)} 
                                     placeholder="Full Address" 
                                     rows="2"
                                 />
                             ) : (
-                                <p>{formData.address || "Not added"}</p>
+                                <p>{address || "Not added"}</p>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {isEditing && (
-                    <div className="profile-admin-actions">
-                        <button className="profile-admin-save-btn" onClick={handleSave} disabled={loading}>
+                    <div className="admin-profile-actions">
+                        <button className="admin-profile-save-btn" onClick={handleSave} disabled={loading}>
                             {loading ? "Saving..." : "Save Changes"}
                         </button>
-                        <button className="profile-admin-cancel-btn" onClick={() => setIsEditing(false)}>
+                        <button className="admin-profile-cancel-btn" onClick={() => setIsEditing(false)}>
                             Cancel
                         </button>
                     </div>

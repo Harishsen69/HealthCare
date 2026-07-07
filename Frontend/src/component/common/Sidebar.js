@@ -12,11 +12,15 @@ import {
   FaBell,
   FaClipboardList,
   FaStethoscope,
-  FaChartLine
+  FaChartLine,
+  FaHospitalAlt,
+  FaMapMarkerAlt
 } from "react-icons/fa";
 
 function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingAppointments, notificationCount, reportCount }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [forceUpdate, setForceUpdate] = useState(false);
+    const [displayName, setDisplayName] = useState("User");
     
     // Check if mobile
     const isMobile = window.innerWidth <= 768;
@@ -24,19 +28,13 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
     // 🔥 UPDATED: Better scroll prevention when sidebar is open
     useEffect(() => {
         if (isMobile && isOpen) {
-            // Add class to body to prevent all scrolling on main content
             document.body.classList.add('sidebar-open-mobile');
-            
-            // Hide mobile header when sidebar opens
             const mobileHeader = document.querySelector('.patient-mobile-header');
             if (mobileHeader) {
                 mobileHeader.style.display = 'none';
             }
         } else {
-            // Remove class when sidebar closes
             document.body.classList.remove('sidebar-open-mobile');
-            
-            // Show mobile header when sidebar closes
             if (isMobile && !isOpen) {
                 const mobileHeader = document.querySelector('.patient-mobile-header');
                 if (mobileHeader) {
@@ -45,7 +43,6 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
             }
         }
         
-        // Cleanup on unmount
         return () => {
             document.body.classList.remove('sidebar-open-mobile');
             const mobileHeader = document.querySelector('.patient-mobile-header');
@@ -55,6 +52,75 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
         };
     }, [isOpen, isMobile]);
 
+    // 🔥 Listen for storage changes to update user name
+    useEffect(() => {
+        updateDisplayName();
+
+        const handleStorageChange = (e) => {
+            if (e.key === 'medicareUser' || e.key === 'user_type' || e.key === 'user_role') {
+                console.log("🔄 Sidebar: Storage event detected");
+                updateDisplayName();
+                setForceUpdate(prev => !prev);
+            }
+        };
+        
+        const handleCustomEvent = () => {
+            console.log("🔄 Sidebar: Custom event detected");
+            updateDisplayName();
+            setForceUpdate(prev => !prev);
+        };
+        
+        let lastCheckedName = displayName;
+        const interval = setInterval(() => {
+            const savedUser = localStorage.getItem("medicareUser");
+            if (savedUser) {
+                try {
+                    const userData = JSON.parse(savedUser);
+                    const currentName = getUserDisplayNameFromData(userData);
+                    if (currentName !== lastCheckedName) {
+                        console.log("🔄 Sidebar: Polling detected name change:", currentName);
+                        updateDisplayName();
+                        setForceUpdate(prev => !prev);
+                        lastCheckedName = currentName;
+                    }
+                } catch (e) {}
+            }
+        }, 1000);
+        
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('profileUpdated', handleCustomEvent);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('profileUpdated', handleCustomEvent);
+            clearInterval(interval);
+        };
+    }, []);
+
+    // 🔥 Update display name from localStorage
+    const updateDisplayName = () => {
+        const savedUser = localStorage.getItem("medicareUser");
+        if (savedUser) {
+            try {
+                const userData = JSON.parse(savedUser);
+                const name = getUserDisplayNameFromData(userData);
+                setDisplayName(name);
+                console.log("✅ Sidebar: Display name updated to:", name);
+                return;
+            } catch (e) {}
+        }
+        
+        if (user?.name) {
+            setDisplayName(user.name);
+        } else if (user?.first_name && user?.last_name) {
+            setDisplayName(`${user.first_name} ${user.last_name}`);
+        } else if (user?.username) {
+            setDisplayName(user.username);
+        } else {
+            setDisplayName("User");
+        }
+    };
+
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
@@ -63,7 +129,7 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
         setIsOpen(false);
     };
 
-    // 🔥 NEW: Handle navigation with sidebar close
+    // 🔥 Navigation with sidebar close
     const handleNavigation = (tabId) => {
         setActiveTab(tabId);
         if (isMobile) {
@@ -71,22 +137,31 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
         }
     };
 
+    // ========================================
+    // 🔥 ADMIN MENU - Complete Control
+    // ========================================
     const adminMenu = [
         { id: "overview", icon: <FaTachometerAlt />, label: "Dashboard" },
-        { id: "doctors", icon: <FaUserMd />, label: "Doctors" },
-        { id: "appointments", icon: <FaCalendarAlt />, label: "Appointments" },
+        { id: "doctors", icon: <FaUserMd />, label: "Manage Doctors" },
+        { id: "appointments", icon: <FaCalendarAlt />, label: "All Appointments" },
         { id: "profile", icon: <FaUser />, label: "Profile" }
     ];
 
+    // ========================================
+    // 🔥 DOCTOR MENU - Doctor Features
+    // ========================================
     const doctorMenu = [
         { id: "overview", icon: <FaChartLine />, label: "Dashboard" },
-        { id: "appointments", icon: <FaCalendarAlt />, label: "Appointments", showBadge: hasPendingAppointments },
+        { id: "appointments", icon: <FaCalendarAlt />, label: "My Appointments", showBadge: hasPendingAppointments },
         { id: "availability", icon: <FaClock />, label: "Availability" },
         { id: "reports", icon: <FaClipboardList />, label: "Reports" },
-        { id: "profile", icon: <FaUser />, label: "Profile" },
+        { id: "profile", icon: <FaUser />, label: "Profile & Location" },
         { id: "notifications", icon: <FaBell />, label: "Notifications" }
     ];
 
+    // ========================================
+    // 🔥 PATIENT MENU - Patient Features
+    // ========================================
     const patientMenu = [
         { id: "overview", icon: <FaTachometerAlt />, label: "Dashboard" },
         { id: "appointments", icon: <FaCalendarAlt />, label: "My Appointments" },
@@ -95,19 +170,32 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
         { id: "notifications", icon: <FaBell />, label: "Notifications", badge: notificationCount }
     ];
 
+    // ========================================
+    // 🔥 MENU SELECTION BASED ON ROLE
+    // ========================================
     let menuItems = [];
     if (userRole === "admin") menuItems = adminMenu;
     else if (userRole === "doctor") menuItems = doctorMenu;
     else menuItems = patientMenu;
 
+    // ========================================
+    // 🔥 LOGOUT FUNCTION - UPDATED
+    // ========================================
     const handleLogout = () => {
+        // ✅ Remove all dashboard tabs
+        localStorage.removeItem('patientDashboardTab');
+        localStorage.removeItem('doctorDashboardTab');
+        localStorage.removeItem('adminDashboardTab');
+        localStorage.removeItem('currentPage');
+        
+        // Remove other items
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("medicareUser");
         localStorage.removeItem("user_type");
         localStorage.removeItem("user_role");
-        localStorage.removeItem("currentPage");
         sessionStorage.clear();
+        
         if (setPage) setPage("home");
         setTimeout(() => window.location.reload(), 50);
     };
@@ -115,6 +203,25 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
     const handleHome = () => {
         setPage("home");
         closeSidebar();
+    };
+
+    // ========================================
+    // 🔥 GET USER ROLE LABEL
+    // ========================================
+    const getRoleLabel = () => {
+        if (userRole === "admin") return "🛡️ Admin";
+        if (userRole === "doctor") return "👨‍⚕️ Doctor";
+        return "👤 Patient";
+    };
+
+    // ========================================
+    // 🔥 GET USER DISPLAY NAME FROM DATA
+    // ========================================
+    const getUserDisplayNameFromData = (userData) => {
+        if (userData.name) return userData.name;
+        if (userData.first_name && userData.last_name) return `${userData.first_name} ${userData.last_name}`;
+        if (userData.username) return userData.username;
+        return "User";
     };
 
     return (
@@ -150,10 +257,8 @@ function Sidebar({ userRole, activeTab, setActiveTab, user, setPage, hasPendingA
                 
                 <div className="sidebar-user-info">
                     <div className="sidebar-user-avatar">👤</div>
-                    <h3 className="sidebar-user-name">{user?.name || "User"}</h3>
-                    <p className="sidebar-user-role">
-                        {userRole === "admin" ? "🛡️ Admin" : userRole === "doctor" ? "👨‍⚕️ Doctor" : "👤 Patient"}
-                    </p>
+                    <h3 className="sidebar-user-name">{displayName}</h3>
+                    <p className="sidebar-user-role">{getRoleLabel()}</p>
                 </div>
                 
                 <nav className="sidebar-nav">

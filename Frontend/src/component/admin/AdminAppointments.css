@@ -252,3 +252,24 @@
         -webkit-overflow-scrolling: touch;
     }
 }
+/* 🔥 Clinic/Hospital Column Styling */
+.admin-appointments-table th:nth-child(4),
+.admin-appointments-table td:nth-child(4) {
+    min-width: 120px;
+    max-width: 180px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.admin-appointments-table td:nth-child(4) {
+    font-size: 0.7rem;
+    color: #1e293b;
+}
+
+@media (max-width: 768px) {
+    .admin-appointments-table th:nth-child(4),
+    .admin-appointments-table td:nth-child(4) {
+        min-width: 100px;
+        max-width: 140px;
+    }
+}

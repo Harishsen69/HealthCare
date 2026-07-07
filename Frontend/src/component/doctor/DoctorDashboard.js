@@ -14,34 +14,108 @@ function DoctorDashboard({ setPage }) {
         const savedUser = localStorage.getItem("medicareUser");
         return savedUser ? JSON.parse(savedUser) : null;
     });
-    
+
     const [activeTab, setActiveTab] = useState(() => {
         const savedTab = localStorage.getItem('doctorDashboardTab');
         return savedTab || "overview";
     });
-    
+
     const [loading, setLoading] = useState(true);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-    
+
     const [doctorPendingAppointments, setDoctorPendingAppointments] = useState([]);
     const [doctorConfirmedAppointments, setDoctorConfirmedAppointments] = useState([]);
     const [doctorCompletedAppointments, setDoctorCompletedAppointments] = useState([]);
     const [hasPendingAppointments, setHasPendingAppointments] = useState(false);
     const [doctorUniquePatients, setDoctorUniquePatients] = useState(0);
-    
+
     const [todayAppointments, setTodayAppointments] = useState([]);
     const [upcomingDoctorAppointments, setUpcomingDoctorAppointments] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
 
-    // 🔥 NEW: Search & Filter States
+    // 🔥 Search & Filter States
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [dateFilter, setDateFilter] = useState("all");
     const [customDateRange, setCustomDateRange] = useState({ start: "", end: "" });
     const [showDateRangePicker, setShowDateRangePicker] = useState(false);
 
+    // 🔥 Force re-render state
+    const [forceUpdate, setForceUpdate] = useState(0);
+
     const isMobile = window.innerWidth <= 768;
+
+    // 🔥 Auto-sync user from localStorage
+    useEffect(() => {
+        const savedUser = localStorage.getItem("medicareUser");
+        if (savedUser) {
+            try {
+                const userData = JSON.parse(savedUser);
+                setUser(userData);
+                console.log("✅ DoctorDashboard initial sync:", userData.name);
+            } catch (e) { }
+        }
+
+        const handleStorageChange = () => {
+            const saved = localStorage.getItem("medicareUser");
+            if (saved) {
+                try {
+                    const userData = JSON.parse(saved);
+                    setUser(userData);
+                    setForceUpdate(prev => prev + 1);
+                    console.log("🔄 DoctorDashboard storage sync:", userData.name);
+                } catch (e) { }
+            }
+        };
+
+        const handleCustomEvent = () => {
+            const saved = localStorage.getItem("medicareUser");
+            if (saved) {
+                try {
+                    const userData = JSON.parse(saved);
+                    setUser(userData);
+                    setForceUpdate(prev => prev + 1);
+                    console.log("🔄 DoctorDashboard custom event sync:", userData.name);
+                } catch (e) { }
+            }
+        };
+
+        // Polling for cross-device updates
+        let lastCheckedUser = localStorage.getItem("medicareUser");
+        const interval = setInterval(() => {
+            const currentUser = localStorage.getItem("medicareUser");
+            if (currentUser !== lastCheckedUser) {
+                lastCheckedUser = currentUser;
+                if (currentUser) {
+                    try {
+                        const userData = JSON.parse(currentUser);
+                        setUser(userData);
+                        setForceUpdate(prev => prev + 1);
+                        console.log("🔄 DoctorDashboard polling sync:", userData.name);
+                    } catch (e) { }
+                }
+            }
+        }, 2000);
+
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('profileUpdated', handleCustomEvent);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('profileUpdated', handleCustomEvent);
+            clearInterval(interval);
+        };
+    }, []);
+
+    useEffect(() => {
+        const savedTab = localStorage.getItem('doctorDashboardTab');
+        if (savedTab) {
+            setActiveTab(savedTab);
+        } else {
+            setActiveTab('overview');
+        }
+    }, []);
 
     useEffect(() => {
         localStorage.setItem('doctorDashboardTab', activeTab);
@@ -61,33 +135,30 @@ function DoctorDashboard({ setPage }) {
             overview: "Dashboard",
             appointments: "Appointments",
             availability: "Availability",
-            profile: "Profile",
+            profile: "Profile & Location",
             notifications: "Notifications",
             reports: "Reports"
         };
         return pageNames[activeTab] || "Dashboard";
     };
 
-    // 🔥 NEW: Filter appointments function
+    // 🔥 Filter appointments function
     const filterAppointments = (appointmentsList) => {
         let filtered = [...appointmentsList];
-        
-        // Search by patient name
+
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase();
-            filtered = filtered.filter(apt => 
+            filtered = filtered.filter(apt =>
                 apt.patient_name?.toLowerCase().includes(term)
             );
         }
-        
-        // Status filter
+
         if (statusFilter !== "all") {
             filtered = filtered.filter(apt => apt.status === statusFilter);
         }
-        
-        // Date filter
+
         const today = new Date().toISOString().split('T')[0];
-        
+
         if (dateFilter === "today") {
             filtered = filtered.filter(apt => apt.date === today);
         } else if (dateFilter === "upcoming") {
@@ -97,11 +168,11 @@ function DoctorDashboard({ setPage }) {
         } else if (dateFilter === "custom" && customDateRange.start && customDateRange.end) {
             filtered = filtered.filter(apt => apt.date >= customDateRange.start && apt.date <= customDateRange.end);
         }
-        
+
         return filtered;
     };
 
-    // 🔥 NEW: Reset all filters
+    // 🔥 Reset all filters
     const resetFilters = () => {
         setSearchTerm("");
         setStatusFilter("all");
@@ -110,16 +181,16 @@ function DoctorDashboard({ setPage }) {
         setShowDateRangePicker(false);
     };
 
-    // 🔥 NEW: Export to CSV
+    // 🔥 Export to CSV
     const exportToCSV = () => {
         const allAppointments = [...doctorPendingAppointments, ...doctorConfirmedAppointments, ...doctorCompletedAppointments];
         const filteredAppointments = filterAppointments(allAppointments);
-        
+
         if (filteredAppointments.length === 0) {
             alert("No appointments to export!");
             return;
         }
-        
+
         const headers = ["S.No", "Patient Name", "Date", "Time", "Status"];
         const rows = filteredAppointments.map((apt, index) => [
             index + 1,
@@ -128,7 +199,7 @@ function DoctorDashboard({ setPage }) {
             formatTimeTo12Hour(apt.time),
             apt.status
         ]);
-        
+
         const csvContent = [headers, ...rows].map(row => row.join(",")).join("\n");
         const blob = new Blob([csvContent], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
@@ -174,7 +245,7 @@ function DoctorDashboard({ setPage }) {
 
                 const today = new Date().toISOString().split('T')[0];
                 const allApps = [...pending, ...confirmed, ...completed];
-                
+
                 setTodayAppointments(allApps.filter(apt => apt.date === today));
                 setUpcomingDoctorAppointments(
                     allApps.filter(apt => apt.date > today && apt.status !== 'completed')
@@ -238,7 +309,7 @@ function DoctorDashboard({ setPage }) {
         fetchNotifications();
     }, []);
 
-    // 🔥 NEW: Render Filter Bar Component
+    // 🔥 Render Filter Bar Component
     const renderFilterBar = () => (
         <div className="doctor-filter-bar">
             <div className="doctor-filter-row">
@@ -250,7 +321,7 @@ function DoctorDashboard({ setPage }) {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                
+
                 <select
                     className="doctor-filter-select"
                     value={statusFilter}
@@ -262,7 +333,7 @@ function DoctorDashboard({ setPage }) {
                     <option value="completed">✔️ Completed</option>
                     <option value="cancelled">❌ Cancelled</option>
                 </select>
-                
+
                 <select
                     className="doctor-filter-select"
                     value={dateFilter}
@@ -282,7 +353,7 @@ function DoctorDashboard({ setPage }) {
                     <option value="custom">📆 Custom Range</option>
                 </select>
             </div>
-            
+
             {showDateRangePicker && dateFilter === "custom" && (
                 <div className="doctor-date-range">
                     <input
@@ -300,7 +371,7 @@ function DoctorDashboard({ setPage }) {
                     />
                 </div>
             )}
-            
+
             <div className="doctor-filter-actions">
                 <button className="doctor-reset-btn" onClick={resetFilters}>
                     🔄 Reset
@@ -319,7 +390,7 @@ function DoctorDashboard({ setPage }) {
         </div>
     );
 
-    // 🔥 Filtered appointments for overview
+    // Filtered appointments for overview
     const filteredPending = filterAppointments(doctorPendingAppointments);
     const filteredConfirmed = filterAppointments(doctorConfirmedAppointments);
     const filteredCompleted = filterAppointments(doctorCompletedAppointments);
@@ -368,7 +439,7 @@ function DoctorDashboard({ setPage }) {
                 <div className="doctor-section-header">
                     <h3>📅 Today's Schedule - {new Date().toISOString().split('T')[0]}</h3>
                 </div>
-                
+
                 {todayAppointments.length === 0 ? (
                     <div className="doctor-empty-table">No appointments scheduled for today</div>
                 ) : (
@@ -471,12 +542,15 @@ function DoctorDashboard({ setPage }) {
                     )}
                 </div>
             )}
+
+            {/* 🔥 EXTRA SPACE AT BOTTOM */}
+            <div style={{ height: '30px' }}></div>
         </div>
     );
 
     return (
         <div className="doctor-dashboard-layout">
-            <Sidebar 
+            <Sidebar
                 userRole="doctor"
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
@@ -488,7 +562,7 @@ function DoctorDashboard({ setPage }) {
                 isMobileSidebarOpen={isMobileSidebarOpen}
                 toggleMobileSidebar={toggleMobileSidebar}
             />
-            
+
             <div className={`doctor-content-overlay ${isMobile && isMobileSidebarOpen ? 'blur-active' : ''}`}>
                 <div className="doctor-main-content">
                     {isMobile && (
@@ -498,19 +572,19 @@ function DoctorDashboard({ setPage }) {
                             </div>
                         </div>
                     )}
-                    
+
                     {!isMobile && (
                         <div className="doctor-main-header">
                             <h1>Welcome back, <span>{user?.name?.split(" ")[0] || "Doctor"}</span>!</h1>
                             <p>Manage your appointments and availability.</p>
                         </div>
                     )}
-                    
+
                     {activeTab === "overview" && renderOverview()}
                     {activeTab === "appointments" && (
                         <>
                             {renderFilterBar()}
-                            <DoctorAppointments 
+                            <DoctorAppointments
                                 doctorPendingAppointments={filteredPending}
                                 doctorConfirmedAppointments={filteredConfirmed}
                                 doctorCompletedAppointments={filteredCompleted}
@@ -523,7 +597,7 @@ function DoctorDashboard({ setPage }) {
                     {activeTab === "availability" && <DoctorAvailability />}
                     {activeTab === "profile" && <DoctorProfile user={user} setUser={setUser} />}
                     {activeTab === "notifications" && (
-                        <DoctorNotifications 
+                        <DoctorNotifications
                             notifications={notifications}
                             fetchNotifications={fetchNotifications}
                             setActiveTab={setActiveTab}

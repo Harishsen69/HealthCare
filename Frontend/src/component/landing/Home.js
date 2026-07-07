@@ -132,15 +132,12 @@ function Home({ setPage }) {
             document.body.style.height = '';
             document.body.style.top = '';
             
-            // 🔥 FIX: Exact position restore - NO SCROLL DOWN
             if (scrollPosition > 0) {
-                // Use requestAnimationFrame for smooth restore
                 requestAnimationFrame(() => {
                     window.scrollTo({
                         top: scrollPosition,
                         behavior: 'instant'
                     });
-                    // Don't reset scrollPosition immediately, keep it
                 });
             }
         }
@@ -195,25 +192,33 @@ function Home({ setPage }) {
         return imagePath;
     };
 
-    const fetchDoctors = useCallback(async () => {
-        try {
-            setLoading(true);
-            const response = await API.get('doctors/');
-            const doctorsData = response.data || [];
-            const doctorsWithImages = doctorsData.map((doc, index) => ({
-                ...doc,
-                image: doc.image || `https://randomuser.me/api/portraits/${index % 2 === 0 ? 'men' : 'women'}/${(index % 50) + 1}.jpg`
-            }));
-            setDoctors(doctorsWithImages);
-            const initialCount = window.innerWidth <= 900 ? 4 : 6;
-            setVisibleDoctors(initialCount);
-        } catch (error) {
-            console.error("Error fetching doctors:", error);
-            setDoctors([]);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+   // 🔥 In fetchDoctors function
+const fetchDoctors = useCallback(async () => {
+    try {
+        setLoading(true);
+        // ✅ Cache busting - Force fresh data
+        const response = await API.get('doctors/?t=' + new Date().getTime());
+        const doctorsData = response.data || [];
+        
+        const doctorsWithImages = doctorsData.map((doc, index) => ({
+            ...doc,
+            image: doc.image 
+                ? doc.image.startsWith('http') 
+                    ? doc.image 
+                    : `http://127.0.0.1:8000${doc.image}`
+                : `https://randomuser.me/api/portraits/${index % 2 === 0 ? 'men' : 'women'}/${(index % 50) + 1}.jpg`
+        }));
+        
+        setDoctors(doctorsWithImages);
+        const initialCount = window.innerWidth <= 900 ? 4 : 6;
+        setVisibleDoctors(initialCount);
+    } catch (error) {
+        console.error("Error fetching doctors:", error);
+        setDoctors([]);
+    } finally {
+        setLoading(false);
+    }
+}, []);
 
     const getDoctorsBySpecialty = (specialtyName) => {
         return doctors.filter(doc => 
@@ -398,6 +403,17 @@ function Home({ setPage }) {
     const initialCount = isMobile ? 4 : 6;
     const showMoreButton = visibleDoctors < doctors.length;
     const showLessButton = visibleDoctors > initialCount;
+
+    // 🔥 Helper function to get full address
+    const getDoctorAddress = (doctor) => {
+        if (!doctor) return "Address not available";
+        const parts = [];
+        if (doctor.address) parts.push(doctor.address);
+        if (doctor.city) parts.push(doctor.city);
+        if (doctor.state) parts.push(doctor.state);
+        if (doctor.pincode) parts.push(doctor.pincode);
+        return parts.length > 0 ? parts.join(", ") : "Address not available";
+    };
 
     if (loading) {
         return (
@@ -618,7 +634,10 @@ function Home({ setPage }) {
                             <select name="doctorId" value={formData.doctorId} onChange={handleChange} required>
                                 <option value="">Select Doctor</option>
                                 {doctors.map(doc => (
-                                    <option key={doc.id} value={doc.id}>Dr. {doc.name} - {doc.specialization} (₹{doc.fee})</option>
+                                    <option key={doc.id} value={doc.id}>
+                                        Dr. {doc.name} - {doc.specialization} (₹{doc.fee})
+                                        {doc.clinic_name && ` - ${doc.clinic_name}`}
+                                    </option>
                                 ))}
                             </select>
                             <input type="date" name="date" value={formData.date} onChange={handleChange} required min={new Date().toISOString().split('T')[0]} />
@@ -632,7 +651,7 @@ function Home({ setPage }) {
                 </div>
             )}
 
-            {/* Doctor Modal - Full Detail */}
+            {/* 🔥 Doctor Modal - Full Detail with Address */}
             {showDoctorModal && selectedDoctor && (
                 <div className="hm-modal-overlay" onClick={closeDoctorModal}>
                     <div className="hm-doctor-modal" onClick={stopPropagation}>
@@ -671,7 +690,7 @@ function Home({ setPage }) {
                                     <span>📍</span>
                                     <div>
                                         <label>Location</label>
-                                        <p>{selectedDoctor.location || "Delhi, India"}</p>
+                                        <p>{getDoctorAddress(selectedDoctor)}</p>
                                     </div>
                                 </div>
                                 <div className="hm-doc-detail-item">
@@ -688,6 +707,34 @@ function Home({ setPage }) {
                                         <p>{selectedDoctor.patients || 5000}+</p>
                                     </div>
                                 </div>
+                                {/* 🔥 Clinic/Hospital Info */}
+                                {selectedDoctor.clinic_name && (
+                                    <div className="hm-doc-detail-item">
+                                        <span>🏥</span>
+                                        <div>
+                                            <label>Clinic / Hospital</label>
+                                            <p>{selectedDoctor.clinic_name}</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {selectedDoctor.clinic_timings && (
+                                    <div className="hm-doc-detail-item">
+                                        <span>⏰</span>
+                                        <div>
+                                            <label>Timings</label>
+                                            <p>{selectedDoctor.clinic_timings}</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {selectedDoctor.landmark && (
+                                    <div className="hm-doc-detail-item">
+                                        <span>📍</span>
+                                        <div>
+                                            <label>Landmark</label>
+                                            <p>{selectedDoctor.landmark}</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <div className="hm-about-doc">
                                 <h3>📖 About Doctor</h3>

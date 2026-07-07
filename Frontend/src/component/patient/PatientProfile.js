@@ -16,7 +16,34 @@ function PatientProfile({ user, setUser }) {
         gender: "",
         father_name: "",
         mother_name: "",
-});
+    });
+
+    // 🔥 Force sync from localStorage
+    const syncFromLocalStorage = () => {
+        const saved = localStorage.getItem("medicareUser");
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                const fullName = `${data.first_name || ""} ${data.last_name || ""}`.trim() || data.name || "";
+                setFormData(prev => ({
+                    ...prev,
+                    full_name: fullName,
+                    phone: data.phone || "",
+                    address: data.address || "",
+                    state: data.state || "",
+                    dob: data.dob || "",
+                    blood_group: data.blood_group || "",
+                    gender: data.gender || "",
+                    father_name: data.father_name || "",
+                    mother_name: data.mother_name || "",
+                }));
+                return data;
+            } catch (e) {
+                console.error("Sync error:", e);
+            }
+        }
+        return null;
+    };
 
     const fetchLatestProfile = useCallback(async () => {
         try {
@@ -26,6 +53,9 @@ function PatientProfile({ user, setUser }) {
             const response = await API.get('patient-profile/', {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            
+            // 🔥 Also update from localStorage
+            syncFromLocalStorage();
             
             setFormData(prev => ({
                 ...prev,
@@ -43,13 +73,38 @@ function PatientProfile({ user, setUser }) {
         }
     }, []);
 
+    // 🔥 Mount par sync
     useEffect(() => {
+        syncFromLocalStorage();
         fetchLatestProfile();
     }, [fetchLatestProfile]);
 
+    // 🔥 Storage event listener
+    useEffect(() => {
+        const handleStorage = (e) => {
+            if (e.key === 'medicareUser') {
+                console.log("🔄 PatientProfile: Storage event detected");
+                syncFromLocalStorage();
+            }
+        };
+        
+        const handleCustom = () => {
+            console.log("🔄 PatientProfile: Custom event detected");
+            syncFromLocalStorage();
+        };
+        
+        window.addEventListener('storage', handleStorage);
+        window.addEventListener('profileUpdated', handleCustom);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorage);
+            window.removeEventListener('profileUpdated', handleCustom);
+        };
+    }, []);
+
     useEffect(() => {
         if (user) {
-            const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim();
+            const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim() || user.name || "";
             setFormData(prev => ({
                 ...prev,
                 full_name: fullName,
@@ -68,6 +123,21 @@ function PatientProfile({ user, setUser }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    // 🔥 Update appointment names after profile update
+    const updateAppointmentNames = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+            
+            const response = await API.post('update-appointment-names/', {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("✅ Appointments updated:", response.data);
+        } catch (error) {
+            console.log("Appointment update note:", error);
+        }
     };
 
     const handleSave = async () => {
@@ -102,13 +172,26 @@ function PatientProfile({ user, setUser }) {
             });
             
             if (response.status === 200) {
+                const fullName = formData.full_name;
+                const nameParts = fullName.trim().split(' ');
+                const firstName = nameParts[0] || "";
+                const lastName = nameParts.slice(1).join(' ') || "";
+                
                 const updatedUser = { 
                     ...user, 
                     ...response.data.user,
-                    name: formData.full_name,
+                    name: fullName,
+                    first_name: firstName,
+                    last_name: lastName,
                 };
+                
                 setUser(updatedUser);
                 localStorage.setItem("medicareUser", JSON.stringify(updatedUser));
+                
+                // 🔥 Update appointment names
+                await updateAppointmentNames();
+                
+                window.dispatchEvent(new CustomEvent("profileUpdated"));
                 setIsEditing(false);
                 alert("Profile updated successfully!");
                 await fetchLatestProfile();

@@ -9,7 +9,7 @@
 .doctor-profile-header {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     border-radius: 20px;
-    padding: 1.5rem;
+    padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -23,35 +23,111 @@
 .doctor-profile-avatar {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
+}
+
+/* ========== 🔥 AVATAR WRAPPER - FIXED ========== */
+.doctor-profile-avatar-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #1e293b;
+}
+
+.doctor-profile-avatar-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    display: block;
 }
 
 .doctor-profile-avatar-initial {
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 100px;
     background: linear-gradient(135deg, #0284c7, #0ea5e9);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
+    font-size: 2.8rem;
     font-weight: 700;
     color: white;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.2);
 }
 
+/* ========== AVATAR UPLOAD CONTROLS ========== */
+.doctor-profile-avatar-upload {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    display: flex;
+    gap: 4px;
+    z-index: 5;
+}
+
+.doctor-profile-upload-label {
+    background: #0284c7;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s;
+    border: 2px solid #0f172a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.doctor-profile-upload-label:hover {
+    background: #0369a1;
+    transform: scale(1.05);
+}
+
+.doctor-profile-remove-img {
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #0f172a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+}
+
+.doctor-profile-remove-img:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
+
+/* ========== PROFILE INFO ========== */
 .doctor-profile-info h2 {
     color: white;
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 700;
 }
 
 .doctor-profile-badge {
     background: rgba(255, 255, 255, 0.2);
-    padding: 0.2rem 0.8rem;
+    padding: 0.3rem 1rem;
     border-radius: 30px;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: white;
     display: inline-block;
     margin-top: 0.3rem;
@@ -61,10 +137,10 @@
 .doctor-profile-edit-btn {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.25);
-    padding: 0.6rem 1.5rem;
+    padding: 0.7rem 1.8rem;
     border-radius: 40px;
     color: white;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
@@ -154,15 +230,6 @@
 }
 
 /* ========== FORM INPUTS ========== */
-.doctor-profile-name-row {
-    display: flex;
-    gap: 0.8rem;
-}
-
-.doctor-profile-name-row input {
-    flex: 1;
-}
-
 .doctor-profile-info-card input,
 .doctor-profile-info-card select,
 .doctor-profile-info-card textarea {
@@ -195,7 +262,6 @@
     justify-content: flex-end;
     gap: 1rem;
     margin-top: 0.5rem;
-    margin-bottom: 1rem;
 }
 
 .doctor-profile-save-btn {
@@ -204,7 +270,7 @@
     color: white;
     border: none;
     border-radius: 40px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
@@ -229,7 +295,7 @@
     color: #64748b;
     border: 1.5px solid #e2e8f0;
     border-radius: 40px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
@@ -241,89 +307,314 @@
     transform: translateY(-2px);
 }
 
+/* ========== CROP MODAL ========== */
+.doctor-crop-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.doctor-crop-modal {
+    background: white;
+    border-radius: 24px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+.doctor-crop-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.doctor-crop-modal-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.doctor-crop-close {
+    background: #fee2e2;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: #dc2626;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.doctor-crop-close:hover {
+    background: #dc2626;
+    color: white;
+    transform: rotate(90deg);
+}
+
+.doctor-crop-modal-body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+}
+
+/* ========== CROP CONTAINER ========== */
+.doctor-crop-container {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+    max-height: 60vh;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #0f172a;
+    cursor: default;
+    touch-action: none;
+}
+
+.doctor-crop-image {
+    width: 100%;
+    height: auto;
+    max-height: 58vh;
+    object-fit: contain;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* ========== CROP BOX ========== */
+.doctor-crop-box {
+    position: absolute;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    cursor: move;
+    touch-action: none;
+}
+
+.doctor-crop-box-border {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    animation: pulseBorder 2s ease-in-out infinite;
+}
+
+@keyframes pulseBorder {
+    0%, 100% { border-color: rgba(255, 255, 255, 0.3); }
+    50% { border-color: rgba(255, 255, 255, 0.7); }
+}
+
+/* ========== CROP GRID ========== */
+.doctor-crop-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.doctor-crop-grid span {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ========== DRAG HANDLE ========== */
+.doctor-crop-drag-handle {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    border: 2px solid #0284c7;
+    cursor: nwse-resize;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    touch-action: none;
+}
+
+.doctor-crop-drag-handle::after {
+    content: '↘';
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #1e293b;
+}
+
+/* ========== CROP CONTROLS ========== */
+.doctor-crop-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.doctor-crop-tip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8fafc;
+    padding: 0.4rem 0.8rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.doctor-crop-tip span {
+    font-size: 1rem;
+}
+
+.doctor-crop-tip p {
+    font-size: 0.7rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.doctor-crop-buttons {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.doctor-crop-cancel {
+    flex: 1;
+    padding: 0.5rem;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.8rem;
+}
+
+.doctor-crop-cancel:hover {
+    background: #e2e8f0;
+}
+
+.doctor-crop-confirm {
+    flex: 2;
+    padding: 0.5rem;
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.8rem;
+}
+
+.doctor-crop-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(2, 132, 199, 0.3);
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     .doctor-profile-container {
         padding: 0.8rem;
     }
-    
+
     .doctor-profile-header {
         flex-direction: column;
         text-align: center;
         padding: 1.2rem;
     }
-    
+
     .doctor-profile-avatar {
         flex-direction: column;
         text-align: center;
     }
-    
+
+    .doctor-profile-avatar-wrapper {
+        width: 80px;
+        height: 80px;
+    }
+
     .doctor-profile-avatar-initial {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
     }
-    
+
+    .doctor-profile-avatar-img {
+        width: 80px;
+        height: 80px;
+    }
+
     .doctor-profile-info h2 {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
-    
+
     .doctor-profile-edit-btn {
         width: 100%;
         justify-content: center;
         padding: 0.5rem 1rem;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
     }
-    
+
     .doctor-profile-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .doctor-profile-info-card {
         border-right: none;
         padding: 0.8rem 1rem;
     }
-    
+
     .doctor-profile-info-card.full-width {
         grid-column: span 1;
     }
-    
-    .doctor-profile-info-card label {
-        font-size: 0.6rem;
-    }
-    
-    .doctor-profile-info-card p {
-        font-size: 0.8rem;
-    }
-    
-    .doctor-profile-name-row {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
+
     .doctor-profile-actions {
         flex-direction: column-reverse;
         gap: 0.8rem;
     }
-    
+
     .doctor-profile-save-btn,
     .doctor-profile-cancel-btn {
         width: 100%;
         text-align: center;
         padding: 0.6rem 1rem;
-        font-size: 0.75rem;
-    }
-    
-    .doctor-profile-section-title {
-        padding: 0.7rem 1rem;
-    }
-    
-    .doctor-profile-section-title span {
-        font-size: 1rem;
-    }
-    
-    .doctor-profile-section-title h3 {
         font-size: 0.8rem;
+    }
+
+    .doctor-crop-container {
+        max-width: 350px;
+        max-height: 50vh;
+    }
+
+    .doctor-crop-image {
+        max-height: 48vh;
     }
 }
 
@@ -331,47 +622,100 @@
     .doctor-profile-container {
         padding: 0.6rem;
     }
-    
+
     .doctor-profile-header {
         padding: 1rem;
     }
-    
+
+    .doctor-profile-avatar-wrapper {
+        width: 70px;
+        height: 70px;
+    }
+
     .doctor-profile-avatar-initial {
-        width: 50px;
-        height: 50px;
-        font-size: 1.3rem;
+        width: 70px;
+        height: 70px;
+        font-size: 1.6rem;
     }
-    
+
+    .doctor-profile-avatar-img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .doctor-profile-upload-label {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+    }
+
+    .doctor-profile-remove-img {
+        width: 20px;
+        height: 20px;
+        font-size: 8px;
+    }
+
     .doctor-profile-info h2 {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
-    
+
     .doctor-profile-badge {
-        font-size: 0.6rem;
+        font-size: 0.65rem;
+        padding: 0.2rem 0.6rem;
     }
-    
+
+    .doctor-profile-edit-btn {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+
     .doctor-profile-info-card {
         padding: 0.6rem 0.8rem;
     }
-    
-    .doctor-profile-info-card label {
-        font-size: 0.55rem;
-    }
-    
-    .doctor-profile-info-card p {
-        font-size: 0.75rem;
-    }
-    
+
     .doctor-profile-info-card input,
     .doctor-profile-info-card select,
     .doctor-profile-info-card textarea {
         padding: 0.5rem 0.6rem;
         font-size: 0.7rem;
     }
-    
+
     .doctor-profile-save-btn,
     .doctor-profile-cancel-btn {
         padding: 0.5rem 0.8rem;
-        font-size: 0.7rem;
+        font-size: 0.75rem;
+    }
+
+    .doctor-crop-modal {
+        max-width: 98vw;
+        padding: 0.5rem;
+    }
+
+    .doctor-crop-container {
+        max-width: 280px;
+        max-height: 40vh;
+    }
+
+    .doctor-crop-image {
+        max-height: 38vh;
+    }
+
+    .doctor-crop-box {
+        border-width: 1.5px;
+    }
+
+    .doctor-crop-drag-handle {
+        width: 24px;
+        height: 24px;
+        bottom: -6px;
+        right: -6px;
+    }
+
+    .doctor-crop-drag-handle::after {
+        font-size: 11px;
+    }
+
+    .doctor-crop-buttons {
+        flex-direction: column;
     }
 }

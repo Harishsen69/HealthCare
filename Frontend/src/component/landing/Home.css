@@ -1725,3 +1725,14 @@ body {
         height: 80px;
     }
 }
+/* 🔥 Doctor Address Styling */
+.hm-doc-detail-item .hm-doc-address {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.4;
+}
+
+.hm-doc-detail-item .hm-doc-address strong {
+    color: #0f172a;
+    font-weight: 600;
+}

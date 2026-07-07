@@ -46,6 +46,16 @@ function PatientAppointments({ upcomingAppointments, pastAppointments, handleCan
         setPastCurrentPage(1);
     };
 
+    // 🔥 Helper function to get full address
+    const getDoctorAddress = (appointment) => {
+        if (!appointment) return "Address not available";
+        const parts = [];
+        if (appointment.doctor_address) {
+            parts.push(appointment.doctor_address);
+        }
+        return parts.length > 0 ? parts.join(", ") : "Address not available";
+    };
+
     return (
         <div className="patient-appointments-container">
             {/* Upcoming Appointments */}
@@ -66,6 +76,7 @@ function PatientAppointments({ upcomingAppointments, pastAppointments, handleCan
                                         <th>S.No.</th>
                                         <th>Doctor</th>
                                         <th>Specialization</th>
+                                        <th>Clinic/Hospital</th>
                                         <th>Date</th>
                                         <th>Time</th>
                                         <th>Status</th>
@@ -76,8 +87,11 @@ function PatientAppointments({ upcomingAppointments, pastAppointments, handleCan
                                     {currentUpcoming.map((apt, index) => (
                                         <tr key={apt.id}>
                                             <td>{upcomingStartIndex + index + 1}</td>
-                                            <td><strong>{apt.doctor_name}</strong></td>
+                                            <td><strong>Dr. {apt.doctor_name}</strong></td>
                                             <td>{apt.doctor_specialty}</td>
+                                            <td>
+                                                {apt.doctor_clinic || apt.doctor_address || "N/A"}
+                                            </td>
                                             <td>{apt.date}</td>
                                             <td>{formatTimeTo12Hour(apt.time)}</td>
                                             <td><span className={`patient-appointment-status ${apt.status}`}>{apt.status}</span></td>
@@ -130,6 +144,7 @@ function PatientAppointments({ upcomingAppointments, pastAppointments, handleCan
                                         <th>S.No.</th>
                                         <th>Doctor</th>
                                         <th>Specialization</th>
+                                        <th>Clinic/Hospital</th>
                                         <th>Date</th>
                                         <th>Time</th>
                                         <th>Status</th>
@@ -139,8 +154,11 @@ function PatientAppointments({ upcomingAppointments, pastAppointments, handleCan
                                     {currentPast.map((apt, index) => (
                                         <tr key={apt.id}>
                                             <td>{pastStartIndex + index + 1}</td>
-                                            <td><strong>{apt.doctor_name}</strong></td>
+                                            <td><strong>Dr. {apt.doctor_name}</strong></td>
                                             <td>{apt.doctor_specialty}</td>
+                                            <td>
+                                                {apt.doctor_clinic || apt.doctor_address || "N/A"}
+                                            </td>
                                             <td>{apt.date}</td>
                                             <td>{formatTimeTo12Hour(apt.time)}</td>
                                             <td><span className={`patient-appointment-status ${apt.status}`}>{apt.status}</span></td>

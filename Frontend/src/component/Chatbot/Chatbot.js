@@ -11,7 +11,24 @@ function Chatbot() {
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
-    const API_BASE_URL = 'http://10.122.186.205:8000';
+    // 🔥 AUTO-DETECT - Laptop aur Mobile dono par kaam karega
+    const getApiBaseUrl = () => {
+        const hostname = window.location.hostname;
+        
+        // Agar localhost ya 127.0.0.1 hai toh laptop hai
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://127.0.0.1:8000';
+        }
+        
+        // Agar IP address hai (mobile ya network access)
+        // Same port 8000 pe backend chal raha hai
+        return `http://${hostname}:8000`;
+    };
+
+    const API_BASE_URL = getApiBaseUrl();
+
+    // 🔥 Debug - Console mein check karo kaunsa URL use ho raha hai
+    console.log('✅ Chatbot API URL:', API_BASE_URL);
 
     const getPatientEmail = () => {
         try {
@@ -56,12 +73,10 @@ function Chatbot() {
         }
     };
 
-    // 🔥 FIXED: Remove the ** replacement
     const formatResponse = (text) => {
         let formatted = text;
         formatted = formatted.replace(/\\n/g, '\n');
         formatted = formatted.replace(/\n{3,}/g, '\n\n');
-        // ✅ REMOVED: formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '**$1**');
         return formatted.trim();
     };
 

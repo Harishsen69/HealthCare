@@ -13,24 +13,24 @@ function PatientDashboard({ setPage }) {
         const savedUser = localStorage.getItem("medicareUser");
         return savedUser ? JSON.parse(savedUser) : null;
     });
-    
+
     const [activeTab, setActiveTab] = useState(() => {
         const savedTab = localStorage.getItem('patientDashboardTab');
         return savedTab || "overview";
     });
-    
+
     const [loading, setLoading] = useState(true);
     const [showAllUpcoming, setShowAllUpcoming] = useState(false);
     const [showAllCompleted, setShowAllCompleted] = useState(false);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-    
+
     const [appointments, setAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
     const [reportCount, setReportCount] = useState(0);
     const [hasNewReports, setHasNewReports] = useState(false);
-    
+
     const [showBookingForm, setShowBookingForm] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [appointmentDate, setAppointmentDate] = useState("");
@@ -40,7 +40,7 @@ function PatientDashboard({ setPage }) {
     const [bookedSlots, setBookedSlots] = useState([]);
     const [checkingSlots, setCheckingSlots] = useState(false);
     const [doctorAvailable, setDoctorAvailable] = useState(true);
-    
+
     // 🔥 Search & Filter States
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -50,6 +50,15 @@ function PatientDashboard({ setPage }) {
     const [doctorSearchTerm, setDoctorSearchTerm] = useState("");
 
     const isMobile = window.innerWidth <= 768;
+
+    useEffect(() => {
+        const savedTab = localStorage.getItem('patientDashboardTab');
+        if (savedTab) {
+            setActiveTab(savedTab);
+        } else {
+            setActiveTab('overview');
+        }
+    }, []);
 
     useEffect(() => {
         localStorage.setItem('patientDashboardTab', activeTab);
@@ -71,7 +80,7 @@ function PatientDashboard({ setPage }) {
         const currentMinute = now.getMinutes();
         const currentTotalMinutes = currentHour * 60 + currentMinute;
         const minAdvanceMinutes = 60;
-        
+
         const allSlots = [
             { value: "09:00", label: "09:00 AM" }, { value: "10:00", label: "10:00 AM" },
             { value: "11:00", label: "11:00 AM" }, { value: "12:00", label: "12:00 PM" },
@@ -80,7 +89,7 @@ function PatientDashboard({ setPage }) {
             { value: "17:00", label: "05:00 PM" }, { value: "18:00", label: "06:00 PM" },
             { value: "19:00", label: "07:00 PM" }, { value: "20:00", label: "08:00 PM" }
         ];
-        
+
         if (appointmentDate === today) {
             return allSlots.filter(slot => {
                 const [hours, minutes] = slot.value.split(':');
@@ -105,21 +114,21 @@ function PatientDashboard({ setPage }) {
     // 🔥 Filter appointments
     const filterAppointments = (appointmentsList) => {
         let filtered = [...appointmentsList];
-        
+
         if (searchTerm.trim()) {
             const term = searchTerm.toLowerCase();
-            filtered = filtered.filter(apt => 
+            filtered = filtered.filter(apt =>
                 apt.doctor_name?.toLowerCase().includes(term) ||
                 apt.doctor_specialty?.toLowerCase().includes(term)
             );
         }
-        
+
         if (statusFilter !== "all") {
             filtered = filtered.filter(apt => apt.status === statusFilter);
         }
-        
+
         const today = new Date().toISOString().split('T')[0];
-        
+
         if (dateFilter === "today") {
             filtered = filtered.filter(apt => apt.date === today);
         } else if (dateFilter === "upcoming") {
@@ -129,7 +138,7 @@ function PatientDashboard({ setPage }) {
         } else if (dateFilter === "custom" && customDateRange.start && customDateRange.end) {
             filtered = filtered.filter(apt => apt.date >= customDateRange.start && apt.date <= customDateRange.end);
         }
-        
+
         return filtered;
     };
 
@@ -143,12 +152,12 @@ function PatientDashboard({ setPage }) {
 
     const exportToCSV = () => {
         const filteredAppointments = filterAppointments(appointments);
-        
+
         if (filteredAppointments.length === 0) {
             alert("No appointments to export!");
             return;
         }
-        
+
         const headers = ["S.No", "Doctor Name", "Specialization", "Date", "Time", "Status"];
         const rows = filteredAppointments.map((apt, index) => [
             index + 1,
@@ -158,7 +167,7 @@ function PatientDashboard({ setPage }) {
             formatTimeTo12Hour(apt.time),
             apt.status
         ]);
-        
+
         const csvContent = [headers, ...rows].map(row => row.join(",")).join("\n");
         const blob = new Blob([csvContent], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
@@ -169,7 +178,7 @@ function PatientDashboard({ setPage }) {
         URL.revokeObjectURL(url);
     };
 
-    const filteredDoctors = doctors.filter(doc => 
+    const filteredDoctors = doctors.filter(doc =>
         doc.name?.toLowerCase().includes(doctorSearchTerm.toLowerCase()) ||
         doc.specialization?.toLowerCase().includes(doctorSearchTerm.toLowerCase())
     );
@@ -366,10 +375,10 @@ function PatientDashboard({ setPage }) {
     const today = new Date().toISOString().split('T')[0];
     const upcomingAppointmentsRaw = appointments.filter(a => a.status !== 'completed' && a.status !== 'cancelled');
     const pastAppointmentsRaw = appointments.filter(a => a.status === 'completed');
-    
+
     const filteredUpcoming = filterAppointments(upcomingAppointmentsRaw);
     const filteredPast = filterAppointments(pastAppointmentsRaw);
-    
+
     const todayAppointments = filteredUpcoming.filter(apt => apt.date === today);
     const futureAppointments = filteredUpcoming.filter(apt => apt.date > today);
     const totalDoctors = doctors.length;
@@ -388,80 +397,80 @@ function PatientDashboard({ setPage }) {
 
     // 🔥 Render Filter Bar Component
     const renderFilterBar = () => (
-    <div className="patient-filter-bar">
-        {/* Row 1: Search + Status + Date */}
-        <div className="patient-filter-row">
-            <div className="patient-search-input">
-                <input
-                    type="text"
-                    placeholder="🔍 Search by doctor or specialization..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+        <div className="patient-filter-bar">
+            {/* Row 1: Search + Status + Date */}
+            <div className="patient-filter-row">
+                <div className="patient-search-input">
+                    <input
+                        type="text"
+                        placeholder="🔍 Search by doctor or specialization..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+
+                <select
+                    className="patient-filter-select"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="all">📊 All Status</option>
+                    <option value="pending">⏳ Pending</option>
+                    <option value="confirmed">✅ Confirmed</option>
+                    <option value="completed">✔️ Completed</option>
+                    <option value="cancelled">❌ Cancelled</option>
+                </select>
+
+                <select
+                    className="patient-filter-select"
+                    value={dateFilter}
+                    onChange={(e) => {
+                        setDateFilter(e.target.value);
+                        if (e.target.value === "custom") {
+                            setShowDateRangePicker(true);
+                        } else {
+                            setShowDateRangePicker(false);
+                        }
+                    }}
+                >
+                    <option value="all">📅 All Dates</option>
+                    <option value="today">📍 Today</option>
+                    <option value="upcoming">⏫ Upcoming</option>
+                    <option value="past">⬇️ Past</option>
+                    <option value="custom">📆 Custom Range</option>
+                </select>
             </div>
-            
-            <select
-                className="patient-filter-select"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-            >
-                <option value="all">📊 All Status</option>
-                <option value="pending">⏳ Pending</option>
-                <option value="confirmed">✅ Confirmed</option>
-                <option value="completed">✔️ Completed</option>
-                <option value="cancelled">❌ Cancelled</option>
-            </select>
-            
-            <select
-                className="patient-filter-select"
-                value={dateFilter}
-                onChange={(e) => {
-                    setDateFilter(e.target.value);
-                    if (e.target.value === "custom") {
-                        setShowDateRangePicker(true);
-                    } else {
-                        setShowDateRangePicker(false);
-                    }
-                }}
-            >
-                <option value="all">📅 All Dates</option>
-                <option value="today">📍 Today</option>
-                <option value="upcoming">⏫ Upcoming</option>
-                <option value="past">⬇️ Past</option>
-                <option value="custom">📆 Custom Range</option>
-            </select>
-        </div>
-        
-        {/* Row 2: Date Range Picker (if custom selected) */}
-        {showDateRangePicker && dateFilter === "custom" && (
-            <div className="patient-date-range">
-                <input
-                    type="date"
-                    placeholder="Start Date"
-                    value={customDateRange.start}
-                    onChange={(e) => setCustomDateRange(prev => ({ ...prev, start: e.target.value }))}
-                />
-                <span>to</span>
-                <input
-                    type="date"
-                    placeholder="End Date"
-                    value={customDateRange.end}
-                    onChange={(e) => setCustomDateRange(prev => ({ ...prev, end: e.target.value }))}
-                />
+
+            {/* Row 2: Date Range Picker (if custom selected) */}
+            {showDateRangePicker && dateFilter === "custom" && (
+                <div className="patient-date-range">
+                    <input
+                        type="date"
+                        placeholder="Start Date"
+                        value={customDateRange.start}
+                        onChange={(e) => setCustomDateRange(prev => ({ ...prev, start: e.target.value }))}
+                    />
+                    <span>to</span>
+                    <input
+                        type="date"
+                        placeholder="End Date"
+                        value={customDateRange.end}
+                        onChange={(e) => setCustomDateRange(prev => ({ ...prev, end: e.target.value }))}
+                    />
+                </div>
+            )}
+
+            {/* Row 2: Buttons */}
+            <div className="patient-filter-actions">
+                <button className="patient-reset-btn" onClick={resetFilters}>
+                    🔄 Reset
+                </button>
+                <button className="patient-export-btn" onClick={exportToCSV}>
+                    📥 Export
+                </button>
             </div>
-        )}
-        
-        {/* Row 2: Buttons */}
-        <div className="patient-filter-actions">
-            <button className="patient-reset-btn" onClick={resetFilters}>
-                🔄 Reset
-            </button>
-            <button className="patient-export-btn" onClick={exportToCSV}>
-                📥 Export
-            </button>
         </div>
-    </div>
-);
+    );
 
     const renderOverview = () => (
         <div className="patient-dashboard-container">
@@ -538,15 +547,15 @@ function PatientDashboard({ setPage }) {
                                         onChange={(e) => setDoctorSearchTerm(e.target.value)}
                                         className="patient-doctor-search"
                                     />
-                                    <select 
-                                        value={selectedDoctor} 
-                                        onChange={(e) => { 
-                                            setSelectedDoctor(e.target.value); 
-                                            setAppointmentTime(""); 
-                                            setBookedSlots([]); 
-                                            setDoctorAvailable(true); 
-                                            setBookingError(""); 
-                                        }} 
+                                    <select
+                                        value={selectedDoctor}
+                                        onChange={(e) => {
+                                            setSelectedDoctor(e.target.value);
+                                            setAppointmentTime("");
+                                            setBookedSlots([]);
+                                            setDoctorAvailable(true);
+                                            setBookingError("");
+                                        }}
                                         required
                                     >
                                         <option value="">Select Doctor</option>
@@ -562,28 +571,28 @@ function PatientDashboard({ setPage }) {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 <div className="patient-form-group">
-                                    <input 
-                                        type="date" 
-                                        value={appointmentDate} 
-                                        onChange={(e) => { 
-                                            setAppointmentDate(e.target.value); 
-                                            setAppointmentTime(""); 
-                                            setBookedSlots([]); 
-                                            setDoctorAvailable(true); 
-                                            setBookingError(""); 
-                                        }} 
-                                        required 
+                                    <input
+                                        type="date"
+                                        value={appointmentDate}
+                                        onChange={(e) => {
+                                            setAppointmentDate(e.target.value);
+                                            setAppointmentTime("");
+                                            setBookedSlots([]);
+                                            setDoctorAvailable(true);
+                                            setBookingError("");
+                                        }}
+                                        required
                                         min={today}
                                     />
                                 </div>
-                                
+
                                 <div className="patient-form-group">
-                                    <select 
-                                        value={appointmentTime} 
-                                        onChange={(e) => setAppointmentTime(e.target.value)} 
-                                        required 
+                                    <select
+                                        value={appointmentTime}
+                                        onChange={(e) => setAppointmentTime(e.target.value)}
+                                        required
                                         disabled={doctorAvailable === false}
                                     >
                                         <option value="">Select Time</option>
@@ -611,13 +620,13 @@ function PatientDashboard({ setPage }) {
                                 <button type="submit" disabled={bookingLoading || doctorAvailable === false}>
                                     {bookingLoading ? "Booking..." : "Confirm Booking"}
                                 </button>
-                                <button type="button" onClick={() => { 
-                                    setShowBookingForm(false); 
-                                    setSelectedDoctor(""); 
-                                    setAppointmentDate(""); 
-                                    setAppointmentTime(""); 
-                                    setBookedSlots([]); 
-                                    setDoctorAvailable(true); 
+                                <button type="button" onClick={() => {
+                                    setShowBookingForm(false);
+                                    setSelectedDoctor("");
+                                    setAppointmentDate("");
+                                    setAppointmentTime("");
+                                    setBookedSlots([]);
+                                    setDoctorAvailable(true);
                                     setBookingError("");
                                     setDoctorSearchTerm("");
                                 }}>
@@ -717,12 +726,15 @@ function PatientDashboard({ setPage }) {
                     )}
                 </div>
             )}
+
+            {/* 🔥 EXTRA SPACE AT BOTTOM */}
+            <div style={{ height: '30px' }}></div>
         </div>
     );
 
     return (
         <div className="patient-dashboard-layout">
-            <Sidebar 
+            <Sidebar
                 userRole="patient"
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
@@ -734,7 +746,7 @@ function PatientDashboard({ setPage }) {
                 isMobileSidebarOpen={isMobileSidebarOpen}
                 toggleMobileSidebar={toggleMobileSidebar}
             />
-            
+
             <div className={`patient-content-overlay ${isMobile && isMobileSidebarOpen ? 'blur-active' : ''}`}>
                 <div className="patient-main-content">
                     {isMobile && (
@@ -744,32 +756,32 @@ function PatientDashboard({ setPage }) {
                             </div>
                         </div>
                     )}
-                    
+
                     {!isMobile && (
                         <div className="patient-main-header">
                             <h1>Welcome back, <span>{user?.name?.split(" ")[0] || "Patient"}</span>!</h1>
                             <p>Book and manage your appointments.</p>
                         </div>
                     )}
-                    
+
                     {activeTab === "overview" && renderOverview()}
-                    
+
                     {activeTab === "appointments" && (
                         <>
                             {renderFilterBar()}
-                            <PatientAppointments 
-                                upcomingAppointments={filteredUpcoming} 
-                                pastAppointments={filteredPast} 
-                                handleCancelAppointment={handleCancelAppointment} 
+                            <PatientAppointments
+                                upcomingAppointments={filteredUpcoming}
+                                pastAppointments={filteredPast}
+                                handleCancelAppointment={handleCancelAppointment}
                                 formatTimeTo12Hour={formatTimeTo12Hour}
                             />
                         </>
                     )}
-                    
+
                     {activeTab === "profile" && <PatientProfile user={user} setUser={setUser} />}
                     {activeTab === "notifications" && (
-                        <PatientNotifications 
-                            notifications={notifications} 
+                        <PatientNotifications
+                            notifications={notifications}
                             fetchNotifications={fetchNotifications}
                             onNotificationCountChange={handleNotificationCountChange}
                         />

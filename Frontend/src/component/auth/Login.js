@@ -69,10 +69,12 @@ function Login({ setPage }) {
             });
 
             if (response.status === 200) {
+                const userType = response.data.user.user_type;
+                
                 localStorage.setItem('access_token', response.data.access);
                 localStorage.setItem('refresh_token', response.data.refresh);
-                localStorage.setItem('user_role', response.data.user.user_type);
-                localStorage.setItem('user_type', response.data.user.user_type);
+                localStorage.setItem('user_role', userType);
+                localStorage.setItem('user_type', userType);
 
                 const userData = {
                     id: response.data.user.id,
@@ -82,14 +84,26 @@ function Login({ setPage }) {
                     first_name: response.data.user.first_name || "",
                     last_name: response.data.user.last_name || "",
                     email: response.data.user.email,
-                    user_type: response.data.user.user_type,
+                    user_type: userType,
                     phone: response.data.user.phone || "",
                     address: response.data.user.address || ""
                 };
 
                 localStorage.setItem("medicareUser", JSON.stringify(userData));
-                setPage("home");
-                showToast(`Welcome ${response.data.user.user_type}!`, "success");
+                
+                // ✅ Remove all dashboard tabs from localStorage
+                localStorage.removeItem('patientDashboardTab');
+                localStorage.removeItem('doctorDashboardTab');
+                localStorage.removeItem('adminDashboardTab');
+                localStorage.removeItem('currentPage');
+                
+                // ✅ Clear URL hash
+                window.location.hash = '';
+                
+                // ✅ Always go to HOME page first
+                setPage('home');
+                
+                showToast(`Welcome ${userType}!`, "success");
             }
         } catch (err) {
             setError(err.response?.data?.error || "Invalid email or password");

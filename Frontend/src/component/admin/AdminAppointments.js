@@ -39,6 +39,7 @@ function AdminAppointments({ appointments, formatTimeTo12Hour }) {
                             <th>S.No.</th>
                             <th>Patient Name</th>
                             <th>Doctor Name</th>
+                            <th>Clinic/Hospital</th>
                             <th>Date</th>
                             <th>Time</th>
                             <th>Status</th>
@@ -47,7 +48,7 @@ function AdminAppointments({ appointments, formatTimeTo12Hour }) {
                     <tbody>
                         {currentAppointments.length === 0 ? (
                             <tr>
-                                <td colSpan="6" className="admin-empty-table">No appointments found</td>
+                                <td colSpan="7" className="admin-empty-table">No appointments found</td>
                             </tr>
                         ) : (
                             currentAppointments.map((apt, index) => (
@@ -55,6 +56,7 @@ function AdminAppointments({ appointments, formatTimeTo12Hour }) {
                                     <td>{startIndex + index + 1}</td>
                                     <td>{apt.patient_name || apt.user?.username || "N/A"}</td>
                                     <td>{apt.doctor_name}</td>
+                                    <td>{apt.doctor_clinic || apt.doctor_address || "N/A"}</td>
                                     <td>{apt.date}</td>
                                     <td>{formatTimeTo12Hour(apt.time)}</td>
                                     <td><span className={`admin-status-badge ${apt.status}`}>{apt.status}</span></td>
