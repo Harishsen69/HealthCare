@@ -11,12 +11,11 @@ load_dotenv()
 
 # 🔥 3 API Keys - Round Robin Support
 API_KEYS = [
-    'AQ.Ab8RN6L_ZqvR2_dDngB9FVWU4pTimmw_C2FpFXEs6VrEp6J-Ww',  # Key 1
-    'AQ.Ab8RN6LV6q0uH15YGgjcJvefSmvNHiV6Z9R1nQoGtNYIpaT7Jg',  # Key 2
-    'AQ.Ab8RN6KKrB9EZC_Q2kbonYDhOur40IuRPL0LTzi8l3m19y7L9A',  # Key 3
+    'AQ.Ab8RN6JSUlpNLRZ2pTMjx34c02WkYU97HK_5X1Q9vMzloV12EQ',  # Key 1
+    'AQ.Ab8RN6Lm5SpIXnQVAmAG6hB38Irz18Y2VZeF42uKwJEvXIHViw',  # Key 2
+    'AQ.Ab8RN6JcuFqI7qZM1qowHWloMWlJo_ac21d0jEwhacsvYMQHNQ',  # Key 3
 ]
 
-ACTIVE_API_KEY = API_KEYS[0]
 current_key_index = 0
 
 def get_next_api_key():
@@ -24,7 +23,7 @@ def get_next_api_key():
     global current_key_index
     key = API_KEYS[current_key_index]
     current_key_index = (current_key_index + 1) % len(API_KEYS)
-    print(f"🔄 Using API Key {current_key_index}/{len(API_KEYS)}")
+    print(f"🔄 Using API Key {current_key_index + 1}/{len(API_KEYS)}")
     return key
 
 print(f"✅ {len(API_KEYS)} API Keys loaded successfully")
@@ -35,7 +34,7 @@ def detect_language(text):
     hindi_count = sum(1 for char in text if char in hindi_chars)
     if hindi_count > len(text) * 0.1:
         return 'hindi'
-    elif any(word in text.lower() for word in ['hai', 'hain', 'hoon', 'hum', 'aap', 'kya', 'kaise', 'nahi', 'hoga', 'sakta', 'chahiye']):
+    elif any(word in text.lower() for word in ['hai', 'hain', 'hoon', 'hum', 'aap', 'kya', 'kaise', 'nahi', 'hoga', 'sakta', 'chahiye', 'mera', 'tera', 'uska', 'iska']):
         return 'hinglish'
     else:
         return 'english'
@@ -372,7 +371,8 @@ def get_gemini_response(user_message, patient_email=None):
             'aap kaha rehte ho', 'where do you live', 'your location',
             'aap ka naam kya hai', 'what is your name', 'aap kon ho',
             'who are you', 'what can you do', 'aap kya kar sakte ho',
-            'are you real', 'real doctor', 'ai ho', 'kya tum real ho'
+            'are you real', 'real doctor', 'ai ho', 'kya tum real ho',
+            'hyy', 'hello', 'hii', 'hi', 'hey', 'namaste', 'नमस्ते'
         ]
         
         if any(keyword in user_message_lower for keyword in personal_keywords):
@@ -402,6 +402,14 @@ def get_gemini_response(user_message, patient_email=None):
                     return "Mera naam MediBot hai 🤖\n\nMain aapka AI healthcare assistant hoon. Main aapki madad kar sakta hoon:\n- 📅 Appointment book karne mein\n- 📋 Aapke appointments dekhne mein\n- 🩺 Specialization ke hisaab se doctor dhoondhne mein\n- 💰 Doctor ki fee check karne mein\n- ❓ Health-related sawalon ke jawab dene mein"
                 else:
                     return "My name is MediBot 🤖\n\nI'm your AI healthcare assistant. I'm here to help you with:\n- 📅 Booking appointments\n- 📋 Viewing your appointments\n- 🩺 Finding doctors by specialty\n- 💰 Checking doctor fees\n- ❓ Answering health-related questions"
+            
+            elif 'hyy' in user_message_lower or 'hello' in user_message_lower or 'hii' in user_message_lower or 'hi' in user_message_lower or 'hey' in user_message_lower or 'namaste' in user_message_lower or 'नमस्ते' in user_message_lower:
+                if language == 'hindi':
+                    return f"नमस्ते {name}! 👋\n\nमैं MediBot हूँ, आपका AI हेल्थकेयर असिस्टेंट।\n\nमैं आपकी कैसे मदद कर सकता हूँ?\n💡 आप मुझसे पूछ सकते हैं:\n• 🩺 डॉक्टर की सूची\n• 📅 अपॉइंटमेंट बुक करना\n• 📋 मेरे अपॉइंटमेंट\n• 💰 डॉक्टर की फीस"
+                elif language == 'hinglish':
+                    return f"Namaste {name}! 👋\n\nMain MediBot hoon, aapka AI healthcare assistant.\n\nMain aapki kaise madad kar sakta hoon?\n💡 Aap mujhse poochh sakte hain:\n• 🩺 Doctor ki list\n• 📅 Appointment book karna\n• 📋 Mere appointments\n• 💰 Doctor ki fee"
+                else:
+                    return f"Hi {name}! 👋\n\nI'm MediBot, your AI healthcare assistant.\n\nHow can I help you today?\n💡 You can ask me about:\n• 🩺 List of doctors\n• 📅 Booking appointments\n• 📋 My appointments\n• 💰 Doctor fees"
             
             else:
                 if language == 'hindi':
@@ -1055,7 +1063,6 @@ User said: {user_message}"""
                 elif '401' in error_str or 'invalid' in error_str.lower():
                     # 🔥 API Key invalid - try next key
                     try:
-                        # Try next API key
                         active_key = get_next_api_key()
                         genai.configure(api_key=active_key)
                         model = genai.GenerativeModel('gemini-2.5-flash')
